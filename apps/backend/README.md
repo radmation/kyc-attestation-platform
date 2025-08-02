@@ -1,98 +1,161 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Prisma
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Database Migrations
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This project uses Prisma for database management. The schema is organized using the `prismaSchemaFolder` feature, with models split across multiple files in the `prisma/models/` directory.
 
-## Description
+### Prerequisites
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. **Database Connection**: Ensure your database is running and accessible
+   - For local development: `DATABASE_URL="postgresql://user:password@localhost:5432/mydatabase?schema=public"`
+   - For Docker: Database should be running via `docker-compose up db`
 
-## Project setup
+2. **Environment Setup**: Make sure your `.env` file is configured with the correct `DATABASE_URL`
 
+### Creating Migrations
+
+#### Create and Apply a New Migration
 ```bash
-$ npm install
+# Navigate to the backend directory
+cd apps/backend
+
+# Create and apply a new migration
+npx prisma migrate dev --name <migration_name>
+
+# Example:
+npx prisma migrate dev --name add_user_profile
 ```
 
-## Compile and run the project
-
+#### Create Migration Without Applying
 ```bash
-# development
-$ npm run start
+# Create migration file only (useful for review before applying)
+npx prisma migrate dev --create-only --name <migration_name>
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# Then apply the migration
+npx prisma migrate dev
 ```
 
-## Run tests
+### Applying Migrations
 
+#### Apply Pending Migrations
 ```bash
-# unit tests
-$ npm run test
+# Apply all pending migrations
+npx prisma migrate dev
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# Apply migrations in production (without interactive prompts)
+npx prisma migrate deploy
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+#### Apply Specific Migration
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Apply migrations up to a specific migration
+npx prisma migrate resolve --applied <migration_name>
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Rolling Back Migrations
 
-## Resources
+#### Reset Database (Development Only)
+```bash
+# Reset database and apply all migrations from scratch
+npx prisma migrate reset
 
-Check out a few resources that may come in handy when working with NestJS:
+# Force reset (bypass confirmation)
+npx prisma migrate reset --force
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+#### Rollback to Specific Migration
+```bash
+# Mark a migration as rolled back
+npx prisma migrate resolve --rolled-back <migration_name>
 
-## Support
+# Then apply migrations up to desired point
+npx prisma migrate deploy
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Working with Docker
 
-## Stay in touch
+#### Run Migrations Inside Docker Container
+```bash
+# Execute migration command inside the backend container
+docker compose exec backend npx prisma migrate dev --name <migration_name> --schema=apps/backend/prisma/schema.prisma
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### Apply Migrations in Docker Environment
+```bash
+# Apply migrations in Docker
+docker compose exec backend npx prisma migrate deploy --schema=apps/backend/prisma/schema.prisma
+```
 
-## License
+### Schema Management
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+#### Generate Prisma Client
+```bash
+# Generate the Prisma client after schema changes
+npx prisma generate
+```
+
+#### Introspect Database
+```bash
+# Pull schema from existing database
+npx prisma db pull
+```
+
+#### Push Schema Changes (Development)
+```bash
+# Push schema changes directly to database (bypass migrations)
+npx prisma db push
+```
+
+### Migration Best Practices
+
+1. **Always create migrations for schema changes** - Don't use `db push` in production
+2. **Review migration files** - Check the generated SQL before applying
+3. **Test migrations** - Always test migrations in development before production
+4. **Use descriptive names** - Migration names should clearly describe the change
+5. **Backup before major changes** - Always backup your database before applying migrations
+
+### Common Migration Commands
+
+```bash
+# Check migration status
+npx prisma migrate status
+
+# View migration history
+npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma
+
+# Validate schema
+npx prisma validate
+
+# Format schema files
+npx prisma format
+```
+
+### Troubleshooting
+
+#### Migration Issues
+- **"Already in sync"**: Database schema matches your Prisma schema
+- **"Database is empty"**: Run `npx prisma migrate reset` to start fresh
+- **Connection errors**: Check your `DATABASE_URL` and ensure database is running
+
+#### Schema Issues
+- **"Preview feature deprecated"**: Remove `previewFeatures = ["prismaSchemaFolder"]` from schema.prisma
+- **Client generation errors**: Run `npx prisma generate` after schema changes
+
+### File Structure
+
+```
+apps/backend/prisma/
+├── schema.prisma          # Main schema file
+├── models/                # Organized model files
+│   ├── user/
+│   │   ├── user.prisma
+│   │   └── enums/
+│   │       └── role.prisma
+│   ├── client/
+│   │   └── client.prisma
+│   └── profile/
+│       └── profile.prisma
+└── migrations/            # Generated migration files
+    └── YYYYMMDDHHMMSS_migration_name/
+        └── migration.sql
+```

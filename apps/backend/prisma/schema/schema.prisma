@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../../generated/prisma"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+/// User role enumeration for access control and permissions
+enum Role {
+  SUPER_ADMIN    // Full system access
+  CLIENT_ADMIN   // Client organization admin
+  CLIENT_USER    // Regular client user
+}
+
+// =============================================================================
+// CLIENT MANAGEMENT
+// =============================================================================
+
+/// Client/Organization model for multi-tenant architecture
+/// Each client represents a separate organization using the platform
+model Client {
+  id              String   @id @unique // ULID will be generated in app
+  name            String   @unique     // Organization name
+  domain          String   @unique     // Primary domain
+  subdomain       String?  @unique     // Optional subdomain
+  isActive        Boolean  @default(true) // Account status
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relationships
+  users           User[]   // All users belonging to this client
+  profiles        Profile[] // All profiles associated with this client
+  
+  // Future relationships (commented for later implementation)
+  // branding        Branding? // Will be added in a later migration
+}
+
+// =============================================================================
+// USER MANAGEMENT
+// =============================================================================
+
+/// User model for authentication and user management
+/// Represents individual users within client organizations
+model User {
+  id              String   @id @unique // ULID will be generated in app
+  email           String   @unique     // User's email address
+  password        String               // Hashed password
+  firstName       String?              // User's first name
+  lastName        String?              // User's last name
+  role            Role     @default(CLIENT_USER) // User's role in the system
+  clientId        String               // Foreign key to Client
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relationships
+  client          Client   @relation(fields: [clientId], references: [id])
+  profile         Profile? // One-to-one relationship with Profile
+}
+
+// =============================================================================
+// KYC & PROFILE MANAGEMENT
+// =============================================================================
+
+/// Profile model for KYC (Know Your Customer) information
+/// Contains detailed user information for compliance and verification
+model Profile {
+  id              String   @id @unique // ULID will be generated in app
+  userId          String   @unique     // One-to-one relationship with User
+  dateOfBirth     DateTime?            // User's date of birth
+  addressLine1    String?              // Primary address line
+  addressLine2    String?              // Secondary address line
+  city            String?              // City
+  state           String?              // State/Province
+  postalCode      String?              // Postal/ZIP code
+  country         String?              // Country
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relationships
+  user            User     @relation(fields: [userId], references: [id])
+  clientId        String               // Foreign key to Client
+  client          Client   @relation(fields: [clientId], references: [id])
+  
+  // Future KYC fields (commented for later implementation)
+  // documentType    String?  // Type of identification document
+  // documentNumber  String?  // Document number
+  // verificationStatus VerificationStatus @default(PENDING)
+  // verifiedAt      DateTime?
+}
