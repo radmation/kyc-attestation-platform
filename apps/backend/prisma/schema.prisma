@@ -1,0 +1,303 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+/// User role enumeration for access control and permissions
+enum UserRole {
+  SUPER_ADMIN
+  CLIENT_ADMIN
+  CLIENT_USER
+}
+
+/// Attestation status enumeration
+enum AttestationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+  REVOKED
+}
+
+/// KYC verification status enumeration
+enum KycStatus {
+  PENDING
+  IN_PROGRESS
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+/// Transaction monitoring status
+enum MonitoringStatus {
+  CLEAR
+  FLAGGED
+  BLOCKED
+  UNDER_REVIEW
+}
+
+/// Client/Organization model for multi-tenant architecture
+/// Each client represents a separate organization using the platform
+model Client {
+  id        String    @id @unique
+  name      String    @unique
+  domain    String    @unique
+  subdomain String?   @unique
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  // Relationships
+  users     User[]
+  profiles  Profile[]
+  branding  Branding?
+  smartContracts SmartContract[] // Smart contracts integrated by this client
+
+  @@map("clients")
+}
+
+/// Branding model for white-labeling configuration
+/// Stores customizable branding assets for each client
+model Branding {
+  id              String   @id @unique
+  logoUrl         String?
+  primaryColor    String?  // e.g., '#0000FF'
+  secondaryColor  String?
+  
+  // Relationships
+  clientId        String   @unique
+  client          Client   @relation(fields: [clientId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("branding")
+}
+
+/// User model for authentication and user management
+/// Represents employees of client organizations who log in to manage the platform
+model User {
+  id        String   @id @unique
+  email     String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  role      UserRole @default(CLIENT_USER)
+  isActive  Boolean  @default(true)
+  clientId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relationships
+  client    Client   @relation(fields: [clientId], references: [id])
+  profiles  Profile[] // Profiles managed by this user
+  apiTokens ApiToken[]
+  roles     Role[]   // RBAC roles assigned to this user
+
+  @@map("users")
+}
+
+/// Profile model for KYC (Know Your Customer) information
+/// Represents the subject of verification (the end-user being verified)
+model Profile {
+  id          String   @id @unique
+  firstName   String?
+  lastName    String?
+  dateOfBirth DateTime?
+  
+  // Relationships
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id])
+  
+  // A Profile can be tied to a User (e.g., if a KYC-ed user also has login access)
+  userId      String?  @unique
+  user        User?    @relation(fields: [userId], references: [id])
+
+  addresses     Address[]
+  kycChecks     KycVerification[]
+  wallets       Wallet[]
+  attestations  Attestation[] // On-chain attestations for this profile
+  monitoring    TransactionMonitoring[] // Ongoing monitoring of this profile
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+/// Address model for multiple addresses per profile
+/// Supports different types of addresses (primary, mailing, previous)
+model Address {
+  id          String   @id @unique
+  street      String?
+  city        String?
+  state       String?
+  postalCode  String?
+  country     String?
+  type        String?  // e.g., 'primary', 'mailing', 'previous'
+  isVerified  Boolean  @default(false)
+
+  // Relationships
+  profileId   String
+  profile     Profile  @relation(fields: [profileId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("addresses")
+}
+
+/// Wallet model for cryptocurrency addresses
+/// Stores user's cryptocurrency wallet addresses
+model Wallet {
+  id           String    @id @unique
+  address      String    @unique
+  label        String?
+  isVerified   Boolean   @default(false) // Whether this wallet has been KYC verified
+  isBlocked    Boolean   @default(false) // Whether this wallet is blocked from transactions
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relationships
+  profileId    String
+  profile      Profile   @relation(fields: [profileId], references: [id])
+  attestations Attestation[]
+
+  @@map("wallets")
+}
+
+/// KycVerification model for Identity Proofing and Verification (IPV) checks
+/// Stores the results of KYC verification processes
+model KycVerification {
+  id              String   @id @unique
+  providerId      String   @unique
+  status          KycStatus @default(PENDING)
+  lastCheckedAt   DateTime @default(now())
+  webhookReceived Boolean  @default(false)
+  
+  // Foreign key to the Profile who is being verified
+  profileId       String?
+  profile         Profile? @relation(fields: [profileId], references: [id])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("kyc_verifications")
+}
+
+/// Attestation model for on-chain attestation data
+/// This is the core on-chain attestation data
+// An Attestation represents a record of a verification or certification event related to a user or client.
+// Think of it as a digital stamp or a verified statement about a specific piece of information.
+model Attestation {
+  id            String    @id @unique
+  tokenId       BigInt?   @unique // NFT token ID on blockchain
+  smartContract String    // Smart contract address that issued the attestation
+  chain         String    // Blockchain network (e.g., "ethereum", "polygon")
+  metadataUri   String?   // IPFS URI containing attestation metadata
+  status        AttestationStatus @default(PENDING)
+  
+  // Foreign key to the Wallet that holds the attestation
+  walletId      String?
+  wallet        Wallet?   @relation(fields: [walletId], references: [id])
+  
+  // Foreign key to the Profile this attestation belongs to
+  profileId     String
+  profile       Profile   @relation(fields: [profileId], references: [id])
+
+  issuedAt      DateTime?
+  revokedAt     DateTime?
+  expiresAt     DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("attestations")
+}
+
+/// SmartContract model for integrated smart contracts
+/// Tracks smart contracts that have integrated with our platform
+model SmartContract {
+  id              String   @id @unique
+  contractAddress String   @unique // Smart contract address
+  chain           String   // Blockchain network
+  name            String   // Contract name/description
+  isActive        Boolean  @default(true)
+  
+  // Relationships
+  clientId        String
+  client          Client   @relation(fields: [clientId], references: [id])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("smart_contracts")
+}
+
+/// TransactionMonitoring model for continuous on-chain monitoring
+/// Monitors wallet transactions for suspicious activity
+model TransactionMonitoring {
+  id              String   @id @unique
+  transactionHash String   @unique // Blockchain transaction hash
+  fromAddress     String   // Sender wallet address
+  toAddress       String   // Receiver wallet address
+  amount          String   // Transaction amount
+  status          MonitoringStatus @default(CLEAR)
+  riskScore       Int      @default(0) // Risk score (0-100)
+  flags           String[] // Array of risk flags
+  
+  // Relationships
+  profileId       String
+  profile         Profile  @relation(fields: [profileId], references: [id])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("transaction_monitoring")
+}
+
+/// Role model for role-based access control (RBAC)
+/// We will have global roles (e.g., 'platform_admin') and client-scoped roles (e.g., 'client_admin')
+model Role {
+  id          String   @id @unique
+  name        String   @unique
+  description String?
+  users       User[]
+  permissions Permission[]
+
+  @@map("roles")
+}
+
+/// Permission model for role-based access control
+model Permission {
+  id          String   @id @unique
+  name        String   @unique
+  description String?
+  roles       Role[]
+
+  @@map("permissions")
+}
+
+/// ApiToken model for external services
+/// This table manages API tokens for external services
+model ApiToken {
+  id          String   @id @unique
+  name        String
+  token       String   @unique
+  permissions String[]
+  userId      String
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
+  lastUsedAt  DateTime?
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("api_tokens")
+}
+
+
+

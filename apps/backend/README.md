@@ -2,6 +2,8 @@
 
 ## Database Migrations
 
+We changed our default location so use the `--schema=prisma/schema/schema.prisma` flag
+
 This project uses Prisma for database management. The schema is organized using the `prismaSchemaFolder` feature, with models split across multiple files in the `prisma/models/` directory.
 
 ### Prerequisites
