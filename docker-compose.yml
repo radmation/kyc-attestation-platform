@@ -1,0 +1,37 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  # Backend Application Service
+  backend:
+    build:
+      context: . # Build context is the current directory (project root)
+      dockerfile: Dockerfile # Use the Dockerfile in the current directory
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000
+    environment:
+      # DATABASE_URL for the backend to connect to the 'db' service
+      DATABASE_URL: "postgresql://user:password@db:5432/mydatabase?schema=public"
+      # Add any other environment variables your backend needs
+    depends_on:
+      - db # Ensure the database service starts before the backend
+    volumes:
+      - .:/usr/src/app # Mount the current directory into the container for development
+      - /usr/src/app/node_modules # Exclude node_modules from the bind mount to prevent host/container conflicts
+
+  # PostgreSQL Database Service
+  db:
+    image: postgres:14-alpine # Use a specific PostgreSQL version
+    restart: always # Always restart the container if it stops
+    environment:
+      POSTGRES_USER: user # Database user
+      POSTGRES_PASSWORD: password # Database password
+      POSTGRES_DB: mydatabase # Database name
+    ports:
+      - "5432:5432" # Map host port 5432 to container port 5432
+    volumes:
+      - db_data:/var/lib/postgresql/data # Persistent volume for database data
+
+volumes:
+  db_data: # Define the named volume for PostgreSQL data persistence
