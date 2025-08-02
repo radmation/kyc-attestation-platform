@@ -13,3 +13,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// Schema files are automatically combined by Prisma
+// No import statements needed - all .prisma files in the directory are included
