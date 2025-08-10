@@ -15,6 +15,14 @@ enum UserRole {
   CLIENT_USER
 }
 
+/// Account status enumeration for user account lifecycle
+enum AccountStatus {
+  PENDING      // Email not verified yet
+  ACTIVE       // Email verified, account active
+  SUSPENDED    // Admin suspended account
+  DEACTIVATED  // User deactivated account
+}
+
 /// Attestation status enumeration
 enum AttestationStatus {
   PENDING
@@ -57,6 +65,7 @@ model Client {
   profiles  Profile[]
   branding  Branding?
   smartContracts SmartContract[] // Smart contracts integrated by this client
+  roles     Role[] // Client-scoped roles
 
   @@map("clients")
 }
@@ -82,14 +91,23 @@ model Branding {
 /// User model for authentication and user management
 /// Represents employees of client organizations who log in to manage the platform
 model User {
-  id        String   @id @unique
+  id        String   @id @unique @default(uuid())
   email     String   @unique
   password  String
   firstName String?
   lastName  String?
   role      UserRole @default(CLIENT_USER)
+  accountStatus AccountStatus @default(PENDING)
   isActive  Boolean  @default(true)
   clientId  String
+  
+  // Email verification fields
+  emailVerified Boolean @default(false)
+  emailVerificationToken String? @unique
+  emailVerificationExpires DateTime?
+  lastVerificationEmailSent DateTime?
+  verificationEmailCount Int @default(0) // For rate limiting compliance
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -98,6 +116,8 @@ model User {
   profiles  Profile[] // Profiles managed by this user
   apiTokens ApiToken[]
   roles     Role[]   // RBAC roles assigned to this user
+  sessions  UserSession[] // User's active sessions
+  rateLimitAttempts RateLimitAttempt[] // Rate limiting compliance logs
 
   @@map("users")
 }
@@ -264,21 +284,33 @@ model TransactionMonitoring {
 /// Role model for role-based access control (RBAC)
 /// We will have global roles (e.g., 'platform_admin') and client-scoped roles (e.g., 'client_admin')
 model Role {
-  id          String   @id @unique
+  id          String   @id @unique @default(uuid())
   name        String   @unique
   description String?
-  users       User[]
+  isGlobal   Boolean  @default(false) // Whether this role applies across all clients
+  clientId   String?  // If null, role is global; if set, role is client-scoped
+  client     Client?  @relation(fields: [clientId], references: [id])
+  users      User[]
   permissions Permission[]
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("roles")
 }
 
 /// Permission model for role-based access control
+/// Granular permissions for different operations
 model Permission {
-  id          String   @id @unique
+  id          String   @id @unique @default(uuid())
   name        String   @unique
   description String?
-  roles       Role[]
+  resource   String   // e.g., 'user', 'profile', 'attestation', 'client'
+  action     String   // e.g., 'create', 'read', 'update', 'delete', 'approve'
+  roles      Role[]
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("permissions")
 }
@@ -286,7 +318,7 @@ model Permission {
 /// ApiToken model for external services
 /// This table manages API tokens for external services
 model ApiToken {
-  id          String   @id @unique
+  id          String   @id @unique @default(uuid())
   name        String
   token       String   @unique
   permissions String[]
@@ -297,6 +329,39 @@ model ApiToken {
   user        User     @relation(fields: [userId], references: [id])
 
   @@map("api_tokens")
+}
+
+/// UserSession model for managing user sessions and authentication
+model UserSession {
+  id           String   @id @unique @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  token        String   @unique
+  expiresAt    DateTime
+  lastActivity DateTime @default(now())
+  ipAddress    String?
+  userAgent    String?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("user_sessions")
+}
+
+/// RateLimitAttempt model for compliance logging of rate-limited actions
+model RateLimitAttempt {
+  id          String   @id @unique @default(uuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  action      String   // e.g., 'email_verification_resend', 'login_attempt'
+  ipAddress   String?
+  userAgent   String?
+  wasBlocked  Boolean  @default(false) // Whether this attempt was rate limited
+  reason      String?  // Why it was blocked (e.g., 'hourly_limit_exceeded')
+  
+  createdAt   DateTime @default(now())
+
+  @@map("rate_limit_attempts")
 }
 
 
