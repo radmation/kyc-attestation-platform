@@ -215,30 +215,38 @@ Task completed and ready for review"
 ## Task Completion
 
 ✅ **Task ID**: $TASK_ID
-✅ **Status**: Ready for review
+✅ **Status**: Ready for manual review
 ✅ **Validation**: All automated checks passed
 
 ## Changes
 
 This PR implements $TASK_TITLE as specified in the task requirements.
 
-### Acceptance Criteria
-- [ ] Code review completed
-- [ ] All automated tests pass
-- [ ] Integration testing completed
-- [ ] Documentation reviewed
+### Manual Review Required ⚠️
+- [ ] **Code review completed** (required)
+- [ ] **Architecture review** (for infrastructure changes)
+- [ ] **Security review** (for auth/blockchain changes)
+- [ ] **Integration testing completed**
+- [ ] **Documentation reviewed**
 
-### Files Changed
-$(git diff --name-only main..HEAD | sed 's/^/- /')
-
-## Testing
+### Automated Checks ✅
 - [x] Unit tests pass
 - [x] TypeScript compilation successful
 - [x] Linting passes
 - [x] Task-specific validation completed
+- [x] Pre-commit hooks validated
 
-Please review and approve if all criteria are met.
-" --head "task/$TASK_ID" --base main
+### Files Changed
+$(git diff --name-only develop..HEAD | sed 's/^/- /')
+
+## Testing Strategy
+- [x] Automated test suite passes
+- [x] Task acceptance criteria validated
+- [ ] Manual integration testing (reviewer responsibility)
+- [ ] End-to-end workflow testing (if applicable)
+
+**⚠️ Manual approval required before merge - do not auto-merge**
+" --head "task/$TASK_ID" --base develop
         else
             echo "📝 GitHub CLI not available. Please create PR manually:"
             echo "   Branch: task/$TASK_ID"
@@ -274,8 +282,8 @@ Please review and approve if all criteria are met.
             exit 0
         fi
         
-        # Switch to main and delete feature branch
-        git checkout main
+        # Switch to develop and delete feature branch
+        git checkout develop
         git branch -D "task/$TASK_ID" 2>/dev/null || true
         
         # Move task back to todo

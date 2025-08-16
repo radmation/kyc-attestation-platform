@@ -7,7 +7,11 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ develop ]  # All task PRs target develop
+    
+  # Separate workflow for releases to main
+  release:
+    types: [ published ]
 
 env:
   NODE_VERSION: '18'
@@ -236,26 +240,29 @@ jobs:
           echo "✅ Database query optimization verified"
           echo "✅ Memory usage within limits"
 
-  # Auto-merge approved tasks
-  auto-merge:
+  # Manual review gate - blocks auto-merge, requires human approval
+  require-manual-review:
     runs-on: ubuntu-latest
     needs: [validate-tasks, test-and-lint, infrastructure-tests, security-scan]
-    if: contains(github.head_ref, 'task/') && contains(github.event.pull_request.labels.*.name, 'auto-merge-approved')
+    if: contains(github.head_ref, 'task/')
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Auto-merge task
+      - name: Validate all checks passed
         run: |
-          echo "🔄 Auto-merging approved task..."
+          echo "✅ All automated validation checks passed"
+          echo "🔍 Manual review required before merge"
           
           # Extract task ID
           TASK_ID=$(echo "${{ github.head_ref }}" | sed 's/task\///')
+          echo "📋 Task $TASK_ID ready for manual review"
           
-          # Move task to done (this would be done via API in production)
-          echo "📋 Task $TASK_ID ready for completion"
-          echo "✅ All validation checks passed"
-          echo "🎉 Task completed successfully"
+          echo "⚠️  MANUAL REVIEW REQUIRED:"
+          echo "   - Code review by team member"
+          echo "   - Architecture review (for infrastructure)"
+          echo "   - Security review (for auth/blockchain)"
+          echo "   - Integration testing verification"
+          echo "   - Documentation completeness check"
+          
+          echo "🚫 Auto-merge DISABLED - human approval required"
 
   # Deployment (only on main branch)
   deploy:
