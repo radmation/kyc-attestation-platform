@@ -24,4 +24,4 @@ export class LoggingMiddleware implements NestMiddleware {
 
     morganMiddleware(req, res, next);
   }
-} 
+}

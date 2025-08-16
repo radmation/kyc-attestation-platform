@@ -37,13 +37,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      
+
       if (typeof exceptionResponse === 'object') {
         message = (exceptionResponse as any).message || exception.message;
         code = (exceptionResponse as any).error || exception.constructor.name;
         details = (exceptionResponse as any).details;
       } else {
-        message = exceptionResponse as string;
+        message = exceptionResponse;
         code = exception.constructor.name;
       }
     } else {
@@ -52,7 +52,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       code = 'INTERNAL_SERVER_ERROR';
     }
 
-    const requestId = request.headers['x-request-id'] || this.generateRequestId();
+    const requestId =
+      request.headers['x-request-id'] || this.generateRequestId();
 
     const errorResponse: ErrorResponse = {
       success: false,
@@ -84,4 +85,4 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private generateRequestId(): string {
     return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
-} 
+}

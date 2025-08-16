@@ -26,10 +26,16 @@ export interface PaginationMeta {
 }
 
 @Injectable()
-export class ResponseInterceptor<T> implements NestInterceptor<T, SuccessResponse<T>> {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<SuccessResponse<T>> {
+export class ResponseInterceptor<T>
+  implements NestInterceptor<T, SuccessResponse<T>>
+{
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<SuccessResponse<T>> {
     const request = context.switchToHttp().getRequest();
-    const requestId = request.headers['x-request-id'] || this.generateRequestId();
+    const requestId =
+      request.headers['x-request-id'] || this.generateRequestId();
 
     return next.handle().pipe(
       map((data) => ({
@@ -47,4 +53,4 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, SuccessRespons
   private generateRequestId(): string {
     return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
-} 
+}

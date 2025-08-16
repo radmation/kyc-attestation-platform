@@ -9,7 +9,7 @@ import { createCorsConfig } from './shared/config/cors.config';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  
+
   const app = await NestFactory.create(BackendModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });

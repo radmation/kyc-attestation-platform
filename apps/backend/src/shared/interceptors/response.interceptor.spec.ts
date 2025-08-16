@@ -36,61 +36,69 @@ describe('ResponseInterceptor', () => {
     const testData = { message: 'test data' };
     (mockCallHandler.handle as jest.Mock).mockReturnValue(of(testData));
 
-    interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe((result) => {
-      expect(result).toEqual({
-        success: true,
-        data: testData,
-        meta: {
-          version: '1.0.0',
-          timestamp: expect.any(String),
-          requestId: expect.any(String),
-        },
+    interceptor
+      .intercept(mockExecutionContext, mockCallHandler)
+      .subscribe((result) => {
+        expect(result).toEqual({
+          success: true,
+          data: testData,
+          meta: {
+            version: '1.0.0',
+            timestamp: expect.any(String),
+            requestId: expect.any(String),
+          },
+        });
+        done();
       });
-      done();
-    });
   });
 
   it('should use request ID from headers if available', (done) => {
     const testData = { message: 'test data' };
     (mockCallHandler.handle as jest.Mock).mockReturnValue(of(testData));
-    
+
     mockExecutionContext.switchToHttp = jest.fn().mockReturnValue({
       getRequest: () => ({
         headers: { 'x-request-id': 'test-request-id' },
       }),
     });
 
-    interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe((result) => {
-      expect(result.meta?.requestId).toBe('test-request-id');
-      done();
-    });
+    interceptor
+      .intercept(mockExecutionContext, mockCallHandler)
+      .subscribe((result) => {
+        expect(result.meta?.requestId).toBe('test-request-id');
+        done();
+      });
   });
 
   it('should generate request ID if not in headers', (done) => {
     const testData = { message: 'test data' };
     (mockCallHandler.handle as jest.Mock).mockReturnValue(of(testData));
 
-    interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe((result) => {
-      expect(result.meta?.requestId).toMatch(/^req_\d+_[a-z0-9]+$/);
-      done();
-    });
+    interceptor
+      .intercept(mockExecutionContext, mockCallHandler)
+      .subscribe((result) => {
+        expect(result.meta?.requestId).toMatch(/^req_\d+_[a-z0-9]+$/);
+        done();
+      });
   });
 
   it('should handle null/undefined data', (done) => {
     (mockCallHandler.handle as jest.Mock).mockReturnValue(of(null));
 
-    interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe((result) => {
-      expect(result).toEqual({
-        success: true,
-        data: null,
-        meta: {
-          version: '1.0.0',
-          timestamp: expect.any(String),
-          requestId: expect.any(String),
-        },
+    interceptor
+      .intercept(mockExecutionContext, mockCallHandler)
+      .subscribe((result) => {
+        expect(result).toEqual({
+          success: true,
+          data: null,
+          meta: {
+            version: '1.0.0',
+            timestamp: expect.any(String),
+            requestId: expect.any(String),
+          },
+        });
+        done();
       });
-      done();
-    });
   });
 
   it('should handle complex data structures', (done) => {
@@ -107,10 +115,12 @@ describe('ResponseInterceptor', () => {
     };
     (mockCallHandler.handle as jest.Mock).mockReturnValue(of(complexData));
 
-    interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe((result) => {
-      expect(result.data).toEqual(complexData);
-      expect(result.success).toBe(true);
-      done();
-    });
+    interceptor
+      .intercept(mockExecutionContext, mockCallHandler)
+      .subscribe((result) => {
+        expect(result.data).toEqual(complexData);
+        expect(result.success).toBe(true);
+        done();
+      });
   });
-}); 
+});

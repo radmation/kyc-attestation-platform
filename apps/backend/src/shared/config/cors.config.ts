@@ -2,13 +2,15 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 import { ConfigService } from '@nestjs/config';
 
 export const createCorsConfig = (configService: ConfigService): CorsOptions => {
-  const allowedOrigins = configService.get<string>('ALLOWED_ORIGINS')?.split(',') || ['http://localhost:4200'];
-  
+  const allowedOrigins = configService
+    .get<string>('ALLOWED_ORIGINS')
+    ?.split(',') || ['http://localhost:4200'];
+
   return {
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-      
+
       if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
@@ -29,4 +31,4 @@ export const createCorsConfig = (configService: ConfigService): CorsOptions => {
     credentials: true,
     maxAge: 86400, // 24 hours
   };
-}; 
+};

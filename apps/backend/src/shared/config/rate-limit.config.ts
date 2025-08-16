@@ -1,7 +1,9 @@
 import { ThrottlerModuleOptions } from '@nestjs/throttler';
 import { ConfigService } from '@nestjs/config';
 
-export const createRateLimitConfig = (configService: ConfigService): ThrottlerModuleOptions => ({
+export const createRateLimitConfig = (
+  configService: ConfigService,
+): ThrottlerModuleOptions => ({
   throttlers: [
     {
       name: 'short',
@@ -35,4 +37,4 @@ export const rateLimitConfig: RateLimitConfig = {
   skipSuccessfulRequests: false,
   skipFailedRequests: false,
   keyGenerator: (req) => `${req.ip}:${req.user?.id || 'anonymous'}`,
-}; 
+};
