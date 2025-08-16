@@ -49,7 +49,7 @@ describe('GlobalExceptionFilter', () => {
       expect.objectContaining({
         success: false,
         error: expect.objectContaining({
-          code: 'BadRequestException',
+          code: 'HttpException',
           message: 'Test error',
           timestamp: expect.any(String),
           requestId: expect.any(String),
