@@ -51,7 +51,10 @@ describe('JwtAuthGuard', () => {
 
     it('should call super.canActivate for protected routes', async () => {
       reflector.getAllAndOverride.mockReturnValue(false);
-      const superCanActivateSpy = jest.spyOn(Object.getPrototypeOf(Object.getPrototypeOf(guard)), 'canActivate');
+      const superCanActivateSpy = jest.spyOn(
+        Object.getPrototypeOf(Object.getPrototypeOf(guard)),
+        'canActivate',
+      );
       superCanActivateSpy.mockReturnValue(true);
 
       const result = guard.canActivate(mockExecutionContext);
@@ -88,4 +91,4 @@ describe('JwtAuthGuard', () => {
       expect(() => guard.handleRequest(error, null, null)).toThrow(error);
     });
   });
-}); 
+});

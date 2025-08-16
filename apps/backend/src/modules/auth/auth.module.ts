@@ -44,16 +44,13 @@ import { UserController } from './presentation/controllers/user.controller';
       inject: [ConfigService],
     }),
   ],
-  controllers: [
-    EmailVerificationController,
-    UserController,
-  ],
+  controllers: [EmailVerificationController, UserController],
   providers: [
     // Use cases
     SendVerificationEmailUseCase,
     VerifyEmailUseCase,
     CreateUserUseCase,
-    
+
     // Infrastructure services
     {
       provide: 'EmailService',
@@ -65,7 +62,7 @@ import { UserController } from './presentation/controllers/user.controller';
     },
     JwtService,
     JwtStrategy,
-    
+
     // Repositories
     {
       provide: 'UserRepository',
@@ -75,7 +72,6 @@ import { UserController } from './presentation/controllers/user.controller';
       provide: 'RateLimitRepository',
       useClass: PrismaRateLimitRepository,
     },
-    
   ],
   exports: [
     SendVerificationEmailUseCase,
@@ -100,4 +96,4 @@ import { UserController } from './presentation/controllers/user.controller';
     },
   ],
 })
-export class AuthModule {} 
+export class AuthModule {}

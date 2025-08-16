@@ -4,7 +4,9 @@ import type { UserRepository } from '../../domain/repositories/user.repository.i
 import { User } from '../../domain/entities/user.entity';
 
 // Helper function to convert null to undefined for optional properties
-function convertNullToUndefined<T extends Record<string, any>>(obj: T): {
+function convertNullToUndefined<T extends Record<string, any>>(
+  obj: T,
+): {
   id: string;
   email: string;
   password: string;
@@ -63,11 +65,11 @@ export class PrismaUserRepository implements UserRepository {
       lastVerificationEmailSent: user.lastVerificationEmailSent || null,
       verificationEmailCount: user.verificationEmailCount,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
     };
 
     const savedUserData = await this.prisma.user.create({
-      data: userData
+      data: userData,
     });
 
     return User.reconstruct(convertNullToUndefined(savedUserData));
@@ -75,7 +77,7 @@ export class PrismaUserRepository implements UserRepository {
 
   async findById(id: string): Promise<User | null> {
     const userData = await this.prisma.user.findUnique({
-      where: { id }
+      where: { id },
     });
 
     return userData ? User.reconstruct(convertNullToUndefined(userData)) : null;
@@ -83,7 +85,7 @@ export class PrismaUserRepository implements UserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     const userData = await this.prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     return userData ? User.reconstruct(convertNullToUndefined(userData)) : null;
@@ -91,18 +93,20 @@ export class PrismaUserRepository implements UserRepository {
 
   async findByClientId(clientId: string): Promise<User[]> {
     const usersData = await this.prisma.user.findMany({
-      where: { clientId }
+      where: { clientId },
     });
 
-    return usersData.map((userData: any) => User.reconstruct(convertNullToUndefined(userData)));
+    return usersData.map((userData: any) =>
+      User.reconstruct(convertNullToUndefined(userData)),
+    );
   }
 
   async findByVerificationToken(token: string): Promise<User | null> {
     const userData = await this.prisma.user.findFirst({
-      where: { 
+      where: {
         emailVerificationToken: token,
-        emailVerificationExpires: { gt: new Date() }
-      }
+        emailVerificationExpires: { gt: new Date() },
+      },
     });
 
     return userData ? User.reconstruct(convertNullToUndefined(userData)) : null;
@@ -125,12 +129,12 @@ export class PrismaUserRepository implements UserRepository {
       lastVerificationEmailSent: user.lastVerificationEmailSent || null,
       verificationEmailCount: user.verificationEmailCount,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
     };
 
     const updatedUserData = await this.prisma.user.update({
       where: { id: user.id },
-      data: userData
+      data: userData,
     });
 
     return User.reconstruct(convertNullToUndefined(updatedUserData));
@@ -138,14 +142,14 @@ export class PrismaUserRepository implements UserRepository {
 
   async delete(id: string): Promise<void> {
     await this.prisma.user.delete({
-      where: { id }
+      where: { id },
     });
   }
 
   async exists(email: string): Promise<boolean> {
     const count = await this.prisma.user.count({
-      where: { email }
+      where: { email },
     });
     return count > 0;
   }
-} 
+}

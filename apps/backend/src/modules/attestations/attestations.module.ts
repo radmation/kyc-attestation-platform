@@ -16,8 +16,6 @@ import { PrismaUserRepository } from '../auth/infrastructure/repositories/prisma
     // Repositories
     PrismaUserRepository,
   ],
-  exports: [
-    PrismaUserRepository,
-  ],
+  exports: [PrismaUserRepository],
 })
-export class AttestationsModule {} 
+export class AttestationsModule {}

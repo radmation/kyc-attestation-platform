@@ -27,10 +27,7 @@ describe('JwtService', () => {
     client: { id: 'client-1', name: 'Test Client' },
     roles: [
       {
-        permissions: [
-          { name: 'read:profile' },
-          { name: 'write:profile' },
-        ],
+        permissions: [{ name: 'read:profile' }, { name: 'write:profile' }],
       },
     ],
   };
@@ -125,10 +122,12 @@ describe('JwtService', () => {
   describe('refreshTokens', () => {
     it('should refresh tokens successfully', async () => {
       const mockRefreshPayload = { sub: 'user-1', tokenFamily: 'family-1' };
-      
+
       configService.get.mockReturnValue('refresh-secret');
       nestJwtService.verify.mockReturnValue(mockRefreshPayload);
-      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockDbUser);
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(
+        mockDbUser,
+      );
       nestJwtService.sign
         .mockReturnValueOnce('new-access-token')
         .mockReturnValueOnce('new-refresh-token');
@@ -154,14 +153,14 @@ describe('JwtService', () => {
 
     it('should throw UnauthorizedException if user not found', async () => {
       const mockRefreshPayload = { sub: 'user-1', tokenFamily: 'family-1' };
-      
+
       configService.get.mockReturnValue('refresh-secret');
       nestJwtService.verify.mockReturnValue(mockRefreshPayload);
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-      await expect(service.refreshTokens('valid-refresh-token')).rejects.toThrow(
-        'User not found',
-      );
+      await expect(
+        service.refreshTokens('valid-refresh-token'),
+      ).rejects.toThrow('User not found');
     });
 
     it('should throw UnauthorizedException for invalid refresh token', async () => {
@@ -170,9 +169,9 @@ describe('JwtService', () => {
         throw new Error('Invalid token');
       });
 
-      await expect(service.refreshTokens('invalid-refresh-token')).rejects.toThrow(
-        'Invalid refresh token',
-      );
+      await expect(
+        service.refreshTokens('invalid-refresh-token'),
+      ).rejects.toThrow('Invalid refresh token');
     });
 
     it('should throw error if JWT_REFRESH_SECRET not configured', async () => {
@@ -183,4 +182,4 @@ describe('JwtService', () => {
       );
     });
   });
-}); 
+});

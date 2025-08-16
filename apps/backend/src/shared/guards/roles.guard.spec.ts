@@ -72,7 +72,10 @@ describe('RolesGuard', () => {
     });
 
     it('should allow access when user has one of multiple required roles', () => {
-      reflector.getAllAndOverride.mockReturnValue([UserRole.CLIENT_ADMIN, UserRole.CLIENT_USER]);
+      reflector.getAllAndOverride.mockReturnValue([
+        UserRole.CLIENT_ADMIN,
+        UserRole.CLIENT_USER,
+      ]);
       mockRequest.user.role = UserRole.CLIENT_USER;
 
       const result = guard.canActivate(mockExecutionContext);
@@ -81,7 +84,10 @@ describe('RolesGuard', () => {
     });
 
     it('should deny access when user has none of the required roles', () => {
-      reflector.getAllAndOverride.mockReturnValue([UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN]);
+      reflector.getAllAndOverride.mockReturnValue([
+        UserRole.CLIENT_ADMIN,
+        UserRole.SUPER_ADMIN,
+      ]);
       mockRequest.user.role = UserRole.CLIENT_USER;
 
       const result = guard.canActivate(mockExecutionContext);
@@ -92,7 +98,7 @@ describe('RolesGuard', () => {
     it('should call reflector with correct parameters', () => {
       const handler = mockExecutionContext.getHandler();
       const classRef = mockExecutionContext.getClass();
-      
+
       reflector.getAllAndOverride.mockReturnValue([UserRole.CLIENT_USER]);
 
       guard.canActivate(mockExecutionContext);
@@ -103,4 +109,4 @@ describe('RolesGuard', () => {
       ]);
     });
   });
-}); 
+});

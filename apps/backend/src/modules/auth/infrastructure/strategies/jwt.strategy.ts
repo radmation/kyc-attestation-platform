@@ -15,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!jwtSecret) {
       throw new Error('JWT_SECRET not configured');
     }
-    
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -45,7 +45,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: user.email,
       role: user.role,
       clientId: user.clientId,
-      permissions: user.roles.flatMap(role => role.permissions.map(p => p.name)),
+      permissions: user.roles.flatMap((role) =>
+        role.permissions.map((p) => p.name),
+      ),
     };
   }
-} 
+}

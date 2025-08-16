@@ -4,19 +4,19 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../../../database/prisma.service';
 
 export interface JWTPayload {
-  sub: string;              // User ID
+  sub: string; // User ID
   email: string;
   role: string;
   clientId: string;
   permissions: string[];
   iat: number;
   exp: number;
-  jti: string;              // JWT ID for revocation
+  jti: string; // JWT ID for revocation
 }
 
 export interface RefreshTokenPayload {
   sub: string;
-  tokenFamily: string;      // For token rotation
+  tokenFamily: string; // For token rotation
   iat: number;
   exp: number;
 }
@@ -39,7 +39,9 @@ export class JwtService {
    * @returns Promise containing accessToken and refreshToken
    * @throws Error if JWT_REFRESH_SECRET is not configured
    */
-  async generateTokens(user: any): Promise<{ accessToken: string; refreshToken: string }> {
+  async generateTokens(
+    user: any,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload: JWTPayload = {
       sub: user.id,
       email: user.email,
@@ -47,7 +49,7 @@ export class JwtService {
       clientId: user.clientId,
       permissions: user.permissions || [],
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (15 * 60), // 15 minutes
+      exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
       jti: `${user.id}-${Date.now()}`,
     };
 
@@ -55,7 +57,7 @@ export class JwtService {
       sub: user.id,
       tokenFamily: `${user.id}-${Date.now()}`,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60), // 7 days
+      exp: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60, // 7 days
     };
 
     const accessToken = this.nestJwtService.sign(payload);
@@ -63,7 +65,7 @@ export class JwtService {
     if (!refreshSecret) {
       throw new Error('JWT_REFRESH_SECRET not configured');
     }
-    
+
     const refreshToken = this.nestJwtService.sign(refreshPayload, {
       secret: refreshSecret,
       expiresIn: '7d',
@@ -93,17 +95,20 @@ export class JwtService {
    * @returns Promise containing new accessToken and refreshToken
    * @throws UnauthorizedException if refresh token is invalid or user not found
    */
-  async refreshTokens(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+  async refreshTokens(
+    refreshToken: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     try {
-      const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
+      const refreshSecret =
+        this.configService.get<string>('JWT_REFRESH_SECRET');
       if (!refreshSecret) {
         throw new Error('JWT_REFRESH_SECRET not configured');
       }
-      
+
       const payload = this.nestJwtService.verify(refreshToken, {
         secret: refreshSecret,
-      }) as RefreshTokenPayload;
-      
+      });
+
       // Get user from database with roles and permissions
       const user = await this.prismaService.user.findUnique({
         where: { id: payload.sub },
@@ -127,7 +132,9 @@ export class JwtService {
         email: user.email,
         role: user.role,
         clientId: user.clientId,
-        permissions: user.roles.flatMap(role => role.permissions.map(p => p.name)),
+        permissions: user.roles.flatMap((role) =>
+          role.permissions.map((p) => p.name),
+        ),
       };
 
       return this.generateTokens(userTokenData);
@@ -138,4 +145,4 @@ export class JwtService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
-} 
+}
