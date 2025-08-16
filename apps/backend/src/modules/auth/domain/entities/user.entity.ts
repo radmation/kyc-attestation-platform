@@ -17,7 +17,7 @@ export class User {
     private _lastVerificationEmailSent?: Date,
     private _verificationEmailCount: number = 0,
     private _createdAt: Date = new Date(),
-    private _updatedAt: Date = new Date()
+    private _updatedAt: Date = new Date(),
   ) {}
 
   // Factory method for creating new users
@@ -32,7 +32,7 @@ export class User {
     if (!props.email || !props.password || !props.clientId) {
       throw new Error('Email, password, and clientId are required');
     }
-    
+
     if (!this.isValidEmail(props.email)) {
       throw new Error('Invalid email format');
     }
@@ -57,7 +57,7 @@ export class User {
       undefined,
       0,
       new Date(),
-      new Date()
+      new Date(),
     );
   }
 
@@ -96,7 +96,7 @@ export class User {
       data.lastVerificationEmailSent,
       data.verificationEmailCount,
       data.createdAt,
-      data.updatedAt
+      data.updatedAt,
     );
   }
 
@@ -112,7 +112,9 @@ export class User {
 
   setVerificationToken(token: string, expiresInHours: number = 24): void {
     this._emailVerificationToken = token;
-    this._emailVerificationExpires = new Date(Date.now() + expiresInHours * 60 * 60 * 1000);
+    this._emailVerificationExpires = new Date(
+      Date.now() + expiresInHours * 60 * 60 * 1000,
+    );
     this._updatedAt = new Date();
   }
 
@@ -149,25 +151,57 @@ export class User {
   }
 
   // Getters (immutable access)
-  get id(): string { return this._id; }
-  get email(): string { return this._email; }
-  get password(): string { return this._password; }
-  get firstName(): string | undefined { return this._firstName; }
-  get lastName(): string | undefined { return this._lastName; }
-  get role(): UserRole { return this._role; }
-  get accountStatus(): AccountStatus { return this._accountStatus; }
-  get isActive(): boolean { return this._isActive; }
-  get clientId(): string { return this._clientId; }
-  get emailVerified(): boolean { return this._emailVerified; }
-  get emailVerificationToken(): string | undefined { return this._emailVerificationToken; }
-  get emailVerificationExpires(): Date | undefined { return this._emailVerificationExpires; }
-  get lastVerificationEmailSent(): Date | undefined { return this._lastVerificationEmailSent; }
-  get verificationEmailCount(): number { return this._verificationEmailCount; }
-  get createdAt(): Date { return this._createdAt; }
-  get updatedAt(): Date { return this._updatedAt; }
+  get id(): string {
+    return this._id;
+  }
+  get email(): string {
+    return this._email;
+  }
+  get password(): string {
+    return this._password;
+  }
+  get firstName(): string | undefined {
+    return this._firstName;
+  }
+  get lastName(): string | undefined {
+    return this._lastName;
+  }
+  get role(): UserRole {
+    return this._role;
+  }
+  get accountStatus(): AccountStatus {
+    return this._accountStatus;
+  }
+  get isActive(): boolean {
+    return this._isActive;
+  }
+  get clientId(): string {
+    return this._clientId;
+  }
+  get emailVerified(): boolean {
+    return this._emailVerified;
+  }
+  get emailVerificationToken(): string | undefined {
+    return this._emailVerificationToken;
+  }
+  get emailVerificationExpires(): Date | undefined {
+    return this._emailVerificationExpires;
+  }
+  get lastVerificationEmailSent(): Date | undefined {
+    return this._lastVerificationEmailSent;
+  }
+  get verificationEmailCount(): number {
+    return this._verificationEmailCount;
+  }
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+  get updatedAt(): Date {
+    return this._updatedAt;
+  }
 
   // Private validation methods
   private static isValidEmail(email: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
-} 
+}

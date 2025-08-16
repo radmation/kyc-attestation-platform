@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaModule } from '../../prisma/prisma.module';
 
 // Domain
@@ -15,23 +18,39 @@ import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.
 import { PrismaRateLimitRepository } from './infrastructure/repositories/prisma-rate-limit.repository';
 import { MockEmailService } from './infrastructure/services/mock-email.service';
 import { BcryptPasswordService } from './infrastructure/services/bcrypt-password.service';
+import { JwtService } from './infrastructure/services/jwt.service';
+import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 
 // Presentation
 import { EmailVerificationController } from './presentation/controllers/email-verification.controller';
 import { UserController } from './presentation/controllers/user.controller';
 
 @Module({
-  imports: [PrismaModule],
-  controllers: [
-    EmailVerificationController,
-    UserController,
+  imports: [
+    PrismaModule,
+    PassportModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET');
+        if (!secret) {
+          throw new Error('JWT_SECRET not configured');
+        }
+        return {
+          secret,
+          signOptions: { expiresIn: '15m' },
+        };
+      },
+      inject: [ConfigService],
+    }),
   ],
+  controllers: [EmailVerificationController, UserController],
   providers: [
     // Use cases
     SendVerificationEmailUseCase,
     VerifyEmailUseCase,
     CreateUserUseCase,
-    
+
     // Infrastructure services
     {
       provide: 'EmailService',
@@ -41,7 +60,9 @@ import { UserController } from './presentation/controllers/user.controller';
       provide: 'PasswordService',
       useClass: BcryptPasswordService,
     },
-    
+    JwtService,
+    JwtStrategy,
+
     // Repositories
     {
       provide: 'UserRepository',
@@ -51,7 +72,6 @@ import { UserController } from './presentation/controllers/user.controller';
       provide: 'RateLimitRepository',
       useClass: PrismaRateLimitRepository,
     },
-    
   ],
   exports: [
     SendVerificationEmailUseCase,
@@ -65,6 +85,7 @@ import { UserController } from './presentation/controllers/user.controller';
       provide: 'PasswordService',
       useClass: BcryptPasswordService,
     },
+    JwtService,
     {
       provide: 'UserRepository',
       useClass: PrismaUserRepository,
@@ -75,4 +96,4 @@ import { UserController } from './presentation/controllers/user.controller';
     },
   ],
 })
-export class AuthModule {} 
+export class AuthModule {}

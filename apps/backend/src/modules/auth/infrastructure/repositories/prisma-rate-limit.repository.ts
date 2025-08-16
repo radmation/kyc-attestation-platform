@@ -16,11 +16,11 @@ export class PrismaRateLimitRepository implements RateLimitRepository {
       userAgent: attempt.userAgent || null,
       wasBlocked: attempt.wasBlocked,
       reason: attempt.reason || null,
-      createdAt: attempt.createdAt
+      createdAt: attempt.createdAt,
     };
 
     const savedAttemptData = await this.prisma.rateLimitAttempt.create({
-      data: attemptData
+      data: attemptData,
     });
 
     return RateLimitAttempt.reconstruct({
@@ -28,71 +28,91 @@ export class PrismaRateLimitRepository implements RateLimitRepository {
       userId: savedAttemptData.userId || undefined,
       ipAddress: savedAttemptData.ipAddress || undefined,
       userAgent: savedAttemptData.userAgent || undefined,
-      reason: savedAttemptData.reason || undefined
+      reason: savedAttemptData.reason || undefined,
     });
   }
 
-  async findByUserAndAction(userId: string, action: string, hours: number): Promise<RateLimitAttempt[]> {
+  async findByUserAndAction(
+    userId: string,
+    action: string,
+    hours: number,
+  ): Promise<RateLimitAttempt[]> {
     const cutoffTime = new Date(Date.now() - hours * 60 * 60 * 1000);
-    
+
     const attemptsData = await this.prisma.rateLimitAttempt.findMany({
       where: {
         userId,
         action,
-        createdAt: { gte: cutoffTime }
-      }
+        createdAt: { gte: cutoffTime },
+      },
     });
 
-    return attemptsData.map(attemptData => RateLimitAttempt.reconstruct({
-      ...attemptData,
-      userId: attemptData.userId || undefined,
-      ipAddress: attemptData.ipAddress || undefined,
-      userAgent: attemptData.userAgent || undefined,
-      reason: attemptData.reason || undefined
-    }));
+    return attemptsData.map((attemptData) =>
+      RateLimitAttempt.reconstruct({
+        ...attemptData,
+        userId: attemptData.userId || undefined,
+        ipAddress: attemptData.ipAddress || undefined,
+        userAgent: attemptData.userAgent || undefined,
+        reason: attemptData.reason || undefined,
+      }),
+    );
   }
 
-  async findByIpAndAction(ipAddress: string, action: string, hours: number): Promise<RateLimitAttempt[]> {
+  async findByIpAndAction(
+    ipAddress: string,
+    action: string,
+    hours: number,
+  ): Promise<RateLimitAttempt[]> {
     const cutoffTime = new Date(Date.now() - hours * 60 * 60 * 1000);
-    
+
     const attemptsData = await this.prisma.rateLimitAttempt.findMany({
       where: {
         ipAddress,
         action,
-        createdAt: { gte: cutoffTime }
-      }
+        createdAt: { gte: cutoffTime },
+      },
     });
 
-    return attemptsData.map(attemptData => RateLimitAttempt.reconstruct({
-      ...attemptData,
-      userId: attemptData.userId || undefined,
-      ipAddress: attemptData.ipAddress || undefined,
-      userAgent: attemptData.userAgent || undefined,
-      reason: attemptData.reason || undefined
-    }));
+    return attemptsData.map((attemptData) =>
+      RateLimitAttempt.reconstruct({
+        ...attemptData,
+        userId: attemptData.userId || undefined,
+        ipAddress: attemptData.ipAddress || undefined,
+        userAgent: attemptData.userAgent || undefined,
+        reason: attemptData.reason || undefined,
+      }),
+    );
   }
 
-  async countByUserAndAction(userId: string, action: string, hours: number): Promise<number> {
+  async countByUserAndAction(
+    userId: string,
+    action: string,
+    hours: number,
+  ): Promise<number> {
     const cutoffTime = new Date(Date.now() - hours * 60 * 60 * 1000);
-    
+
     return await this.prisma.rateLimitAttempt.count({
       where: {
         userId,
         action,
-        createdAt: { gte: cutoffTime }
-      }
+        createdAt: { gte: cutoffTime },
+      },
     });
   }
 
-  async countByIpAndAction(ipAddress: string, action: string, hours: number): Promise<number> {
+  async countByIpAndAction(
+    ipAddress: string,
+    action: string,
+    hours: number,
+  ): Promise<number> {
     const cutoffTime = new Date(Date.now() - hours * 60 * 60 * 1000);
-    
+
     return await this.prisma.rateLimitAttempt.count({
       where: {
         ipAddress,
         action,
-        createdAt: { gte: cutoffTime }
-      }
+        createdAt: { gte: cutoffTime },
+      },
     });
   }
-} 
+}

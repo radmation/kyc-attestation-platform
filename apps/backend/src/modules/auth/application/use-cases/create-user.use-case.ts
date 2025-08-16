@@ -43,7 +43,7 @@ export class CreateUserUseCase {
         return {
           success: false,
           message: 'User with this email already exists',
-          error: 'Email already taken'
+          error: 'Email already taken',
         };
       }
 
@@ -52,12 +52,14 @@ export class CreateUserUseCase {
         return {
           success: false,
           message: 'Password does not meet requirements',
-          error: 'Invalid password'
+          error: 'Invalid password',
         };
       }
 
       // Hash password
-      const hashedPassword = await this.passwordService.hashPassword(command.password);
+      const hashedPassword = await this.passwordService.hashPassword(
+        command.password,
+      );
 
       // Create user domain entity
       const createProps: {
@@ -71,10 +73,10 @@ export class CreateUserUseCase {
         password: hashedPassword,
         clientId: command.clientId,
       };
-      
+
       if (command.firstName) createProps.firstName = command.firstName;
       if (command.lastName) createProps.lastName = command.lastName;
-      
+
       const user = User.create(createProps);
 
       // Save user
@@ -91,15 +93,14 @@ export class CreateUserUseCase {
           role: savedUser.role,
           accountStatus: savedUser.accountStatus,
         },
-        message: 'User created successfully'
+        message: 'User created successfully',
       };
-
     } catch (error) {
       return {
         success: false,
         message: 'Failed to create user',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
-} 
+}

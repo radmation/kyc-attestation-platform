@@ -7,7 +7,7 @@ export class RateLimitAttempt {
     private _userAgent?: string,
     private _wasBlocked: boolean = false,
     private _reason?: string,
-    private _createdAt: Date = new Date()
+    private _createdAt: Date = new Date(),
   ) {}
 
   // Factory method for creating new rate limit attempts
@@ -31,7 +31,7 @@ export class RateLimitAttempt {
       props.userAgent,
       props.wasBlocked || false,
       props.reason,
-      new Date()
+      new Date(),
     );
   }
 
@@ -54,7 +54,7 @@ export class RateLimitAttempt {
       data.userAgent,
       data.wasBlocked,
       data.reason,
-      data.createdAt
+      data.createdAt,
     );
   }
 
@@ -65,14 +65,30 @@ export class RateLimitAttempt {
   }
 
   // Getters
-  get id(): string { return this._id; }
-  get userId(): string | undefined { return this._userId; }
-  get action(): string { return this._action; }
-  get ipAddress(): string | undefined { return this._ipAddress; }
-  get userAgent(): string | undefined { return this._userAgent; }
-  get wasBlocked(): boolean { return this._wasBlocked; }
-  get reason(): string | undefined { return this._reason; }
-  get createdAt(): Date { return this._createdAt; }
+  get id(): string {
+    return this._id;
+  }
+  get userId(): string | undefined {
+    return this._userId;
+  }
+  get action(): string {
+    return this._action;
+  }
+  get ipAddress(): string | undefined {
+    return this._ipAddress;
+  }
+  get userAgent(): string | undefined {
+    return this._userAgent;
+  }
+  get wasBlocked(): boolean {
+    return this._wasBlocked;
+  }
+  get reason(): string | undefined {
+    return this._reason;
+  }
+  get createdAt(): Date {
+    return this._createdAt;
+  }
 }
 
 // Rate limit action constants
@@ -80,5 +96,5 @@ export enum RateLimitAction {
   EMAIL_VERIFICATION_RESEND = 'email_verification_resend',
   LOGIN_ATTEMPT = 'login_attempt',
   PASSWORD_RESET = 'password_reset',
-  API_CALL = 'api_call'
-} 
+  API_CALL = 'api_call',
+}

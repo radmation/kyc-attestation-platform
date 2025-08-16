@@ -3,4 +3,4 @@ export interface PasswordService {
   verifyPassword(password: string, hashedPassword: string): Promise<boolean>;
   generateRandomPassword(length?: number): string;
   validatePassword(password: string): boolean;
-} 
+}

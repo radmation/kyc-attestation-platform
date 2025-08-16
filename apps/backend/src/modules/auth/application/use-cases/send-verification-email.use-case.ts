@@ -3,7 +3,10 @@ import type { UserRepository } from '../../domain/repositories/user.repository.i
 import type { RateLimitRepository } from '../../domain/repositories/rate-limit.repository.interface';
 import type { EmailService } from '../../domain/services/email.service';
 import type { User } from '../../domain/entities/user.entity';
-import { RateLimitAttempt, RateLimitAction } from '../../domain/entities/rate-limit-attempt.entity';
+import {
+  RateLimitAttempt,
+  RateLimitAction,
+} from '../../domain/entities/rate-limit-attempt.entity';
 
 export interface SendVerificationEmailCommand {
   email: string;
@@ -28,7 +31,9 @@ export class SendVerificationEmailUseCase {
     private readonly emailService: EmailService,
   ) {}
 
-  async execute(command: SendVerificationEmailCommand): Promise<SendVerificationEmailResult> {
+  async execute(
+    command: SendVerificationEmailCommand,
+  ): Promise<SendVerificationEmailResult> {
     try {
       // 1. Check if user exists
       const user = await this.userRepository.findByEmail(command.email);
@@ -36,7 +41,7 @@ export class SendVerificationEmailUseCase {
         return {
           success: false,
           message: 'User not found',
-          error: 'User not found'
+          error: 'User not found',
         };
       }
 
@@ -54,7 +59,7 @@ export class SendVerificationEmailUseCase {
         const ipAttempts = await this.rateLimitRepository.countByIpAndAction(
           command.ipAddress,
           RateLimitAction.EMAIL_VERIFICATION_RESEND,
-          1 // Last hour
+          1, // Last hour
         );
 
         if (ipAttempts >= 5) {
@@ -70,8 +75,9 @@ export class SendVerificationEmailUseCase {
 
           return {
             success: false,
-            message: 'Too many verification email requests from this IP address. Please try again later.',
-            error: 'Rate limit exceeded'
+            message:
+              'Too many verification email requests from this IP address. Please try again later.',
+            error: 'Rate limit exceeded',
           };
         }
       }
@@ -91,14 +97,15 @@ export class SendVerificationEmailUseCase {
           ipAddress: command.ipAddress,
           userAgent: command.userAgent,
           wasBlocked: true,
-          reason: 'daily_user_limit_exceeded'
+          reason: 'daily_user_limit_exceeded',
         });
         await this.rateLimitRepository.save(blockedAttempt);
 
         return {
           success: false,
-          message: 'Too many verification email requests. Please try again tomorrow.',
-          error: 'Rate limit exceeded'
+          message:
+            'Too many verification email requests. Please try again tomorrow.',
+          error: 'Rate limit exceeded',
         };
       }
 
@@ -113,7 +120,10 @@ export class SendVerificationEmailUseCase {
       await this.userRepository.update(user);
 
       // 8. Send verification email
-      await this.emailService.sendVerificationEmail(user.email, verificationToken);
+      await this.emailService.sendVerificationEmail(
+        user.email,
+        verificationToken,
+      );
 
       // 9. Log the successful attempt
       const successfulAttempt = RateLimitAttempt.create({
@@ -121,7 +131,7 @@ export class SendVerificationEmailUseCase {
         action: RateLimitAction.EMAIL_VERIFICATION_RESEND,
         ipAddress: command.ipAddress,
         userAgent: command.userAgent,
-        wasBlocked: false
+        wasBlocked: false,
       });
       await this.rateLimitRepository.save(successfulAttempt);
 
@@ -129,7 +139,6 @@ export class SendVerificationEmailUseCase {
         success: true,
         message: 'Verification email sent successfully',
       };
-
     } catch (error) {
       return {
         success: false,
@@ -138,4 +147,4 @@ export class SendVerificationEmailUseCase {
       };
     }
   }
-} 
+}

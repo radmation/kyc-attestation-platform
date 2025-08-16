@@ -7,4 +7,4 @@ export class SendVerificationEmailDto {
     type: String,
   })
   email!: string;
-} 
+}
