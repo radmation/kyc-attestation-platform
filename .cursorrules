@@ -1,0 +1,221 @@
+# KYC Attestation Platform - Cursor Rules
+
+## Project Overview
+This is a Know Your Customer (KYC) Attestation Platform designed for token issuers to achieve compliance with the GENIUS Act and other regulatory requirements. The platform creates on-chain attestations for verified identities and provides smart contract integration for automated compliance enforcement.
+
+## Technology Stack Guidelines
+
+### Architecture Pattern
+- **Monorepo Structure**: Keep backend and frontend in single repository for shared DTOs, interfaces, and utilities
+- **Clean Architecture**: Follow domain-driven design with clear separation of concerns
+- **Type Safety**: Ensure end-to-end TypeScript type safety between frontend and backend
+
+### Backend (NestJS)
+- **Framework**: Use NestJS with TypeScript-first approach
+- **Modules**: Organize code into feature modules (auth, kyc, attestations, users)
+- **Dependency Injection**: Leverage NestJS DI container for loose coupling
+- **Validation**: Use class-validator and class-transformer for DTOs
+- **Guards**: Implement JWT authentication guards and RBAC authorization guards
+- **Interceptors**: Use interceptors for logging, transformation, and error handling
+- **Exception Filters**: Create global exception filters for consistent error responses
+
+### Database & ORM
+- **Database**: PostgreSQL for relational data integrity (ACID compliance required for compliance platform)
+- **ORM**: Prisma for type-safe database operations
+- **Migrations**: Use Prisma migrations for schema changes
+- **Seeding**: Maintain seed files for development data
+- **ULIDs**: Use ULIDs for unique, sortable identifiers
+- **Indexes**: Add proper database indexes for performance-critical queries
+
+### Frontend (Angular)
+- **Framework**: Angular with TypeScript for structured, enterprise-grade SPA
+- **Components**: Create reusable, well-documented components
+- **Services**: Use Angular services for API communication and state management
+- **Guards**: Implement route guards for authentication and authorization
+- **Interceptors**: Use HTTP interceptors for token attachment and error handling
+- **Reactive Forms**: Use Angular reactive forms for complex form validation
+- **UI Library**: Bootstrap 5 + NG-Bootstrap for consistent, professional UI
+
+### Blockchain Integration
+- **Network**: Hyperledger Fabric private, permissioned blockchain
+- **SDK**: Use Hyperledger Fabric Node.js SDK for blockchain interactions
+- **Development**: Fabric test-network for local development and testing
+- **Chaincode**: Smart contracts (chaincode) written in Go (primary) or Node.js
+- **Consensus**: Raft consensus algorithm for crash fault tolerance
+- **Identity**: PKI-based identity management with X.509 certificates
+- **Privacy**: Channel-based isolation and private data collections
+- **Storage**: IPFS with Filebase for attestation metadata storage using S3-compatible API
+
+### Security & Compliance
+- **Authentication**: JWT tokens with refresh token rotation
+- **Password**: Use bcrypt for password hashing
+- **Rate Limiting**: Implement rate limiting for API endpoints
+- **Input Validation**: Validate and sanitize all inputs
+- **CORS**: Configure CORS appropriately for production
+- **Secrets**: Store sensitive data in AWS Secrets Manager
+- **Audit Trails**: Log all compliance-related actions for audit purposes
+- **Data Privacy**: Never store PII in blockchain/IPFS, only attestation proofs
+
+### External Integrations
+- **KYC Provider**: Persona for identity verification with webhook integration
+- **Monitoring**: Implement health checks and monitoring endpoints
+- **Logging**: Structured logging with appropriate log levels
+- **Error Tracking**: Integrate error tracking service for production monitoring
+
+## Code Organization
+
+### Backend Structure
+```
+apps/backend/src/
+├── main.ts                 # Application bootstrap
+├── modules/
+│   ├── auth/               # Authentication & authorization
+│   ├── users/              # User management
+│   ├── kyc/                # KYC verification processes
+│   ├── attestations/       # On-chain attestation management
+│   ├── monitoring/         # Transaction monitoring
+│   └── reporting/          # Regulatory reporting
+├── shared/                 # Shared utilities, guards, interceptors
+├── config/                 # Configuration management
+└── database/               # Database service and utilities
+```
+
+### Frontend Structure
+```
+apps/frontend/src/app/
+├── core/                   # Core services, guards, interceptors
+├── shared/                 # Shared components, pipes, directives
+├── features/               # Feature modules
+│   ├── auth/
+│   ├── dashboard/
+│   ├── kyc/
+│   ├── attestations/
+│   └── reporting/
+└── layouts/                # Application layouts
+```
+
+## Development Guidelines
+
+### Naming Conventions
+- **Files**: kebab-case (user-profile.service.ts)
+- **Classes**: PascalCase (UserProfileService)
+- **Interfaces**: PascalCase with 'I' prefix (IUserProfile)
+- **Enums**: PascalCase (UserRole, AttestationStatus)
+- **Constants**: SCREAMING_SNAKE_CASE
+- **Database Tables**: snake_case with plural (user_profiles)
+- **API Endpoints**: RESTful naming (/api/v1/users/:id/profiles)
+
+### Error Handling
+- Use custom exception classes inheriting from NestJS base exceptions
+- Implement global exception filters for consistent error responses
+- Log errors with appropriate context for debugging
+- Return user-friendly error messages without exposing internal details
+
+### Testing
+- Write unit tests for all services and critical business logic
+- Integration tests for API endpoints
+- E2E tests for critical user flows
+- Mock external services (Persona, blockchain) in tests
+- Maintain test coverage above 80%
+
+### Documentation
+- Use JSDoc comments for all public methods and complex logic
+- Swagger/OpenAPI documentation for all API endpoints
+- README files for each major module
+- Database schema documentation in Prisma comments
+
+### Performance
+- Implement caching for frequently accessed data
+- Use database indexes for query optimization
+- Paginate large datasets
+- Lazy load modules and components where appropriate
+- Optimize bundle sizes for frontend
+
+### Blockchain Best Practices
+- Always validate blockchain transaction receipts
+- Implement proper error handling for failed transactions
+- Use appropriate gas limits and pricing strategies
+- Implement retry mechanisms for network issues
+- Never expose private keys in code or logs
+
+### Compliance Requirements
+- Log all KYC-related actions with timestamps and user context
+- Implement data retention policies
+- Ensure audit trail immutability where required
+- Follow GDPR/privacy regulations for data handling
+- Implement proper access controls for sensitive operations
+
+## Module-Specific Guidelines
+
+### Auth Module
+- Implement multi-tenant authentication with client scoping
+- Support role-based access control (RBAC)
+- Email verification with rate limiting
+- Session management with proper cleanup
+
+### KYC Module
+- Integrate with Persona webhooks for real-time status updates
+- Implement fallback polling mechanism for webhook failures
+- Store minimal necessary data, reference external provider IDs
+- Support multiple verification levels/tiers
+
+### Attestations Module
+- Generate attestations only after successful KYC verification
+- Store metadata in IPFS, reference in smart contracts
+- Implement attestation lifecycle management (issue, revoke, expire)
+- Support batch operations for efficiency
+
+### Monitoring Module
+- Continuous wallet address monitoring
+- Risk scoring algorithms
+- Integration with sanctions lists and watchlists
+- Real-time alerting for suspicious activities
+
+## Deployment & Infrastructure
+
+### Containerization
+- Use multi-stage Docker builds for optimization
+- Separate containers for different environments
+- Health check endpoints for container orchestration
+- Proper secret management in containers
+
+### AWS Infrastructure
+- Frontend: S3 + CloudFront for static site hosting
+- Backend: ECS Fargate for container orchestration
+- Database: RDS PostgreSQL with automated backups
+- Secrets: AWS Secrets Manager for sensitive configuration
+- CI/CD: CodePipeline + CodeBuild for automated deployments
+
+### Environment Management
+- Separate configurations for development, staging, production
+- Use environment variables for configuration
+- Never commit secrets to version control
+- Implement feature flags for gradual rollouts
+
+## Code Quality
+
+### Linting & Formatting
+- ESLint for TypeScript/JavaScript code quality
+- Prettier for consistent code formatting
+- Husky for pre-commit hooks
+- Lint-staged for efficient pre-commit linting
+
+### Git Workflow
+- Feature branches for all changes
+- Conventional commit messages
+- Pull request reviews required
+- Automated testing in CI/CD pipeline
+
+### Dependencies
+- Keep dependencies up to date with security patches
+- Use exact versions in package-lock.json
+- Regular dependency audits for vulnerabilities
+- Prefer established, well-maintained packages
+
+## Priority Order for Implementation
+1. **On-Chain Identity and Attestation** (Wallet-to-person mapping)
+2. **Smart Contract Integration and Enforcement** (Compliance automation)
+3. **Targeted Airdrop Campaign Creation** (Business value feature)
+4. **Continuous On-Chain Monitoring & Regulatory Reporting** (Enterprise features)
+
+Remember: This is a compliance-focused platform where security, auditability, and regulatory adherence are paramount. Every decision should consider the regulatory implications and audit trail requirements. 
