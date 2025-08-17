@@ -2,16 +2,11 @@ import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { BackendController } from './backend.controller';
-import { BackendService } from './backend.service';
-
 import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
-import { KycModule } from './modules/kyc/kyc.module';
-import { AttestationsModule } from './modules/attestations/attestations.module';
-import { PrismaModule } from './prisma/prisma.module';
+import { BlockchainModule } from './blockchain/blockchain.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { RolesGuard } from './shared/guards/roles.guard';
+import { DatabaseModule } from './database/database.module';
 import { SecurityMiddleware } from './shared/middleware/security.middleware';
 import { LoggingMiddleware } from './shared/middleware/logging.middleware';
 import { createRateLimitConfig } from './shared/config/rate-limit.config';
@@ -27,15 +22,11 @@ import { createRateLimitConfig } from './shared/config/rate-limit.config';
       useFactory: createRateLimitConfig,
       inject: [ConfigService],
     }),
-    PrismaModule,
+    DatabaseModule,
     AuthModule,
-    UsersModule,
-    KycModule,
-    AttestationsModule,
+    BlockchainModule,
   ],
-  controllers: [BackendController],
   providers: [
-    BackendService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
@@ -52,6 +43,8 @@ import { createRateLimitConfig } from './shared/config/rate-limit.config';
 })
 export class BackendModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SecurityMiddleware, LoggingMiddleware).forRoutes('*');
+    consumer
+      .apply(SecurityMiddleware, LoggingMiddleware)
+      .forRoutes('*');
   }
 }
