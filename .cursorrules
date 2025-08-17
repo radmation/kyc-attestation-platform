@@ -1,5 +1,14 @@
 # KYC Attestation Platform - Cursor Rules
 
+## ⚠️ CRITICAL: MANDATORY FIRST STEPS FOR ANY TASK ASSESSMENT
+**BEFORE assessing any task completion or starting work, ALWAYS:**
+1. **Check git context**: `git status` and `git branch -a`
+2. **Use task utilities**: `./task-utils.sh status` for proper task state
+3. **Check develop branch**: `git checkout develop` to see merged work
+4. **Verify task branch**: Check if `task/TASK-ID` branch exists and was merged
+
+**NEVER assess task completion without following this workflow!**
+
 ## Project Overview
 This is a Know Your Customer (KYC) Attestation Platform designed for token issuers to achieve compliance with the GENIUS Act and other regulatory requirements. The platform creates on-chain attestations for verified identities and provides smart contract integration for automated compliance enforcement.
 
@@ -33,6 +42,25 @@ This is a Know Your Customer (KYC) Attestation Platform designed for token issue
 - Each task MUST have its own feature branch named `task/TASK-ID`
 - NEVER work directly on the main/develop branch
 - All PRs must be reviewed before merging
+
+## Task Validation Protocol - MANDATORY
+### Before Validating ANY Task Completion:
+1. **Git Context Check**: Always run `git status` and `git branch -a` FIRST
+2. **Check All Relevant Branches**:
+   - Current branch (might be wrong context)
+   - `task/TASK-ID` branch (where work was done)
+   - `develop` branch (where work gets merged)
+   - `main` branch (production)
+3. **Use Task Utils**: `./task-utils.sh status` for official task state
+4. **Verify Implementation**: Check actual code files, not just directory structure
+5. **Test Build**: Ensure `npm run build` passes if assessing backend changes
+
+### Common Validation Errors to Avoid:
+- ❌ Assessing completion on wrong branch
+- ❌ Only checking directory structure without examining file contents  
+- ❌ Not using the official task management tools
+- ❌ Missing merged work that exists on develop branch
+- ❌ Not verifying build/compile status
 
 ## Technology Stack Guidelines
 
