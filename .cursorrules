@@ -3,6 +3,37 @@
 ## Project Overview
 This is a Know Your Customer (KYC) Attestation Platform designed for token issuers to achieve compliance with the GENIUS Act and other regulatory requirements. The platform creates on-chain attestations for verified identities and provides smart contract integration for automated compliance enforcement.
 
+## Git Workflow Strategy - CRITICAL
+### MANDATORY Process for ALL Tasks
+1. **NEVER start a new task without following this process**
+2. **ALWAYS check for tasks in review first and prioritize completing those**
+3. **ALWAYS use the task-utils.sh script to manage tasks**
+
+### Required Steps for Starting a Task
+```bash
+# 1. Check current status to see tasks in review
+./task-utils.sh status
+
+# 2. If tasks are in review, complete those first
+# For tasks in review, check the PR and help get it merged
+
+# 3. Check what task should be worked on next
+./task-utils.sh next
+
+# 4. Start a task properly with a new branch
+./task-utils.sh start TASK-ID  # e.g., P0-ATT-001
+```
+
+### Task Workflow States
+- **todo/** → **in-progress/** → **review/** → **done/**
+- Tasks MUST move through these states using the automation scripts
+- NEVER manually move files between directories
+
+### Git Branch Strategy
+- Each task MUST have its own feature branch named `task/TASK-ID`
+- NEVER work directly on the main/develop branch
+- All PRs must be reviewed before merging
+
 ## Technology Stack Guidelines
 
 ### Architecture Pattern

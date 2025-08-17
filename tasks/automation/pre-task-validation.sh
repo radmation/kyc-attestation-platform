@@ -1,23 +1,47 @@
 #!/bin/bash
 # Pre-Task Validation Script
-# Run this before starting any task to ensure dependencies are met
+# Validates environment and dependencies before starting any task
 
 set -e
 
 TASK_FILE="$1"
+
 if [[ -z "$TASK_FILE" ]]; then
-    echo "Usage: $0 <task-file-path>"
+    echo "Usage: $0 <task-file>"
     echo "Example: $0 tasks/00-infrastructure/todo/P0-INF-001-authentication-authorization-system.md"
     exit 1
 fi
 
+# CRITICAL: Check for tasks in review first
+echo "🔍 Checking for tasks in review that should be prioritized..."
+REVIEW_TASKS=$(find tasks/ -path "*/review/*" -name "*.md")
+if [[ -n "$REVIEW_TASKS" ]]; then
+    echo "⚠️ WARNING: There are tasks in review that should be completed first!"
+    echo "The following tasks are in review:"
+    echo "$REVIEW_TASKS"
+    echo ""
+    echo "❗ RECOMMENDED ACTION: Help complete these review tasks before starting a new one."
+    echo "Check the PR status and help get it merged."
+    echo ""
+    read -p "Do you want to continue anyway? (y/n): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Exiting. Please help complete review tasks first."
+        exit 1
+    fi
+    echo "Continuing with validation, but please consider prioritizing review tasks."
+    echo ""
+fi
+
+# Continue with regular validation
+echo "🚀 Validating environment for task: $(basename "$TASK_FILE" .md)"
+echo "=================================================="
+
+# Check if task file exists
 if [[ ! -f "$TASK_FILE" ]]; then
     echo "❌ Task file not found: $TASK_FILE"
     exit 1
 fi
-
-echo "🔍 Pre-Task Validation for: $(basename "$TASK_FILE")"
-echo "=============================================="
 
 # Extract task metadata
 TASK_ID=$(grep "Task ID" "$TASK_FILE" | sed 's/.*: //')

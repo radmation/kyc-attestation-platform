@@ -1,5 +1,30 @@
 # KYC Attestation Platform
 
+## 🚨 CRITICAL: Git Workflow & Task Management
+
+**BEFORE STARTING ANY WORK, READ THIS SECTION CAREFULLY**
+
+This project uses a strict git workflow and task management process that **MUST** be followed:
+
+1. **ALWAYS check for tasks in review first** and prioritize completing those
+2. **NEVER start a new task without creating a proper branch**
+3. **ALWAYS use the task-utils.sh script** to manage tasks
+
+```bash
+# Required workflow - ALWAYS follow these steps
+./task-utils.sh status  # Check current status
+./task-utils.sh next    # See what task to work on next
+./task-utils.sh start P0-XXX-XXX  # Start a task properly
+```
+
+**For complete details, read [tasks/GIT_WORKFLOW.md](tasks/GIT_WORKFLOW.md)**
+
+---
+
+## Overview
+
+This is a Know Your Customer (KYC) Attestation Platform designed for token issuers to achieve compliance with the GENIUS Act and other regulatory requirements. The platform creates on-chain attestations for verified identities and provides smart contract integration for automated compliance enforcement.
+
 ## Project Overview
 
 This project is a Know Your Customer (KYC) Attestation Platform designed to streamline and secure the process of identity verification and compliance. It features a NestJS backend integrated with Hyperledger Fabric blockchain for immutable attestations, along with PostgreSQL for operational data storage. The platform is designed with scalability, security, and regulatory compliance in mind.

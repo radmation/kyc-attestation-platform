@@ -50,6 +50,27 @@ case "$ACTION" in
         echo "🎯 Next Priority Tasks"
         echo "====================="
         echo ""
+        
+        # Check for tasks in review FIRST
+        echo "🔄 **Tasks In Review - PRIORITIZE THESE:**"
+        REVIEW_TASKS=$(find tasks/ -path "*/review/*" -name "*.md")
+        if [[ -n "$REVIEW_TASKS" ]]; then
+            echo "$REVIEW_TASKS" | while read -r file; do
+                if [[ -n "$file" ]]; then
+                    task_name=$(basename "$file" .md | sed 's/^[^-]*-[^-]*-[^-]*-//')
+                    task_id=$(basename "$file" .md | sed 's/-.*$//')
+                    echo "   $task_id: $task_name (⚠️ IN REVIEW - COMPLETE FIRST!)"
+                fi
+            done
+            echo ""
+            echo "⚠️ IMPORTANT: Tasks in review should be completed before starting new tasks!"
+            echo "   Check PRs and help get them merged."
+            echo ""
+        else
+            echo "   None - Great! You can start a new task."
+            echo ""
+        fi
+        
         echo "🔥 **Critical Path (P0) - Start Here:**"
         find tasks/ -path "*/todo/*" -name "P0-*" | sort | while read -r file; do
             if [[ -n "$file" ]]; then
@@ -80,8 +101,12 @@ case "$ACTION" in
         done
         
         echo ""
-        echo "💡 **Recommended:** Start with P0-INF-001 (Authentication)"
-        echo "   ./task-utils.sh start P0-INF-001"
+        if [[ -n "$REVIEW_TASKS" ]]; then
+            echo "💡 **Recommended:** Complete review tasks first!"
+        else
+            echo "💡 **Recommended:** Start with the highest priority P0 task"
+            echo "   ./task-utils.sh start P0-XXX-XXX"
+        fi
         ;;
         
     "status")
@@ -94,6 +119,22 @@ case "$ACTION" in
         if [[ -z "$TASK_ID" ]]; then
             echo "❌ Task ID required (e.g., P0-INF-001)"
             exit 1
+        fi
+        
+        # Check for tasks in review before starting a new one
+        REVIEW_TASKS=$(find tasks/ -path "*/review/*" -name "*.md")
+        if [[ -n "$REVIEW_TASKS" ]]; then
+            echo "⚠️ WARNING: There are tasks in review that should be completed first!"
+            echo "The following tasks are in review:"
+            echo "$REVIEW_TASKS"
+            echo ""
+            echo "❗ RECOMMENDED ACTION: Help complete these review tasks before starting a new one."
+            read -p "Do you want to continue anyway? (y/n): " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                echo "Exiting. Please help complete review tasks first."
+                exit 1
+            fi
         fi
         
         TASK_FILE=$(find_task_file "$TASK_ID" "todo")
