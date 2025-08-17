@@ -3,6 +3,24 @@
 ## 📋 Overview
 This is a comprehensive task management system designed for AI-assisted development of the KYC Attestation Platform. It provides Jira-like functionality with automated workflows, quality gates, and success measures to ensure project completion.
 
+## ❗ IMPORTANT: Before Starting Any Work
+Before beginning any task, it is MANDATORY to:
+1. Read ALL markdown (.md) files in the project, including but not limited to:
+   - All files in the `.github/` directory for git workflow and review processes
+   - All files in the `tasks/` directory for task management and automation
+   - All files in the `apps/` directory for application-specific documentation
+   - All root-level documentation files
+2. Understand the complete development workflow and requirements
+3. Follow the git branching and review strategy exactly as documented
+4. Use the automated task management system for all work
+
+This ensures proper understanding of:
+- Project architecture and requirements
+- Development workflows and processes
+- Git branching and review strategies
+- Task management and automation
+- Security and compliance requirements
+
 ## 🎯 Quick Start
 
 ### **1. First Time Setup**

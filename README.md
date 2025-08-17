@@ -2,32 +2,48 @@
 
 ## Project Overview
 
-This project is a Know Your Customer (KYC) Attestation Platform designed to streamline and secure the process of identity verification and compliance. It features a NestJS backend for robust API services and data management, integrated with PostgreSQL for data storage. The platform is designed with scalability and compliance in mind, utilizing ULIDs for unique, sortable identifiers.
+This project is a Know Your Customer (KYC) Attestation Platform designed to streamline and secure the process of identity verification and compliance. It features a NestJS backend integrated with Hyperledger Fabric blockchain for immutable attestations, along with PostgreSQL for operational data storage. The platform is designed with scalability, security, and regulatory compliance in mind.
+
+## Key Features
+
+* **Blockchain-Based Attestations**: Immutable record of KYC verifications
+* **Smart Contract Automation**: Automated compliance enforcement
+* **Secure Identity Management**: PKI-based identity system
+* **Event-Driven Architecture**: Real-time updates and notifications
+* **Audit Trail**: Complete history of all attestations
+* **Privacy by Design**: No PII stored on-chain
 
 ## Project Structure
 
-The project is structured as a monorepo, with the core backend application located in the `apps/backend` directory.
+The project is structured as a monorepo containing all components:
 
 ```text
 .
 ├── apps/
 │   └── backend/             # NestJS backend application
 │       ├── src/
-│       ├── prisma/          # Prisma schema and migrations
-│       └── .env.example     # Example environment variables
-├── Dockerfile               # Dockerfile for building the backend image
-├── docker-compose.yml       # Docker Compose for orchestrating services
-├── package.json             # Root package for monorepo dependencies
-└── README.md                # This file
+│       │   ├── blockchain/  # Fabric integration
+│       │   └── prisma/      # Database schema and migrations
+│       └── .env.example     # Environment variables template
+├── chaincode/
+│   └── kyc-attestation/     # Go chaincode for attestations
+├── fabric-network/          # Hyperledger Fabric network
+│   ├── organizations/       # Network organizations and certificates
+│   ├── scripts/            # Network management scripts
+│   └── config/             # Network configuration
+├── Dockerfile              # Backend Dockerfile
+├── docker-compose.yml      # Service orchestration
+└── README.md              # This documentation
 ```
-
 
 ## Technologies Used
 
-* **Backend:** NestJS (TypeScript)
+* **Backend Framework:** NestJS (TypeScript)
+* **Blockchain:** Hyperledger Fabric
+* **Smart Contracts:** Go (Chaincode)
 * **Database:** PostgreSQL
 * **ORM:** Prisma
-* **Unique Identifiers:** ULIDs (Universally Unique Lexicographically Sortable Identifiers)
+* **Identity:** Fabric CA with X.509 certificates
 * **Containerization:** Docker, Docker Compose
 
 ## Getting Started
@@ -38,135 +54,234 @@ Follow these instructions to set up and run the project on your local machine.
 
 * Node.js (v20 or later)
 * npm (v10 or later)
-* Docker and Docker Compose (if running with Docker)
-* PostgreSQL database instance (if running locally without Docker Compose for the DB)
+* Go (v1.21 or later)
+* Docker and Docker Compose
+* Hyperledger Fabric binaries (v2.5 or later)
 
 ### 1. Clone the Repository
-
-If you haven't already, clone the project repository:
 
 ```bash
 git clone <your-repository-url>
 cd kyc-attestation-platform
-````
-### 2. Install Dependencies. Navigate to the project root and install all Node.js dependencies:
+```
+
+### 2. Install Dependencies
 
 ```bash
+# Install Node.js dependencies
 npm install
+
+# Install Fabric binaries and Docker images
+curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.5.0 1.5.5
 ```
+
 ### 3. Environment Configuration
 
-Backend .env File
-
-Create a `.env` file inside the `apps/backend directory`. This file will hold your database connection string and other environment-specific variables.
+Create `.env` files for both backend and Fabric network:
 
 ```bash
 # apps/backend/.env
-
-# Database connection URL for Prisma.
-# If running the backend locally and connecting to a local PostgreSQL instance:
 DATABASE_URL="postgresql://user:password@localhost:5432/mydatabase?schema=public"
+FABRIC_NETWORK_NAME="kycchannel"
+FABRIC_CHAINCODE_NAME="kycattestation"
+FABRIC_CONNECTION_PROFILE_PATH="/path/to/connection/profile.json"
+FABRIC_WALLET_PATH="/path/to/wallet"
 
-# If running the backend service via Docker Compose, the DATABASE_URL in docker-compose.yml
-# will override this for the container, connecting to the 'db' service defined there.
+# fabric-network/.env
+COMPOSE_PROJECT_NAME=kyc-attestation
+FABRIC_VERSION=2.5.0
 ```
 
-**Important:** Replace `user`, `password`, `localhost:5432`, and `mydatabase` with your actual PostgreSQL credentials and host/port.
+### 4. Setup Hyperledger Fabric Network
 
-### 4. Database Setup (Prisma)
-Navigate into the apps/backend directory to run Prisma commands.
+```bash
+# Navigate to fabric network directory
+cd fabric-network
+
+# Start the network
+./network.sh up
+
+# Create channel
+./network.sh createChannel
+
+# Deploy chaincode
+./scripts/deployCC.sh
+```
+
+The network setup will:
+- Start orderer and peer nodes
+- Create the KYC channel
+- Deploy the attestation chaincode
+- Configure TLS certificates
+
+### 5. Database Setup
 
 ```bash
 cd apps/backend
-```
 
-### Generate Prisma Client
-Generate the Prisma client based on your prisma/schema.prisma file. This is essential for your NestJS application to interact with the database.
-
-```bash
+# Generate Prisma client
 npx prisma generate
-```
 
-### Apply Database Migrations
-Apply any pending database migrations to create the necessary tables in your PostgreSQL database.
-
-```bash
+# Apply migrations
 npx prisma migrate dev --name init
 ```
 
-You can choose a more descriptive name than init for subsequent migrations.
+### 6. Running the Application
 
-### 5. Running the Application
-You have two primary ways to run the application: locally (for development) or using Docker Compose (for a containerized environment).
-
-**Option A: Running Locally (Development)**
-
-To run the backend application directly on your host machine:
+#### Option A: Local Development
 
 ```bash
+# Terminal 1: Run Fabric network
+cd fabric-network
+./network.sh up
+
+# Terminal 2: Run backend
 cd apps/backend
 npm run start:dev
 ```
 
-The application will typically start on `http://localhost:3000`.
-
-**Option B: Running with Docker Compose (Recommended for consistency)**
-
-This method will spin up both your PostgreSQL database and the backend application in Docker containers.
-
-1. **Build Docker Images:**
-
-From the project root (`~/200x/kyc-attestation-platform`), build the Docker image for your backend.
+#### Option B: Docker Compose (Recommended)
 
 ```bash
-docker compose build
-```
-
-2. **Start Services:**
-
-Start the PostgreSQL database and the backend application.
-
-```bash
+# Build and start all services
 docker compose up -d
+
+# Apply database migrations
+docker compose exec backend npx prisma migrate dev
 ```
 
-This will run the containers in detached mode.
+The following services will be available:
+- Backend API: http://localhost:3000
+- Fabric Orderer: localhost:7050
+- Fabric Peer: localhost:7051
+- PostgreSQL: localhost:5432
 
-3. **Run Prisma Migrations (Inside Docker Container):**
-
-After the services are up, apply your database migrations by executing the command inside the running backend container:
+### 7. Testing the Setup
 
 ```bash
-docker compose exec backend npx prisma migrate dev --name init
+# Test chaincode
+cd fabric-network
+./network.sh testChaincode
+
+# Test backend integration
+curl http://localhost:3000/api/health
 ```
 
-4. **Access the Application:**
-Your backend API should now be accessible at 1http://localhost:3000`.
+### Development Workflow
 
-### Stopping Docker Services
-To stop and remove the running Docker containers:
+#### Working with Chaincode
 
 ```bash
-docker compose down
+# 1. Make changes to chaincode
+cd chaincode/kyc-attestation
+
+# 2. Update version in deployCC.sh
+vim fabric-network/scripts/deployCC.sh
+
+# 3. Redeploy chaincode
+cd fabric-network
+./scripts/deployCC.sh
 ```
 
-If you also want to remove the persistent database volume (and lose all database data), add the `-v` flag:
+#### Testing Chaincode
 
 ```bash
-docker compose down -v
+# Unit tests
+cd chaincode/kyc-attestation
+go test ./...
+
+# Integration tests via CLI
+peer chaincode invoke -C kycchannel -n kycattestation -c '{"Args":["CreateAttestation","id1","profile1","wallet1","ipfs://..."]}'
 ```
 
-### 6. Building the application
-**Backend**
+#### Working with NestJS Backend
 
-This creates a `dist` build in the `apps/backend` folder.
 ```bash
- npx nest build backend
+# Run in development mode
+npm run start:dev
+
+# Run tests
+npm run test
+npm run test:e2e
 ```
+
+### Troubleshooting
+
+#### Fabric Network Issues
+
+```bash
+# Check network status
+docker ps
+docker logs peer0.org1.example.com
+
+# Reset network
+cd fabric-network
+./network.sh down
+./network.sh up -ca
+```
+
+#### Backend Issues
+
+```bash
+# Check logs
+docker logs backend
+
+# Reset backend container
+docker compose restart backend
+```
+
+### Security Considerations
+
+1. **Network Security**
+   - TLS is enabled by default
+   - All communications are encrypted
+   - Access control via certificates
+
+2. **Data Privacy**
+   - No PII stored on blockchain
+   - Only attestation proofs on-chain
+   - Sensitive data in PostgreSQL
+
+3. **Identity Management**
+   - PKI-based identities
+   - Certificate rotation
+   - Role-based access control
+
+### Monitoring and Maintenance
+
+1. **Network Monitoring**
+   - Fabric metrics via Prometheus
+   - Node health checks
+   - Transaction monitoring
+
+2. **Backend Monitoring**
+   - API metrics
+   - Error tracking
+   - Performance monitoring
 
 ### Contributing
-(Optional section: Add guidelines for contributions, code style, testing, etc.)
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ### License
 
-This project is licensed under the Apache License, Version 2.0.
+This project is licensed under the Apache License, Version 2.0 - see the [LICENSE](LICENSE) file for details.
+
+### Support
+
+For support and questions, please:
+1. Check the [documentation](docs/)
+2. Review existing issues
+3. Create a new issue if needed
+
+### Acknowledgments
+
+* Hyperledger Fabric Community
+* NestJS Team
+* All contributors to this project

@@ -3,6 +3,28 @@
 ## 📋 Overview
 Your filesystem-based task management system is now set up! This provides Jira-like functionality with simple file operations.
 
+## 🚨 MANDATORY FIRST STEP
+Before proceeding with ANY task:
+1. Read ALL markdown (.md) files in the project:
+   ```bash
+   # List all markdown files
+   find . -name "*.md" -type f
+   
+   # Read each file carefully, especially:
+   cat .github/BRANCH_STRATEGY.md          # Git workflow
+   cat .github/REVIEW_WORKFLOW.md          # Review process
+   cat tasks/README.md                     # Task management
+   cat apps/backend/DEVELOPMENT_SETUP.md   # Development setup
+   ```
+2. Understand the complete workflow and requirements
+3. Follow the git strategy and review process exactly
+
+Failure to read and follow ALL documentation may result in:
+- Incorrect task implementation
+- Git workflow violations
+- Failed reviews
+- Wasted development effort
+
 ## 🗂️ Structure Created
 ```
 tasks/

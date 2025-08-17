@@ -1,5 +1,15 @@
 # Task: [Task Title]
 
+## ❗ Pre-Task Checklist
+Before starting this task, confirm that you have:
+- [ ] Read ALL .md files in the project root
+- [ ] Read ALL .md files in the .github/ directory
+- [ ] Read ALL .md files in the tasks/ directory
+- [ ] Read ALL .md files in the apps/ directory
+- [ ] Understood the git workflow and branching strategy
+- [ ] Reviewed the automated task management process
+- [ ] Checked current task dependencies and blockers
+
 ## Meta Information
 - **Task ID**: [PRIORITY]-[MODULE]-[SEQUENCE]
 - **Epic**: [Epic Name]
