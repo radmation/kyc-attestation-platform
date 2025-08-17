@@ -16,7 +16,7 @@ Epic,Monitoring & Reporting,Continuous compliance monitoring and regulatory repo
 ### Priority 1 Tasks (CSV)
 ```csv
 Issue Type,Summary,Description,Priority,Story Points,Epic Link,Component,Labels
-Story,Persona Integration Setup,Integrate with Persona API for KYC verification including webhooks and polling fallback,Highest,8,Module 1: Identity & Attestation,Backend,integration
+Story,Idenfy Integration Setup,Integrate with Idenfy API for KYC verification including webhooks and polling fallback,Highest,8,Module 1: Identity & Attestation,Backend,integration
 Story,KYC Verification Workflow,Create end-to-end KYC verification workflow with status tracking,Highest,8,Module 1: Identity & Attestation,Backend,workflow
 Story,Profile Management System,Manage user profiles and verification data with wallet linking,High,5,Module 1: Identity & Attestation,Backend,profiles
 Story,Smart Contract Development,Develop ERC-721 based attestation NFT smart contracts,Highest,8,Module 1: Identity & Attestation,Blockchain,contracts
@@ -64,27 +64,27 @@ Story,Frontend Dashboard,Create user-facing dashboard for KYC status and attesta
 ```markdown
 ## Epic: Identity Verification Infrastructure
 
-### Issue: Persona Integration Setup
+### Issue: Idenfy Integration Setup
 **Priority**: P0
 **Estimate**: 2 weeks
 **Labels**: backend, integration, kyc
 **Project**: Module 1: On-Chain Identity and Attestation
 
 **Description**:
-Integrate with Persona API for KYC verification including webhook endpoints and polling fallback mechanism.
+Integrate with Idenfy API for KYC verification including webhook endpoints and polling fallback mechanism.
 
 **Acceptance Criteria**:
-- [ ] Persona SDK integrated into backend
+- [ ] Idenfy SDK integrated into backend
 - [ ] Webhook endpoint configured for status updates  
 - [ ] Polling fallback mechanism implemented
 - [ ] Error handling for API failures
 - [ ] Test environment configured
 
 **Deliverables**:
-- PersonaService class with full API integration
+- IdenfyService class with full API integration
 - Webhook controller for status updates
-- Configuration for Persona credentials
-- Unit tests with mocked Persona responses
+- Configuration for Idenfy credentials
+- Unit tests with mocked Idenfy responses
 
 ---
 
@@ -93,7 +93,7 @@ Integrate with Persona API for KYC verification including webhook endpoints and 
 **Estimate**: 2 weeks
 **Labels**: backend, workflow, kyc
 **Project**: Module 1: On-Chain Identity and Attestation
-**Depends on**: Persona Integration Setup
+**Depends on**: Idenfy Integration Setup
 
 **Description**:
 Create end-to-end KYC verification workflow with comprehensive status tracking.
@@ -126,7 +126,7 @@ Module 4: Monitoring & Reporting,KYC Platform,Epics,Team Lead,2024-12-01,Medium,
 ### Task Breakdown
 ```csv
 Name,Project,Section,Assignee,Due Date,Priority,Notes,Tags,Parent Task
-Persona Integration Setup,KYC Platform,Sprint 1,Backend Dev,2024-03-15,High,Integrate Persona API with webhooks,integration;kyc,Module 1: On-Chain Identity and Attestation
+Idenfy Integration Setup,KYC Platform,Sprint 1,Backend Dev,2024-03-15,High,Integrate Idenfy API with webhooks,integration;kyc,Module 1: On-Chain Identity and Attestation
 KYC Verification Workflow,KYC Platform,Sprint 2,Backend Dev,2024-03-29,High,End-to-end verification workflow,workflow;kyc,Module 1: On-Chain Identity and Attestation
 Profile Management System,KYC Platform,Sprint 2,Backend Dev,2024-04-05,Medium,User profile and wallet management,profiles;backend,Module 1: On-Chain Identity and Attestation
 Smart Contract Development,KYC Platform,Sprint 3,Blockchain Dev,2024-04-19,High,ERC-721 attestation contracts,contracts;solidity,Module 1: On-Chain Identity and Attestation

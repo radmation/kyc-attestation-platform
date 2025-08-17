@@ -116,7 +116,7 @@ This is a Know Your Customer (KYC) Attestation Platform designed for token issue
 - **Data Privacy**: Never store PII in blockchain/IPFS, only attestation proofs
 
 ### External Integrations
-- **KYC Provider**: Persona for identity verification with webhook integration
+- **KYC Provider**: Idenfy for identity verification with webhook integration
 - **Monitoring**: Implement health checks and monitoring endpoints
 - **Logging**: Structured logging with appropriate log levels
 - **Error Tracking**: Integrate error tracking service for production monitoring
@@ -174,7 +174,7 @@ apps/frontend/src/app/
 - Write unit tests for all services and critical business logic
 - Integration tests for API endpoints
 - E2E tests for critical user flows
-- Mock external services (Persona, blockchain) in tests
+- Mock external services (Idenfy, blockchain) in tests
 - Maintain test coverage above 80%
 
 ### Documentation
@@ -213,7 +213,7 @@ apps/frontend/src/app/
 - Session management with proper cleanup
 
 ### KYC Module
-- Integrate with Persona webhooks for real-time status updates
+- Integrate with Idenfy webhooks for real-time status updates
 - Implement fallback polling mechanism for webhook failures
 - Store minimal necessary data, reference external provider IDs
 - Support multiple verification levels/tiers

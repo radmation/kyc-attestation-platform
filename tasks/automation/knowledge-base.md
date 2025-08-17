@@ -129,10 +129,10 @@ export class FabricService {
 }
 ```
 
-### Persona API Integration Pattern
+### Idenfy API Integration Pattern
 ```typescript
 // Error handling for external APIs
-async makePersonaRequest<T>(operation: () => Promise<T>): Promise<T> {
+async makeIdenfyRequest<T>(operation: () => Promise<T>): Promise<T> {
   try {
     return await operation();
   } catch (error) {
@@ -141,10 +141,10 @@ async makePersonaRequest<T>(operation: () => Promise<T>): Promise<T> {
       throw new TooManyRequestsException('Rate limit exceeded');
     } else if (error.response?.status >= 500) {
       // Server errors - retry logic
-      throw new ServiceUnavailableException('Persona service unavailable');
+      throw new ServiceUnavailableException('Idenfy service unavailable');
     } else {
       // Client errors
-      throw new BadRequestException('Invalid request to Persona');
+      throw new BadRequestException('Invalid request to Idenfy');
     }
   }
 }

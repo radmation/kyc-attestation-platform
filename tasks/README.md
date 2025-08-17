@@ -67,7 +67,7 @@ tasks/
 ├── 01-identity-attestation/     # Core KYC & blockchain features
 │   ├── epic-info.md
 │   └── phase-1-verification/todo/
-│       └── P0-ATT-001-persona-kyc-integration.md
+│       └── P0-ATT-001-idenfy-kyc-integration.md
 ├── 02-smart-contracts/          # Compliance enforcement
 ├── 03-airdrop-campaigns/        # Business value features
 ├── 04-monitoring-reporting/     # Enterprise features
@@ -231,7 +231,7 @@ Contains critical patterns for:
 - NestJS service and controller patterns
 - Database integration with Prisma
 - Hyperledger Fabric blockchain integration
-- Persona API error handling
+- Idenfy API error handling
 - IPFS storage with dual providers
 - Common issues and solutions
 
@@ -307,7 +307,7 @@ Every commit automatically validated for:
 #### **Week 3: Core Business Logic**
 ```bash
 # After infrastructure is complete
-./task-utils.sh start P0-ATT-001  # Persona KYC Integration
+./task-utils.sh start P0-ATT-001  # Idenfy KYC Integration
 ```
 
 #### **Week 4+: Advanced Features**

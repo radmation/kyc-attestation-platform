@@ -16,21 +16,21 @@ This document provides a comprehensive breakdown of development tasks organized 
 **Total Estimate**: 4-5 weeks
 **Dependencies**: None (foundational)
 
-#### Task 1.1.1: Persona Integration Setup
+#### Task 1.1.1: Idenfy Integration Setup
 - **Estimate**: M (1-2 weeks)
 - **Priority**: Critical
-- **Description**: Integrate with Persona API for KYC verification
+- **Description**: Integrate with Idenfy API for KYC verification
 - **Acceptance Criteria**:
-  - [ ] Persona SDK integrated into backend
+  - [ ] Idenfy SDK integrated into backend
   - [ ] Webhook endpoint configured for status updates
   - [ ] Polling fallback mechanism implemented
   - [ ] Error handling for API failures
   - [ ] Test environment configured
 - **Deliverables**:
-  - `PersonaService` class with full API integration
+  - `IdenfyService` class with full API integration
   - Webhook controller for status updates
-  - Configuration for Persona credentials
-  - Unit tests with mocked Persona responses
+  - Configuration for Idenfy credentials
+  - Unit tests with mocked Idenfy responses
 
 #### Task 1.1.2: KYC Verification Workflow
 - **Estimate**: M (1-2 weeks)

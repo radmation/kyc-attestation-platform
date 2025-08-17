@@ -52,7 +52,7 @@ The KYC Attestation Platform is a blockchain-based compliance solution that enab
 - **IPFS**: Filebase (primary) + Pinata (backup)
 - **Event Streaming**: AWS EventBridge
 - **API Gateway**: NestJS middleware approach
-- **KYC Provider**: Persona integration
+- **KYC Provider**: Idenfy integration
 
 #### Monitoring & Observability
 - **Blockchain Monitoring**: Hyperledger Explorer
@@ -77,7 +77,7 @@ The KYC Attestation Platform is a blockchain-based compliance solution that enab
 - ✅ Fabric test-network deployment
 - ✅ Go chaincode development
 - ✅ Basic authentication & user management
-- ✅ Persona KYC integration
+- ✅ Idenfy KYC integration
 
 #### Sprint 3-4: Core Features
 - ✅ KYC verification workflow

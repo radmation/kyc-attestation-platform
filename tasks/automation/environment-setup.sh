@@ -184,7 +184,7 @@ if [[ ! -f ".env" ]]; then
     cp .env.example .env
     
     echo "⚠️  Please update .env with your actual configuration values:"
-    echo "   - PERSONA_API_KEY"
+    echo "   - IDENFY_API_KEY"
     echo "   - DATABASE_URL"
     echo "   - JWT_SECRET"
     echo "   - Other service credentials"
