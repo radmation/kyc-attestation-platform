@@ -8,10 +8,10 @@
 - **Sprint Range**: Sprint 2 - Sprint 4
 
 ## Epic Goal
-Implement the core KYC verification process integrated with Persona, create blockchain attestations for verified identities, and establish the foundation for wallet-to-person identity mapping.
+Implement the core KYC verification process integrated with iDenfy, create blockchain attestations for verified identities, and establish the foundation for wallet-to-person identity mapping.
 
 ## Success Metrics
-- [ ] KYC verification process functional with Persona integration
+- [ ] KYC verification process functional with iDenfy integration
 - [ ] Blockchain attestations created for verified users
 - [ ] Wallet addresses linked to verified profiles
 - [ ] IPFS metadata storage operational
@@ -31,26 +31,26 @@ Implement the core KYC verification process integrated with Persona, create bloc
 **So that** I can provide audit trails for regulatory reporting
 
 ## Technical Architecture
-Complete identity verification and attestation system using Persona for KYC, Hyperledger Fabric for attestations, and IPFS for metadata storage.
+Complete identity verification and attestation system using iDenfy for KYC, Hyperledger Fabric for attestations, and IPFS for metadata storage.
 
 ### Key Components
-- **KYC Service**: Integration with Persona for identity verification
+- **KYC Service**: Integration with iDenfy for identity verification
 - **Attestation Service**: Blockchain attestation creation and management
 - **Wallet Service**: Wallet address verification and linking
 - **IPFS Service**: Secure metadata storage with privacy protection
 - **Event Service**: Real-time updates and webhook processing
 
 ### Integration Points
-- **External APIs**: Persona webhooks and verification API
+- **External APIs**: iDenfy webhooks and verification API
 - **Database Changes**: Enhanced KYC and attestation tracking
 - **Blockchain**: Fabric chaincode for attestation management
 - **Frontend**: KYC verification UI and status tracking
 
 ## Phases Overview
 ### Phase 1: Identity Verification (Week 1-2)
-**Goal**: Complete KYC verification with Persona
+**Goal**: Complete KYC verification with iDenfy
 **Dependencies**: Infrastructure (auth, API, monitoring)
-**Deliverables**: Persona integration, webhook processing, KYC flow
+**Deliverables**: iDenfy integration, webhook processing, KYC flow
 
 ### Phase 2: Blockchain Attestation (Week 3-4)
 **Goal**: Create on-chain attestations for verified identities
@@ -81,7 +81,7 @@ Complete identity verification and attestation system using Persona for KYC, Hyp
 - [ ] Privacy compliance verified (no PII on-chain)
 
 ## Risks & Mitigation
-- **Risk**: Persona API rate limits affect user experience
+- **Risk**: iDenfy API rate limits affect user experience
   - **Impact**: High
   - **Probability**: Medium
   - **Mitigation**: Implement caching, queue system, fallback verification methods

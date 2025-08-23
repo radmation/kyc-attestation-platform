@@ -39,21 +39,21 @@ Transform regulatory compliance from a manual, reactive burden into an automated
 - **As a regulator**, I want to verify compliance without accessing personal data
 
 #### Features
-- **Identity Verification Integration**: Seamless integration with Persona for KYC/AML
+- **Identity Verification Integration**: Seamless integration with iDenfy for KYC/AML
 - **On-Chain Attestation Generation**: NFT-based attestations stored on private blockchain
 - **Metadata Management**: IPFS storage for attestation metadata (no PII)
 - **Wallet-to-Person Mapping**: Cryptographic proof linking wallets to verified identities
 - **Attestation Lifecycle**: Issue, verify, expire, and revoke attestations
 
 #### Technical Requirements
-- Integration with Persona API and webhooks
+- Integration with iDenfy API and webhooks
 - Smart contract deployment for attestation NFTs
 - IPFS integration for metadata storage
 - Cryptographic signature verification
 - Multi-chain support (starting with private EVM chain)
 
 #### Acceptance Criteria
-- [ ] User can complete KYC through Persona integration
+- [ ] User can complete KYC through iDenfy integration
 - [ ] System generates on-chain attestation upon successful verification
 - [ ] Attestation contains no PII but proves verification status
 - [ ] Wallet owners can prove their attestation to third parties
@@ -189,7 +189,7 @@ Transform regulatory compliance from a manual, reactive burden into an automated
 ```
 
 ### Integration Points
-- **Persona**: Webhooks for KYC status updates + polling fallback
+- **iDenfy**: Webhooks for KYC status updates + polling fallback
 - **Blockchain**: ethers.js for contract interactions
 - **IPFS**: Filebase S3-compatible API for metadata storage
 - **AWS**: Complete infrastructure hosting and management
@@ -205,7 +205,7 @@ Transform regulatory compliance from a manual, reactive burden into an automated
 ### Phase 1: Core Identity & Attestation (Months 1-3)
 **Goal**: Launch basic KYC and attestation functionality
 - User authentication and management
-- Persona integration for KYC
+- iDenfy integration for KYC
 - Basic on-chain attestation generation
 - Simple dashboard for token issuers
 
@@ -289,7 +289,7 @@ Transform regulatory compliance from a manual, reactive burden into an automated
 
 ### Q1 2024: Foundation
 - Complete authentication and user management
-- Integrate Persona for KYC verification
+- Integrate iDenfy for KYC verification
 - Basic on-chain attestation functionality
 - Alpha release with select partners
 

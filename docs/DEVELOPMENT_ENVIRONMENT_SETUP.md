@@ -881,10 +881,10 @@ AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 AWS_EVENTBRIDGE_BUS_NAME=kyc-attestation-events
 
-# Persona KYC
-PERSONA_API_KEY=your_persona_api_key
-PERSONA_WEBHOOK_SECRET=your_persona_webhook_secret
-PERSONA_ENVIRONMENT=sandbox
+# iDenfy KYC
+IDENFY_API_KEY=your_idenfy_api_key
+IDENFY_WEBHOOK_SECRET=your_idenfy_webhook_secret
+IDENFY_ENVIRONMENT=sandbox
 
 # JWT
 JWT_SECRET=your_jwt_secret_key_here

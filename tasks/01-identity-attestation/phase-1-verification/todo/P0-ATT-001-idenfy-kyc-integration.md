@@ -1,4 +1,4 @@
-# Task: Persona KYC Integration Service
+# Task: iDenfy KYC Integration Service
 
 ## Meta Information
 - **Task ID**: P0-ATT-001
@@ -26,30 +26,30 @@
 - Documentation: `/docs/TECHNICAL_SPECIFICATIONS.md` section 7 (Event Streaming)
 
 ## Objective
-Implement complete Persona KYC integration including inquiry creation, webhook processing, status tracking, and real-time updates for identity verification within the KYC attestation platform.
+Implement complete iDenfy KYC integration including inquiry creation, webhook processing, status tracking, and real-time updates for identity verification within the KYC attestation platform.
 
 ## Detailed Implementation Instructions
 
-### Step 1: Install Persona SDK and Dependencies
-**Action**: Install required packages for Persona integration
+### Step 1: Install iDenfy SDK and Dependencies
+**Action**: Install required packages for iDenfy integration
 
 ```bash
-npm install persona-node-client
-npm install --save-dev @types/persona-node-client
+npm install idenfy-node-client
+npm install --save-dev @types/idenfy-node-client
 ```
 
-### Step 2: Create Persona Service
-**File**: `/apps/backend/src/modules/kyc/infrastructure/services/persona.service.ts`
-**Action**: Create comprehensive Persona integration service
+### Step 2: Create iDenfy Service
+**File**: `/apps/backend/src/modules/kyc/infrastructure/services/idenfy.service.ts`
+**Action**: Create comprehensive iDenfy integration service
 
 ```typescript
 import { Injectable, Logger, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Client as PersonaClient } from 'persona-node-client';
+import { Client as IdenfyClient } from 'idenfy-node-client';
 import { PrismaService } from '../../../../database/prisma.service';
 import { KycStatus } from '@prisma/client';
 
-export interface PersonaInquiry {
+export interface IdenfyInquiry {
   id: string;
   type: string;
   status: string;
@@ -60,7 +60,7 @@ export interface PersonaInquiry {
   accountId: string;
 }
 
-export interface PersonaWebhookEvent {
+export interface IdenfyWebhookEvent {
   type: string;
   id: string;
   data: {
@@ -84,9 +84,9 @@ export interface InquiryResult {
 }
 
 @Injectable()
-export class PersonaService {
-  private readonly logger = new Logger(PersonaService.name);
-  private readonly personaClient: PersonaClient;
+export class IdenfyService {
+  private readonly logger = new Logger(IdenfyService.name);
+  private readonly idenfyClient: IdenfyClient;
   private readonly templateId: string;
   private readonly baseUrl: string;
 
@@ -94,19 +94,19 @@ export class PersonaService {
     private configService: ConfigService,
     private prismaService: PrismaService,
   ) {
-    const apiKey = this.configService.get<string>('PERSONA_API_KEY');
-    const environment = this.configService.get<string>('PERSONA_ENVIRONMENT') || 'sandbox';
+    const apiKey = this.configService.get<string>('IDENFY_API_KEY');
+const environment = this.configService.get<string>('IDENFY_ENVIRONMENT') || 'sandbox';
     
     if (!apiKey) {
-      throw new Error('PERSONA_API_KEY is required');
+      throw new Error('IDENFY_API_KEY is required');
     }
 
-    this.personaClient = new PersonaClient({
+    this.idenfyClient = new IdenfyClient({
       apiKey,
       environment: environment as 'production' | 'sandbox',
     });
 
-    this.templateId = this.configService.get<string>('PERSONA_TEMPLATE_ID') || 'tmpl_default';
+    this.templateId = this.configService.get<string>('IDENFY_TEMPLATE_ID') || 'tmpl_default';
     this.baseUrl = this.configService.get<string>('APP_BASE_URL') || 'http://localhost:3000';
   }
 
@@ -115,7 +115,7 @@ export class PersonaService {
    */
   async createInquiry(request: CreateInquiryRequest): Promise<InquiryResult> {
     try {
-      this.logger.log(`Creating Persona inquiry for user: ${request.userId}`);
+      this.logger.log(`Creating iDenfy inquiry for user: ${request.userId}`);
 
       // Check if user already has an active inquiry
       const existingKyc = await this.prismaService.kycVerification.findFirst({
@@ -131,15 +131,15 @@ export class PersonaService {
         throw new BadRequestException('User already has an active KYC verification in progress');
       }
 
-      // Create inquiry with Persona
-      const inquiry = await this.personaClient.inquiries.create({
+      // Create inquiry with iDenfy
+const inquiry = await this.idenfyClient.inquiries.create({
         data: {
           type: 'inquiry',
           attributes: {
             'inquiry-template-id': this.templateId,
             'reference-id': request.referenceId || request.userId,
             'redirect-uri': request.redirectUri || `${this.baseUrl}/kyc/complete`,
-            'account-id': this.configService.get<string>('PERSONA_ACCOUNT_ID'),
+            'account-id': this.configService.get<string>('IDENFY_ACCOUNT_ID'),
           },
         },
       });
@@ -148,7 +148,7 @@ export class PersonaService {
       const kycRecord = await this.prismaService.kycVerification.create({
         data: {
           userId: request.userId,
-          provider: 'PERSONA',
+          provider: 'IDENFY',
           externalId: inquiry.data.id,
           status: KycStatus.PENDING,
           inquiryData: inquiry.data,
@@ -157,7 +157,7 @@ export class PersonaService {
         },
       });
 
-      this.logger.log(`Created Persona inquiry: ${inquiry.data.id} for user: ${request.userId}`);
+      this.logger.log(`Created iDenfy inquiry: ${inquiry.data.id} for user: ${request.userId}`);
 
       return {
         inquiryId: inquiry.data.id,
@@ -166,17 +166,17 @@ export class PersonaService {
         status: inquiry.data.attributes.status,
       };
     } catch (error) {
-      this.logger.error(`Failed to create Persona inquiry: ${error.message}`, error.stack);
+      this.logger.error(`Failed to create iDenfy inquiry: ${error.message}`, error.stack);
       throw new InternalServerErrorException('Failed to create KYC inquiry');
     }
   }
 
   /**
-   * Retrieve inquiry status from Persona
+   * Retrieve inquiry status from iDenfy
    */
-  async getInquiryStatus(inquiryId: string): Promise<PersonaInquiry> {
+  async getInquiryStatus(inquiryId: string): Promise<IdenfyInquiry> {
     try {
-      const inquiry = await this.personaClient.inquiries.retrieve(inquiryId);
+      const inquiry = await this.idenfyClient.inquiries.retrieve(inquiryId);
       
       return {
         id: inquiry.data.id,
@@ -189,17 +189,17 @@ export class PersonaService {
         accountId: inquiry.data.attributes['account-id'],
       };
     } catch (error) {
-      this.logger.error(`Failed to retrieve Persona inquiry: ${error.message}`);
+      this.logger.error(`Failed to retrieve iDenfy inquiry: ${error.message}`);
       throw new InternalServerErrorException('Failed to retrieve inquiry status');
     }
   }
 
   /**
-   * Process Persona webhook events
+   * Process iDenfy webhook events
    */
-  async processWebhookEvent(event: PersonaWebhookEvent): Promise<void> {
+  async processWebhookEvent(event: IdenfyWebhookEvent): Promise<void> {
     try {
-      this.logger.log(`Processing Persona webhook event: ${event.type} for ${event.data.id}`);
+      this.logger.log(`Processing iDenfy webhook event: ${event.type} for ${event.data.id}`);
 
       switch (event.type) {
         case 'inquiry.started':
@@ -218,15 +218,15 @@ export class PersonaService {
           await this.handleInquiryRequiresReview(event);
           break;
         default:
-          this.logger.warn(`Unhandled Persona webhook event type: ${event.type}`);
+          this.logger.warn(`Unhandled iDenfy webhook event type: ${event.type}`);
       }
     } catch (error) {
-      this.logger.error(`Failed to process Persona webhook: ${error.message}`, error.stack);
+      this.logger.error(`Failed to process iDenfy webhook: ${error.message}`, error.stack);
       throw error;
     }
   }
 
-  private async handleInquiryStarted(event: PersonaWebhookEvent): Promise<void> {
+  private async handleInquiryStarted(event: IdenfyWebhookEvent): Promise<void> {
     const inquiryId = event.data.id;
     
     await this.prismaService.kycVerification.updateMany({
@@ -241,7 +241,7 @@ export class PersonaService {
     this.logger.log(`Updated inquiry ${inquiryId} status to IN_PROGRESS`);
   }
 
-  private async handleInquiryCompleted(event: PersonaWebhookEvent): Promise<void> {
+  private async handleInquiryCompleted(event: IdenfyWebhookEvent): Promise<void> {
     const inquiryId = event.data.id;
     
     await this.prismaService.kycVerification.updateMany({
@@ -257,7 +257,7 @@ export class PersonaService {
     this.logger.log(`Updated inquiry ${inquiryId} status to UNDER_REVIEW`);
   }
 
-  private async handleInquiryApproved(event: PersonaWebhookEvent): Promise<void> {
+  private async handleInquiryApproved(event: IdenfyWebhookEvent): Promise<void> {
     const inquiryId = event.data.id;
     
     // Update KYC record
@@ -277,7 +277,7 @@ export class PersonaService {
     this.logger.log(`KYC approved for inquiry ${inquiryId}`);
   }
 
-  private async handleInquiryDeclined(event: PersonaWebhookEvent): Promise<void> {
+  private async handleInquiryDeclined(event: IdenfyWebhookEvent): Promise<void> {
     const inquiryId = event.data.id;
     
     await this.prismaService.kycVerification.updateMany({
@@ -293,7 +293,7 @@ export class PersonaService {
     this.logger.log(`KYC declined for inquiry ${inquiryId}`);
   }
 
-  private async handleInquiryRequiresReview(event: PersonaWebhookEvent): Promise<void> {
+  private async handleInquiryRequiresReview(event: IdenfyWebhookEvent): Promise<void> {
     const inquiryId = event.data.id;
     
     await this.prismaService.kycVerification.updateMany({
@@ -321,13 +321,13 @@ export class PersonaService {
       return null;
     }
 
-    // Sync with Persona if status is still pending/in-progress
+    // Sync with iDenfy if status is still pending/in-progress
     if ([KycStatus.PENDING, KycStatus.IN_PROGRESS, KycStatus.UNDER_REVIEW].includes(kycRecord.status)) {
       try {
-        const personaStatus = await this.getInquiryStatus(kycRecord.externalId);
+        const idenfyStatus = await this.getInquiryStatus(kycRecord.externalId);
         
         // Update local status if it differs
-        if (this.mapPersonaStatusToKycStatus(personaStatus.status) !== kycRecord.status) {
+        if (this.mapIdenfyStatusToKycStatus(idenfyStatus.status) !== kycRecord.status) {
           await this.syncInquiryStatus(kycRecord.externalId);
           
           // Refetch the updated record
@@ -346,8 +346,8 @@ export class PersonaService {
 
   private async syncInquiryStatus(inquiryId: string): Promise<void> {
     try {
-      const personaInquiry = await this.getInquiryStatus(inquiryId);
-      const kycStatus = this.mapPersonaStatusToKycStatus(personaInquiry.status);
+      const idenfyInquiry = await this.getInquiryStatus(inquiryId);
+      const kycStatus = this.mapIdenfyStatusToKycStatus(idenfyInquiry.status);
 
       await this.prismaService.kycVerification.updateMany({
         where: { externalId: inquiryId },
@@ -364,8 +364,8 @@ export class PersonaService {
     }
   }
 
-  private mapPersonaStatusToKycStatus(personaStatus: string): KycStatus {
-    switch (personaStatus) {
+  private mapIdenfyStatusToKycStatus(idenfyStatus: string): KycStatus {
+    switch (idenfyStatus) {
       case 'created':
       case 'pending':
         return KycStatus.PENDING;
@@ -391,9 +391,9 @@ export class PersonaService {
    */
   validateWebhookSignature(payload: string, signature: string): boolean {
     try {
-      const webhookSecret = this.configService.get<string>('PERSONA_WEBHOOK_SECRET');
+      const webhookSecret = this.configService.get<string>('IDENFY_WEBHOOK_SECRET');
       if (!webhookSecret) {
-        this.logger.warn('PERSONA_WEBHOOK_SECRET not configured, skipping validation');
+        this.logger.warn('IDENFY_WEBHOOK_SECRET not configured, skipping validation');
         return true; // In development, allow without validation
       }
 
@@ -435,7 +435,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { PersonaService, CreateInquiryRequest, PersonaWebhookEvent } from '../../infrastructure/services/persona.service';
+import { IdenfyService, CreateInquiryRequest, IdenfyWebhookEvent } from '../../infrastructure/services/idenfy.service';
 import { Public } from '../../../../shared/decorators/public.decorator';
 import { Roles } from '../../../../shared/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
@@ -458,7 +458,7 @@ export class KycStatusResponse {
 @ApiTags('kyc')
 @Controller('kyc')
 export class KycController {
-  constructor(private readonly personaService: PersonaService) {}
+  constructor(private readonly idenfyService: IdenfyService) {}
 
   @Post('inquiry')
   @ApiBearerAuth()
@@ -473,7 +473,7 @@ export class KycController {
       referenceId: body.referenceId,
     };
 
-    return await this.personaService.createInquiry(request);
+    return await this.idenfyService.createInquiry(request);
   }
 
   @Get('status')
@@ -483,7 +483,7 @@ export class KycController {
   async getKycStatus(@Request() req: any): Promise<KycStatusResponse | null> {
     const userId = req.user.id;
     
-    const kycRecord = await this.personaService.getUserKycStatus(userId);
+    const kycRecord = await this.idenfyService.getUserKycStatus(userId);
     
     if (!kycRecord) {
       return null;
@@ -506,7 +506,7 @@ export class KycController {
   @ApiOperation({ summary: 'Get KYC status for specific user (admin only)' })
   @ApiResponse({ status: 200, description: 'KYC status retrieved successfully' })
   async getUserKycStatus(@Param('userId') userId: string): Promise<KycStatusResponse | null> {
-    const kycRecord = await this.personaService.getUserKycStatus(userId);
+    const kycRecord = await this.idenfyService.getUserKycStatus(userId);
     
     if (!kycRecord) {
       return null;
@@ -523,24 +523,24 @@ export class KycController {
     };
   }
 
-  @Post('webhook/persona')
+  @Post('webhook/idenfy')
   @Public()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Handle Persona webhook events' })
+  @ApiOperation({ summary: 'Handle iDenfy webhook events' })
   @ApiResponse({ status: 200, description: 'Webhook processed successfully' })
-  async handlePersonaWebhook(
-    @Body() event: PersonaWebhookEvent,
-    @Headers('persona-signature') signature: string,
+  async handleIdenfyWebhook(
+    @Body() event: IdenfyWebhookEvent,
+    @Headers('idenfy-signature') signature: string,
   ) {
     // Validate webhook signature
     const payload = JSON.stringify(event);
-    const isValidSignature = this.personaService.validateWebhookSignature(payload, signature);
+    const isValidSignature = this.idenfyService.validateWebhookSignature(payload, signature);
     
     if (!isValidSignature) {
       throw new UnauthorizedException('Invalid webhook signature');
     }
 
-    await this.personaService.processWebhookEvent(event);
+    await this.idenfyService.processWebhookEvent(event);
     
     return { success: true };
   }
@@ -598,7 +598,7 @@ export class KycStatusDto {
   rejectedAt?: Date;
 }
 
-export class PersonaWebhookDto {
+export class IdenfyWebhookDto {
   @ApiProperty({ description: 'Event type' })
   type: string;
 
@@ -622,7 +622,7 @@ export class PersonaWebhookDto {
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '../../database/database.module';
-import { PersonaService } from './infrastructure/services/persona.service';
+import { IdenfyService } from './infrastructure/services/idenfy.service';
 import { KycController } from './presentation/controllers/kyc.controller';
 
 @Module({
@@ -631,8 +631,8 @@ import { KycController } from './presentation/controllers/kyc.controller';
     DatabaseModule,
   ],
   controllers: [KycController],
-  providers: [PersonaService],
-  exports: [PersonaService],
+  providers: [IdenfyService],
+exports: [IdenfyService],
 })
 export class KycModule {}
 ```
@@ -700,42 +700,42 @@ export class BackendModule {
 
 ### Step 7: Create Environment Configuration
 **File**: `/.env.example`
-**Action**: Add Persona configuration variables
+**Action**: Add iDenfy configuration variables
 
 ```env
-# Persona Configuration
-PERSONA_API_KEY=your_persona_api_key_here
-PERSONA_ENVIRONMENT=sandbox
-PERSONA_TEMPLATE_ID=tmpl_your_template_id
-PERSONA_ACCOUNT_ID=your_account_id
-PERSONA_WEBHOOK_SECRET=your_webhook_secret
+# iDenfy Configuration
+IDENFY_API_KEY=your_idenfy_api_key_here
+IDENFY_ENVIRONMENT=sandbox
+IDENFY_TEMPLATE_ID=tmpl_your_template_id
+IDENFY_ACCOUNT_ID=your_account_id
+IDENFY_WEBHOOK_SECRET=your_webhook_secret
 
 # Application
 APP_BASE_URL=http://localhost:3000
 ```
 
 ### Step 8: Create KYC Service Unit Tests
-**File**: `/apps/backend/src/modules/kyc/infrastructure/services/persona.service.spec.ts`
+**File**: `/apps/backend/src/modules/kyc/infrastructure/services/idenfy.service.spec.ts`
 **Action**: Create comprehensive unit tests
 
 ```typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { PersonaService } from './persona.service';
+import { IdenfyService } from './idenfy.service';
 import { PrismaService } from '../../../../database/prisma.service';
 import { KycStatus } from '@prisma/client';
 
-describe('PersonaService', () => {
-  let service: PersonaService;
+describe('IdenfyService', () => {
+let service: IdenfyService;
   let prismaService: PrismaService;
   let configService: ConfigService;
 
   const mockConfigService = {
     get: jest.fn((key: string) => {
       const config = {
-        PERSONA_API_KEY: 'test-api-key',
-        PERSONA_ENVIRONMENT: 'sandbox',
-        PERSONA_TEMPLATE_ID: 'tmpl_test',
+        IDENFY_API_KEY: 'test-api-key',
+IDENFY_ENVIRONMENT: 'sandbox',
+IDENFY_TEMPLATE_ID: 'tmpl_test',
         APP_BASE_URL: 'http://localhost:3000',
       };
       return config[key];
@@ -753,13 +753,13 @@ describe('PersonaService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PersonaService,
+        IdenfyService,
         { provide: ConfigService, useValue: mockConfigService },
         { provide: PrismaService, useValue: mockPrismaService },
       ],
     }).compile();
 
-    service = module.get<PersonaService>(PersonaService);
+    service = module.get<IdenfyService>(IdenfyService);
     prismaService = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
   });
@@ -777,15 +777,15 @@ describe('PersonaService', () => {
         status: KycStatus.PENDING,
       });
 
-      // Mock Persona client response would go here
-      // For now, test will need Persona client mocking
+      // Mock iDenfy client response would go here
+// For now, test will need iDenfy client mocking
 
       const request = {
         userId: 'user-123',
         redirectUri: 'http://localhost:3000/complete',
       };
 
-      // This test would need proper Persona client mocking
+      // This test would need proper iDenfy client mocking
       // await expect(service.createInquiry(request)).resolves.toBeDefined();
     });
 
@@ -806,7 +806,7 @@ describe('PersonaService', () => {
 ```
 
 ## Acceptance Criteria
-- [ ] **Functional**: Can create Persona inquiries and receive session tokens
+- [ ] **Functional**: Can create iDenfy inquiries and receive session tokens
 - [ ] **Technical**: Webhook processing updates KYC status correctly
 - [ ] **Integration**: API endpoints work with authentication system
 - [ ] **Testing**: Unit tests cover service logic and error cases
@@ -816,12 +816,12 @@ describe('PersonaService', () => {
 1. **Run Tests**: `npm run test` passes for KYC module
 2. **Type Check**: `npm run build` completes successfully
 3. **API Testing**: Can create inquiry via POST `/api/v1/kyc/inquiry`
-4. **Webhook Testing**: Persona webhooks update database correctly
-5. **Status Sync**: KYC status syncs between Persona and local database
+4. **Webhook Testing**: iDenfy webhooks update database correctly
+5. **Status Sync**: KYC status syncs between iDenfy and local database
 6. **Error Handling**: Invalid requests return appropriate error responses
 
 ## Expected Deliverables
-- [ ] Complete Persona service with inquiry management
+- [ ] Complete iDenfy service with inquiry management
 - [ ] KYC controller with secure API endpoints
 - [ ] Webhook processing for real-time status updates
 - [ ] Database integration with status tracking
@@ -831,14 +831,14 @@ describe('PersonaService', () => {
 ## Error Handling Requirements
 - Use appropriate HTTP status codes for different error types
 - Add comprehensive logging for debugging KYC issues
-- Implement retry logic for Persona API failures
+- Implement retry logic for iDenfy API failures
 - Validate webhook signatures for security
 - Handle rate limiting and API quota issues
 
 ## References
 - **Architecture**: `/docs/TECHNICAL_SPECIFICATIONS.md` Section 7
 - **Database Schema**: `/apps/backend/prisma/schema.prisma` (KycVerification model)
-- **Persona API**: https://docs.withpersona.com/docs/api-reference
+- **iDenfy API**: https://docs.idenfy.com/docs/api-reference
 - **Cursor Rules**: `/.cursorrules` (NestJS patterns and KYC compliance)
 
 ## Notes for AI

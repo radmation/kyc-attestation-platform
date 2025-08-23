@@ -177,15 +177,15 @@ Each task file should contain:
 ### Moving Tasks
 ```bash
 # Move task to in-progress
-mv tasks/01-identity-attestation/phase-1-verification/todo/P0-ATT-001-persona-integration.md \
+mv tasks/01-identity-attestation/phase-1-verification/todo/P0-ATT-001-idenfy-integration.md \
    tasks/01-identity-attestation/phase-1-verification/in-progress/
 
 # Move task to review
-mv tasks/01-identity-attestation/phase-1-verification/in-progress/P0-ATT-001-persona-integration.md \
+mv tasks/01-identity-attestation/phase-1-verification/in-progress/P0-ATT-001-idenfy-integration.md \
    tasks/01-identity-attestation/phase-1-verification/review/
 
 # Move task to done
-mv tasks/01-identity-attestation/phase-1-verification/review/P0-ATT-001-persona-integration.md \
+mv tasks/01-identity-attestation/phase-1-verification/review/P0-ATT-001-idenfy-integration.md \
    tasks/01-identity-attestation/phase-1-verification/done/
 ```
 

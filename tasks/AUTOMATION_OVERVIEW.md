@@ -146,7 +146,7 @@ cp tasks/automation/ci-setup.yml .github/workflows/ci.yml
 - ✅ NestJS service and controller patterns
 - ✅ Database integration best practices
 - ✅ Hyperledger Fabric integration patterns
-- ✅ Persona API error handling
+- ✅ iDenfy API error handling
 - ✅ IPFS storage patterns
 - ✅ Common issues and solutions
 - ✅ Testing patterns

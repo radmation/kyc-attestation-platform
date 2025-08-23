@@ -116,7 +116,7 @@ git push origin main develop --tags
 ### **Examples**
 ```bash
 feat(auth): add JWT refresh token rotation
-fix(kyc): handle Persona webhook timeout errors
+fix(kyc): handle iDenfy webhook timeout errors
 docs(api): update authentication endpoint documentation
 ```
 

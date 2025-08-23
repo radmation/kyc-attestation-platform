@@ -31,7 +31,7 @@ graph TB
     end
     
     subgraph "Integration Layer"
-        D --> M[Persona KYC API]
+        D --> M[iDenfy KYC API]
         B --> N[AWS EventBridge]
     end
     

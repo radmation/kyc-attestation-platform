@@ -40,7 +40,7 @@ tasks/
 ├── 01-identity-attestation/           # Core KYC & blockchain features
 │   ├── epic-info.md
 │   └── phase-1-verification/todo/
-│       └── P0-ATT-001-persona-kyc-integration.md
+│       └── P0-ATT-001-idenfy-kyc-integration.md
 ├── 02-smart-contracts/                # Compliance enforcement
 ├── 03-airdrop-campaigns/              # Business value features
 ├── 04-monitoring-reporting/           # Enterprise features
@@ -126,7 +126,7 @@ grep -r "KYC" tasks/*/todo/
    - Critical for: All blockchain functionality
 
 ### Week 3: KYC Integration
-4. **P0-ATT-001**: Persona KYC Integration
+4. **P0-ATT-001**: iDenfy KYC Integration
    - Location: `tasks/01-identity-attestation/phase-1-verification/todo/`
    - Depends on: P0-INF-001, P0-INF-002
    - Core business logic
