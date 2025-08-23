@@ -12,9 +12,9 @@ This guide provides comprehensive information for integrating iDenfy's KYC verif
 
 ## 🌐 **Webhook Configuration**
 Use the webhook secret above when configuring webhooks in your iDenfy dashboard:
-- **KYC Verification Webhook**: `/api/kyc/webhook/idenfy`
-- **AML Monitoring Webhook**: `/api/aml/webhook/idenfy`
-- **Document Verification Webhook**: `/api/documents/webhook/idenfy`
+- **KYC Verification Webhook**: `/api/v1/kyc/webhook/idenfy`
+- **AML Monitoring Webhook**: `/api/v1/aml/webhook/idenfy`
+- **Document Verification Webhook**: `/api/v1/documents/webhook/idenfy`
 
 **Official Documentation References:**
 - [KYC Overview](https://documentation.idenfy.com/KYC/KYCLanding)
@@ -183,7 +183,7 @@ const session = await client.createSession({
   country: 'US',  // Required: ISO country code
   language: 'en',  // Optional: ISO language code
   redirectUrl: 'https://yourapp.com/kyc/callback',  // Required: Where to redirect after verification
-  callbackUrl: 'https://yourapp.com/api/kyc/webhook/idenfy',  // Required: Webhook endpoint
+  callbackUrl: 'https://yourapp.com/api/v1/kyc/webhook/idenfy',  // Required: Webhook endpoint
   referenceId: 'user-123-kyc',  // Optional: Your internal reference
   data: {
     // Optional: Pre-fill user data

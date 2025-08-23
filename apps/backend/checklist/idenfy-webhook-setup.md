@@ -17,7 +17,7 @@ This checklist guides you through setting up webhooks in the iDenfy dashboard fo
 **Purpose**: Real-time KYC verification status updates
 
 #### **Basic Configuration**
-- [ ] **Webhook URL**: `https://yourdomain.com/api/kyc/webhook/idenfy`
+- [ ] **Webhook URL**: `https://yourdomain.com/api/v1/kyc/webhook/idenfy`
 - [ ] **Signing Key**: `719d19af4f57508df8e0eaab21bf4a5f5cb61e0bf50282cec5514bf36501c4e2`
 - [ ] **HTTP Method**: POST
 - [ ] **Content Type**: application/json
@@ -46,7 +46,7 @@ User-Agent: iDenfy-Webhook/1.0
 **Purpose**: Real-time AML risk assessment updates
 
 #### **Basic Configuration**
-- [ ] **Webhook URL**: `https://yourdomain.com/api/aml/webhook/idenfy`
+- [ ] **Webhook URL**: `https://yourdomain.com/api/v1/aml/webhook/idenfy`
 - [ ] **Signing Key**: `719d19af4f57508df8e0eaab21bf4a5f5cb61e0bf50282cec5514bf36501c4e2`
 - [ ] **HTTP Method**: POST
 - [ ] **Content Type**: application/json
@@ -75,7 +75,7 @@ User-Agent: iDenfy-Webhook/1.0
 **Purpose**: Real-time document processing updates
 
 #### **Basic Configuration**
-- [ ] **Webhook URL**: `https://yourdomain.com/api/documents/webhook/idenfy`
+- [ ] **Webhook URL**: `https://yourdomain.com/api/v1/documents/webhook/idenfy`
 - [ ] **Signing Key**: `719d19af4f57508df8e0eaab21bf4a5f5cb61e0bf50282cec5514bf36501c4e2`
 - [ ] **HTTP Method**: POST
 - [ ] **Content Type**: application/json
@@ -206,6 +206,46 @@ const isValid = crypto.timingSafeEqual(
 
 ---
 
+## 🚀 **Development Setup with ngrok**
+
+### **Local Development Webhook Exposure**
+For development and testing, use ngrok to expose your local backend to the internet:
+
+#### **Option 1: Docker Compose (Recommended)**
+```bash
+# Start development environment with ngrok
+./scripts/dev-setup.sh
+
+# Or manually start with ngrok profile
+docker-compose --profile development up -d
+```
+
+#### **Option 2: Manual ngrok Setup**
+```bash
+# Install ngrok
+curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+echo "deb https://ngrok-agent.s3.amazonaws.com/ngrok buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+sudo apt update && sudo apt install ngrok
+
+# Configure ngrok auth token
+ngrok config add-authtoken YOUR_AUTH_TOKEN
+
+# Expose local backend
+ngrok http 3000
+```
+
+#### **Development Webhook URLs**
+When using ngrok, update your iDenfy webhook URLs to:
+- **KYC**: `https://your-ngrok-url.ngrok.io/api/v1/kyc/webhook/idenfy`
+- **AML**: `https://your-ngrok-url.ngrok.io/api/v1/aml/webhook/idenfy`
+- **Documents**: `https://your-ngrok-url.ngrok.io/api/v1/documents/webhook/idenfy`
+
+#### **ngrok Dashboard**
+- **Web Interface**: http://localhost:4040
+- **API Endpoint**: http://localhost:4041
+
+---
+
 ## 📚 **Additional Resources**
 
 ### **iDenfy Documentation**
@@ -217,6 +257,11 @@ const isValid = crypto.timingSafeEqual(
 - [Webhook Endpoints](../src/modules/kyc/presentation/controllers/webhook.controller.ts)
 - [Signature Validation](../src/modules/kyc/infrastructure/services/webhook-validation.service.ts)
 - [Webhook Processing](../src/modules/kyc/application/use-cases/process-webhook.use-case.ts)
+
+### **Development Tools**
+- [Development Setup Script](../scripts/dev-setup.sh)
+- [Docker Compose Configuration](../../docker-compose.yml)
+- [ngrok Configuration](../../ngrok.yml)
 
 ---
 

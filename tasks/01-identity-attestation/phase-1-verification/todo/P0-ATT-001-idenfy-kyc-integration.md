@@ -78,7 +78,7 @@ Implement complete iDenfy KYC integration including iframe embedding, webhook pr
 **Goal**: Implement robust webhook handling and status synchronization
 
 #### **Chunk 3.1: Webhook Endpoint**
-- [ ] Create `/api/kyc/webhook/idenfy` endpoint
+- [ ] Create `/api/v1/kyc/webhook/idenfy` endpoint
 - [ ] Implement webhook signature validation
 - [ ] Add webhook payload parsing and validation
 - [ ] Create webhook event logging
@@ -265,7 +265,7 @@ Finish with Phase 5 for reliability:
 ### **Key Integration Points**
 - **Token Generation**: `https://ivs.idenfy.com/api/v2/token`
 - **Iframe URL**: `https://ivs.idenfy.com/api/v2/redirect`
-- **Webhook Endpoint**: `/api/kyc/webhook/idenfy`
+- **Webhook Endpoint**: `/api/v1/kyc/webhook/idenfy`
 - **Status Updates**: Real-time via webhooks
 
 ## 🎯 **SUCCESS METRICS**

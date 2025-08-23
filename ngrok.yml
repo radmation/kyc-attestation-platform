@@ -1,0 +1,37 @@
+# ngrok.yml - Development Configuration
+# This file configures ngrok for local development webhook exposure
+
+version: "2"
+authtoken: ${NGROK_AUTH_TOKEN}
+region: ${NGROK_REGION:-us}
+
+# Tunnel configuration for the backend API
+tunnels:
+  backend-api:
+    proto: http
+    addr: 3000
+    subdomain: ${NGROK_SUBDOMAIN:-}
+    inspect: true
+    bind_tls: true
+    
+    # Security headers
+    request_header_add:
+      - "X-Forwarded-Proto: https"
+      - "X-Forwarded-Host: ${NGROK_SUBDOMAIN:-}.ngrok.io"
+    
+    # Basic auth for development (optional)
+    basic_auth:
+      - "dev:password123"
+    
+    # Custom domain (if you have ngrok pro)
+    # hostname: your-custom-domain.com
+
+# Logging configuration
+log_level: info
+log_format: json
+
+# Rate limiting for development
+rate_limit: 100/minute
+
+# Web interface configuration
+web_addr: 0.0.0.0:4040 
