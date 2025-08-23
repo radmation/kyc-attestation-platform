@@ -183,7 +183,7 @@ Transform regulatory compliance from a manual, reactive burden into an automated
                                 │
                                 ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│     Persona     │    │   Smart         │    │      IPFS       │
+│     iDenfy      │    │   Smart         │    │      IPFS       │
 │   KYC Provider  │◄──►│   Contracts     │◄──►│   (Filebase)    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
