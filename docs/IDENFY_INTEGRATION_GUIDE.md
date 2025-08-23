@@ -3,6 +3,19 @@
 ## Overview
 This guide provides comprehensive information for integrating iDenfy's KYC verification services into the KYC Attestation Platform. iDenfy offers multiple integration options including API-based verification, iframe embedding, and webhook notifications.
 
+## 🔑 **Current Configuration Status**
+- ✅ **API Access Key**: `EbjnE31hXkY` (configured in `/apps/backend/.env`)
+- ✅ **API Secret Key**: `yYxHUSev1Khkgfue9n09` (configured in `/apps/backend/.env`)
+- ✅ **Webhook Secret**: `719d19af4f57508df8e0eaab21bf4a5f5cb61e0bf50282cec5514bf36501c4e2` (configured in `/apps/backend/.env`)
+- ✅ **Environment**: `sandbox` (configured in `/apps/backend/.env`)
+- ✅ **Base URL**: `https://ivs.idenfy.com` (configured in `/apps/backend/.env`)
+
+## 🌐 **Webhook Configuration**
+Use the webhook secret above when configuring webhooks in your iDenfy dashboard:
+- **KYC Verification Webhook**: `/api/kyc/webhook/idenfy`
+- **AML Monitoring Webhook**: `/api/aml/webhook/idenfy`
+- **Document Verification Webhook**: `/api/documents/webhook/idenfy`
+
 **Official Documentation References:**
 - [KYC Overview](https://documentation.idenfy.com/KYC/KYCLanding)
 - [Iframe Integration](https://documentation.idenfy.com/KYC/ClientRedirectToWebUiIframe)
@@ -18,13 +31,12 @@ This guide provides comprehensive information for integrating iDenfy's KYC verif
 
 ### Environment Variables
 ```env
-# iDenfy Configuration
-IDENFY_API_KEY=your_idenfy_api_key_here
-IDENFY_API_SECRET=your_idenfy_api_secret_here
-IDENFY_ENVIRONMENT=sandbox  # or 'production'
-IDENFY_WEBHOOK_SECRET=your_webhook_secret_here
-IDENFY_CLIENT_ID=your_client_id_from_idenfy
-IDENFY_BASE_URL=https://ivs.idenfy.com
+# iDenfy Configuration (✅ All configured in /apps/backend/.env)
+IDENFY_API_ACCESS_KEY="EbjnE31hXkY"
+IDENFY_API_SECRET_KEY="yYxHUSev1Khkgfue9n09"
+IDENFY_WEBHOOK_SECRET="719d19af4f57508df8e0eaab21bf4a5f5cb61e0bf50282cec5514bf36501c4e2"
+IDENFY_ENVIRONMENT="sandbox"
+IDENFY_BASE_URL="https://ivs.idenfy.com"
 ```
 
 ### API Client Setup
@@ -32,8 +44,8 @@ IDENFY_BASE_URL=https://ivs.idenfy.com
 import { IdenfyClient } from 'idenfy-node-client';
 
 const client = new IdenfyClient({
-  apiKey: process.env.IDENFY_API_KEY,
-  apiSecret: process.env.IDENFY_API_SECRET,
+  apiKey: process.env.IDENFY_API_ACCESS_KEY,
+  apiSecret: process.env.IDENFY_API_SECRET_KEY,
   environment: process.env.IDENFY_ENVIRONMENT || 'sandbox'
 });
 ```
@@ -51,7 +63,7 @@ async function generateIdentificationToken(clientId: string): Promise<string> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${Buffer.from(`${process.env.IDENFY_API_KEY}:${process.env.IDENFY_API_SECRET}`).toString('base64')}`
+        'Authorization': `Basic ${Buffer.from(`${process.env.IDENFY_API_ACCESS_KEY}:${process.env.IDENFY_API_SECRET_KEY}`).toString('base64')}`
       },
       body: JSON.stringify({ clientId })
     });
