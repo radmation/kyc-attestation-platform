@@ -327,7 +327,7 @@ docker-compose down --rmi all
 
 ### **Documentation**
 - [API Documentation](http://localhost:3000/api/docs)
-- [Webhook Setup Checklist](../apps/backend/checklist/idenfy-webhook-setup.md)
+- [Developer Checklist](../developer_checklist.md)
 - [iDenfy Integration Guide](../docs/IDENFY_INTEGRATION_GUIDE.md)
 - [Project Overview](../docs/PROJECT_OVERVIEW.md)
 

@@ -79,7 +79,7 @@ https://your-ngrok-url.ngrok.io/api/v1/documents/webhook/idenfy
 
 ## 📞 **Need Help?**
 
-- **Full Checklist**: See `idenfy-webhook-setup.md`
+- **Developer Checklist**: See `../../developer_checklist.md`
 - **Integration Guide**: See `/docs/IDENFY_INTEGRATION_GUIDE.md`
 - **Task Details**: See `tasks/01-identity-attestation/phase-1-verification/todo/P0-ATT-001-idenfy-kyc-integration.md`
 - **Development Setup**: See `../../scripts/dev-setup.sh` 
