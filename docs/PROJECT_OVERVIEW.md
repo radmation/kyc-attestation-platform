@@ -1,4 +1,4 @@
-# KYC Attestation Platform - Documentation Overview
+# KYC Attestation Platform - Project Overview
 
 ## 📚 Complete Documentation Suite
 
@@ -62,7 +62,7 @@ The KYC Attestation Platform is a blockchain-based compliance solution that enab
 
 #### Development Framework
 - **Backend**: NestJS with TypeScript
-- **Frontend**: Angular with TypeScript
+- **Frontend**: React.js with TypeScript + shadcn/ui
 - **Testing**: Jest + Fabric test network
 - **CI/CD**: AWS CodePipeline + CodeBuild
 

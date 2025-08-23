@@ -19,7 +19,7 @@ This is a Know Your Customer (KYC) Attestation Platform designed for token issue
 - **Product Requirements**: `docs/PRD.md` - Complete product specifications and user stories
 - **Technical Architecture**: `docs/TECHNICAL_SPECIFICATIONS.md` - Detailed system architecture and integration patterns
 - **Development Setup**: `docs/DEVELOPMENT_ENVIRONMENT_SETUP.md` - Environment configuration and setup instructions
-- **Project Overview**: `docs/README.md` - High-level project overview and technology stack
+- **Project Overview**: `docs/PROJECT_OVERVIEW.md` - High-level project overview and technology stack
 
 ### Task Management & Workflow
 - **Task Organization**: `tasks/README.md` - Complete task structure and management guidelines
@@ -113,14 +113,14 @@ This is a Know Your Customer (KYC) Attestation Platform designed for token issue
 - **ULIDs**: Use ULIDs for unique, sortable identifiers
 - **Indexes**: Add proper database indexes for performance-critical queries
 
-### Frontend (Angular)
-- **Framework**: Angular with TypeScript for structured, enterprise-grade SPA
-- **Components**: Create reusable, well-documented components
-- **Services**: Use Angular services for API communication and state management
-- **Guards**: Implement route guards for authentication and authorization
-- **Interceptors**: Use HTTP interceptors for token attachment and error handling
-- **Reactive Forms**: Use Angular reactive forms for complex form validation
-- **UI Library**: Bootstrap 5 + NG-Bootstrap for consistent, professional UI
+### Frontend (React.js)
+- **Framework**: React.js with TypeScript for modern, component-based SPA
+- **Components**: Create reusable, well-documented components with shadcn/ui
+- **State Management**: Use React hooks and context for state management
+- **Routing**: Use React Router for navigation and route protection
+- **HTTP Client**: Use Axios or fetch with interceptors for API communication
+- **Forms**: Use React Hook Form for complex form validation
+- **UI Library**: shadcn/ui for consistent, modern UI components
 
 ### Blockchain Integration
 - **Network**: Hyperledger Fabric private, permissioned blockchain

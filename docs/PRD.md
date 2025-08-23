@@ -177,7 +177,7 @@ Transform regulatory compliance from a manual, reactive burden into an automated
 ### System Architecture
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Angular       │    │     NestJS      │    │   PostgreSQL    │
+│   React.js      │    │     NestJS      │    │   PostgreSQL    │
 │   Frontend      │◄──►│    Backend      │◄──►│   Database      │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                 │
