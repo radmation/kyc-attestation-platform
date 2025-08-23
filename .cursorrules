@@ -12,6 +12,33 @@
 ## Project Overview
 This is a Know Your Customer (KYC) Attestation Platform designed for token issuers to achieve compliance with the GENIUS Act and other regulatory requirements. The platform creates on-chain attestations for verified identities and provides smart contract integration for automated compliance enforcement.
 
+## 📚 Documentation References
+**For comprehensive project context, refer to these key documentation files:**
+
+### Core Documentation
+- **Product Requirements**: `docs/PRD.md` - Complete product specifications and user stories
+- **Technical Architecture**: `docs/TECHNICAL_SPECIFICATIONS.md` - Detailed system architecture and integration patterns
+- **Development Setup**: `docs/DEVELOPMENT_ENVIRONMENT_SETUP.md` - Environment configuration and setup instructions
+- **Project Overview**: `docs/README.md` - High-level project overview and technology stack
+
+### Task Management & Workflow
+- **Task Organization**: `tasks/README.md` - Complete task structure and management guidelines
+- **Quick Start Guide**: `tasks/QUICK_START.md` - Step-by-step development workflow
+- **Automation Overview**: `tasks/AUTOMATION_OVERVIEW.md` - Task automation patterns and utilities
+- **Epic Information**: `tasks/01-identity-attestation/epic-info.md` - Identity attestation epic goals and phases
+
+### Development Guidelines
+- **Branch Strategy**: `.github/BRANCH_STRATEGY.md` - Git workflow and commit conventions
+- **Task Templates**: `docs/TASK_IMPORT_TEMPLATES.md` - Task creation templates and examples
+- **Knowledge Base**: `tasks/automation/knowledge-base.md` - Development patterns and best practices
+
+### Implementation References
+- **Current KYC Task**: `tasks/01-identity-attestation/phase-1-verification/todo/P0-ATT-001-idenfy-kyc-integration.md` - Active iDenfy integration task
+- **Database Schema**: `apps/backend/prisma/schema.prisma` - Current database structure
+- **API Documentation**: Generated Swagger docs at `/api/docs` when running backend
+
+**Note**: Always consult these files for the most up-to-date information before making architectural decisions or implementing features.
+
 ## Git Workflow Strategy - CRITICAL
 ### MANDATORY Process for ALL Tasks
 1. **NEVER start a new task without following this process**
@@ -276,5 +303,61 @@ apps/frontend/src/app/
 2. **Smart Contract Integration and Enforcement** (Compliance automation)
 3. **Targeted Airdrop Campaign Creation** (Business value feature)
 4. **Continuous On-Chain Monitoring & Regulatory Reporting** (Enterprise features)
+
+## 🔧 Implementation Patterns & Examples
+
+### Service Layer Patterns
+**Reference**: `tasks/automation/knowledge-base.md` - Contains detailed service patterns including:
+- Error handling patterns for external APIs
+- Retry logic implementations
+- Webhook processing patterns
+- Database transaction management
+
+### KYC Integration Examples
+**Reference**: `tasks/01-identity-attestation/phase-1-verification/todo/P0-ATT-001-idenfy-kyc-integration.md` - Complete implementation guide including:
+- iDenfy service implementation
+- Webhook processing
+- Status mapping and synchronization
+- Error handling and validation
+
+### Database Patterns
+**Reference**: `apps/backend/prisma/schema.prisma` - Current schema with:
+- KYC verification models
+- User management structures
+- Attestation tracking
+- Audit trail implementations
+
+### API Design Patterns
+**Reference**: `docs/TECHNICAL_SPECIFICATIONS.md` - API architecture including:
+- RESTful endpoint design
+- Authentication patterns
+- Rate limiting strategies
+- Error response formats
+
+### Task Management Patterns
+**Reference**: `tasks/AUTOMATION_OVERVIEW.md` - Task automation including:
+- Git workflow automation
+- Task state management
+- Validation protocols
+- Completion criteria
+
+## 🚀 Quick Reference Commands
+```bash
+# Task Management
+./task-utils.sh status          # Check current task status
+./task-utils.sh next            # Get next task to work on
+./task-utils.sh start TASK-ID   # Start a new task
+
+# Development
+npm run build                   # Build backend
+npm run test                    # Run tests
+npm run migration:generate      # Generate Prisma migration
+npm run migration:deploy        # Deploy database changes
+
+# Git Workflow
+git checkout develop            # Switch to develop branch
+git status                      # Check current status
+git branch -a                   # List all branches
+```
 
 Remember: This is a compliance-focused platform where security, auditability, and regulatory adherence are paramount. Every decision should consider the regulatory implications and audit trail requirements. 
