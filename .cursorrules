@@ -33,6 +33,7 @@ This is a Know Your Customer (KYC) Attestation Platform designed for token issue
 
 ### Implementation References
 - **Current KYC Task**: `tasks/01-identity-attestation/phase-1-verification/todo/P0-ATT-001-idenfy-kyc-integration.md` - Active iDenfy integration task
+- **iDenfy Integration Guide**: `docs/IDENFY_INTEGRATION_GUIDE.md` - Complete iDenfy API and webhook documentation
 - **Database Schema**: `apps/backend/prisma/schema.prisma` - Current database structure
 - **API Documentation**: Generated Swagger docs at `/api/docs` when running backend
 

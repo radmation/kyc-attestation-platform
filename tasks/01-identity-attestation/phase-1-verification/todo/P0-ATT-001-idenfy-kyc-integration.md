@@ -24,6 +24,7 @@
 - Pattern: `/apps/backend/src/modules/auth/` (similar service patterns)
 - Database: `/apps/backend/prisma/schema.prisma` (KycVerification model)
 - Documentation: `/docs/TECHNICAL_SPECIFICATIONS.md` section 7 (Event Streaming)
+- **iDenfy Integration Guide**: `/docs/IDENFY_INTEGRATION_GUIDE.md` - Complete integration reference
 
 ## Objective
 Implement complete iDenfy KYC integration including inquiry creation, webhook processing, status tracking, and real-time updates for identity verification within the KYC attestation platform.
