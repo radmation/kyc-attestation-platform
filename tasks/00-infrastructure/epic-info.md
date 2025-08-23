@@ -4,11 +4,11 @@
 - **Epic ID**: 00-INF
 - **Priority**: P0 (Critical - blocks all other work)
 - **Module**: Infrastructure Foundation
-- **Total Estimate**: 2-3 weeks
-- **Sprint Range**: Sprint 1 - Sprint 2
+- **Total Estimate**: 6-8 weeks
+- **Sprint Range**: Sprint 1 - Sprint 4
 
 ## Epic Goal
-Establish the foundational infrastructure for the KYC attestation platform including authentication, API framework, monitoring, and blockchain development environment.
+Establish the foundational infrastructure for the KYC attestation platform including authentication, API framework, monitoring, blockchain development environment, user onboarding, and white-labeling capabilities.
 
 ## Success Metrics
 - [ ] Development environment fully operational with Fabric test-network
@@ -16,6 +16,10 @@ Establish the foundational infrastructure for the KYC attestation platform inclu
 - [ ] API framework with rate limiting and security middleware
 - [ ] Monitoring stack operational (Prometheus, Grafana, Hyperledger Explorer)
 - [ ] IPFS storage integration working
+- [ ] Email infrastructure with Mailgun integration operational
+- [ ] React frontend application with centralized theming functional
+- [ ] User invitation and onboarding system working
+- [ ] White-labeling API providing dynamic branding support
 
 ## User Stories
 **As a** developer  
@@ -30,8 +34,20 @@ Establish the foundational infrastructure for the KYC attestation platform inclu
 **I want** comprehensive monitoring and observability  
 **So that** I can ensure system reliability and performance
 
+**As a** client administrator  
+**I want** to invite users to my organization  
+**So that** my team can access the platform
+
+**As a** invited user  
+**I want** a smooth onboarding experience  
+**So that** I can quickly start using the platform
+
+**As a** client organization  
+**I want** to customize the platform with my branding  
+**So that** it feels like my own application
+
 ## Technical Architecture
-Foundation infrastructure supporting all platform features with enterprise-grade security, monitoring, and scalability.
+Foundation infrastructure supporting all platform features with enterprise-grade security, monitoring, scalability, user management, and white-labeling capabilities.
 
 ### Key Components
 - **Authentication System**: JWT-based auth with RBAC and multi-tenant support
@@ -39,27 +55,41 @@ Foundation infrastructure supporting all platform features with enterprise-grade
 - **Blockchain Environment**: Hyperledger Fabric test-network with Go chaincode
 - **Monitoring Stack**: Prometheus + Grafana + Hyperledger Explorer
 - **Storage Integration**: IPFS with Filebase and Pinata providers
+- **Email Infrastructure**: Mailgun integration with white-labeling support
+- **Frontend Application**: React.js with centralized theming and shadcn/ui
+- **User Management**: Invitation system with onboarding flows
+- **White-Labeling**: Dynamic branding API with multi-tenant support
 
 ### Integration Points
-- **External APIs**: AWS EventBridge for event streaming
-- **Database Changes**: Enhanced schema with blockchain integration fields
+- **External APIs**: AWS EventBridge for event streaming, Mailgun for email
+- **Database Changes**: Enhanced schema with blockchain integration, invitation, and branding fields
 - **Blockchain**: Fabric test-network with custom KYC channel
-- **Frontend**: Angular authentication and monitoring dashboards
+- **Frontend**: React.js application with dynamic theming and white-labeling
 
 ## Phases Overview
-### Phase 1: Core Infrastructure (Week 1)
+### Phase 1: Core Infrastructure (Week 1-2)
 **Goal**: Basic platform functionality
 **Dependencies**: None
 **Deliverables**: Auth system, API framework, basic monitoring
 
-### Phase 2: Blockchain Integration (Week 2)
+### Phase 2: Blockchain Integration (Week 2-3)
 **Goal**: Fabric integration and chaincode deployment
 **Dependencies**: Phase 1 completion
 **Deliverables**: Working Fabric network, Go chaincode, blockchain service
 
-### Phase 3: Advanced Features (Week 3)
-**Goal**: Full monitoring and production readiness
+### Phase 3: User Experience Infrastructure (Week 3-4)
+**Goal**: User onboarding and white-labeling capabilities
 **Dependencies**: Phase 2 completion
+**Deliverables**: Email system, user invitation system, white-labeling API
+
+### Phase 4: Frontend & Advanced Features (Week 4-6)
+**Goal**: Complete frontend application and advanced features
+**Dependencies**: Phase 3 completion
+**Deliverables**: React frontend, centralized theming, user onboarding flows
+
+### Phase 5: Production Readiness (Week 6-8)
+**Goal**: Full monitoring and production readiness
+**Dependencies**: Phase 4 completion
 **Deliverables**: Complete monitoring stack, IPFS integration, performance optimization
 
 ## Dependencies
@@ -78,6 +108,10 @@ Foundation infrastructure supporting all platform features with enterprise-grade
 - [ ] Security review passed for authentication system
 - [ ] Performance benchmarks established
 - [ ] Documentation updated with setup procedures
+- [ ] Email infrastructure operational with Mailgun
+- [ ] Frontend application functional with theming
+- [ ] User invitation system working end-to-end
+- [ ] White-labeling API providing dynamic branding
 
 ## Risks & Mitigation
 - **Risk**: Hyperledger Fabric complexity delays development
@@ -90,12 +124,24 @@ Foundation infrastructure supporting all platform features with enterprise-grade
   - **Probability**: Low
   - **Mitigation**: Use proven technology stack, step-by-step integration approach
 
+- **Risk**: Email deliverability issues with Mailgun
+  - **Impact**: Medium
+  - **Probability**: Low
+  - **Mitigation**: Proper DNS configuration, domain reputation management, fallback mechanisms
+
+- **Risk**: Frontend theming complexity
+  - **Impact**: Medium
+  - **Probability**: Medium
+  - **Mitigation**: Use established design systems (shadcn/ui), incremental implementation, comprehensive testing
+
 ## Progress Tracking
 - **Phase 1**: Not Started (0% complete)
 - **Phase 2**: Not Started (0% complete)
 - **Phase 3**: Not Started (0% complete)
+- **Phase 4**: Not Started (0% complete)
+- **Phase 5**: Not Started (0% complete)
 
 **Overall Epic Progress**: 0% complete
 
 ## Notes
-This epic is critical path for all other development. All tasks are written with detailed AI instructions including exact file paths, code examples, and verification steps. Focus on getting this foundation solid before moving to business logic. 
+This epic is critical path for all other development. All tasks are written with detailed AI instructions including exact file paths, code examples, and verification steps. The expanded scope now includes user onboarding, white-labeling, and frontend infrastructure to provide a complete foundation for the KYC attestation platform. Focus on getting this foundation solid before moving to business logic. 
