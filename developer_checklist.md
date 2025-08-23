@@ -8,18 +8,18 @@ This checklist guides developers through setting up all external services, accou
 ## 🔑 **Prerequisites & Account Setup**
 
 ### **1. GitHub Account & Repository Access**
-- [ ] **GitHub Account**: Ensure you have access to the repository
-- [ ] **Repository Access**: Verify you can clone, push, and create PRs
-- [ ] **SSH Keys**: Set up SSH keys for repository access
+- [x] **GitHub Account**: Ensure you have access to the repository
+- [x] **Repository Access**: Verify you can clone, push, and create PRs
+- [x] **SSH Keys**: Set up SSH keys for repository access
 - [ ] **Branch Protection**: Ensure `develop` and `main` branches are protected
 
 ### **2. Development Environment**
-- [ ] **Docker**: Install Docker Desktop (v20.10+)
-- [ ] **Docker Compose**: Install Docker Compose (v2.0+)
-- [ ] **Node.js**: Install Node.js (v18+)
-- [ ] **npm**: Install npm (v8+)
-- [ ] **Git**: Install Git (v2.30+)
-- [ ] **Code Editor**: Install VS Code, Cursor, or preferred editor
+- [x] **Docker**: Install Docker Desktop (v20.10+)
+- [x] **Docker Compose**: Install Docker Compose (v2.0+)
+- [x] **Node.js**: Install Node.js (v18+)
+- [x] **npm**: Install npm (v8+)
+- [x] **Git**: Install Git (v2.30+)
+- [x] **Code Editor**: Install VS Code, Cursor, or preferred editor
 
 ---
 
@@ -92,19 +92,19 @@ This checklist guides developers through setting up all external services, accou
 ## 🔐 **iDenfy Setup for KYC Verification**
 
 ### **5. iDenfy Account & API Configuration**
-- [ ] **Sign Up**: Create account at [idenfy.com](https://idenfy.com)
-- [ ] **Verify Account**: Complete account verification process
-- [ ] **Get API Credentials**: Obtain API access key and secret
-- [ ] **Choose Plan**: Select appropriate plan for your needs
+- [x] **Sign Up**: Create account at [idenfy.com](https://idenfy.com)
+- [x] **Verify Account**: Complete account verification process
+- [x] **Get API Credentials**: Obtain API access key and secret
+- [x] **Choose Plan**: Select appropriate plan for your needs
 
 #### **iDenfy API Configuration**
-- [ ] **API Access Key**: Copy from iDenfy dashboard
-- [ ] **API Secret Key**: Copy from iDenfy dashboard
-- [ ] **Environment**: Confirm sandbox vs production settings
+- [x] **API Access Key**: Copy from iDenfy dashboard
+- [x] **API Secret Key**: Copy from iDenfy dashboard
+- [x] **Environment**: Confirm sandbox vs production settings
 - [ ] **Base URL**: Verify `https://ivs.idenfy.com` is correct
 
 #### **iDenfy Environment Setup**
-- [ ] **Update Environment**: Ensure `apps/backend/.env` has:
+- [x] **Update Environment**: Ensure `apps/backend/.env` has:
   ```env
   IDENFY_API_ACCESS_KEY="your_actual_access_key"
   IDENFY_API_SECRET_KEY="your_actual_secret_key"
@@ -119,32 +119,51 @@ This checklist guides developers through setting up all external services, accou
 
 ### **6. iDenfy Webhook Setup**
 - [ ] **Login to iDenfy Dashboard**: Access webhook configuration
-- [ ] **Configure KYC Webhook**:
-  - **URL**: `https://your-ngrok-url.ngrok.io/api/v1/kyc/webhook/idenfy` (development)
-  - **URL**: `https://identhor.com/api/v1/kyc/webhook/idenfy` (production)
+- [ ] **Configure Single Webhook Endpoint**: Use one endpoint for all webhook types:
+  - **Development URL**: `https://your-ngrok-url.ngrok.io/api/v1/webhooks/idenfy`
+  - **Production URL**: `https://identhor.com/api/v1/webhooks/idenfy`
   - **Signing Key**: `719d19af4f57508df8e0eaab21bf4a5f5cb61e0bf50282cec5514bf36501c4e2`
   - **HTTP Method**: POST
   - **OAuth**: ❌ Disable (use webhook signatures instead)
 
-- [ ] **Configure AML Webhook**:
-  - **URL**: `https://your-ngrok-url.ngrok.io/api/v1/aml/webhook/idenfy` (development)
-  - **URL**: `https://identhor.com/api/v1/aml/webhook/idenfy` (production)
-  - **Signing Key**: Same as above
-  - **HTTP Method**: POST
-  - **OAuth**: ❌ Disable
+#### **Required Webhook Types (Set These Up for MVP)**
+- [ ] **ID VERIFICATION AUTO FINISHED**: When identity verification is completed automatically
+- [ ] **ID VERIFICATION MANUAL FINISHED**: When identity verification is manually approved/denied
+- [ ] **ID VERIFICATION EXPIRED**: When identity verification expires
+- [ ] **ID VERIFICATION CANCELED**: When identity verification is cancelled
+- [ ] **ID VERIFICATION RESUBMITTED**: When client resubmits verification
+- [ ] **AML MONITORING**: When AML monitoring user is checked/accepted/declined
+- [ ] **AML MONITORING EXPIRATION**: When AML monitoring user expires
+- [ ] **DOCUMENT EXPIRATION**: When client's identity document expires
+- [ ] **FACIAL AUTHENTICATION**: When facial authentication session ends
 
-- [ ] **Configure Document Webhook**:
-  - **URL**: `https://your-ngrok-url.ngrok.io/api/v1/documents/webhook/idenfy` (development)
-  - **URL**: `https://identhor.com/api/v1/documents/webhook/idenfy` (production)
-  - **Signing Key**: Same as above
-  - **HTTP Method**: POST
-  - **OAuth**: ❌ Disable
+#### **Optional Webhook Types (Don't Set Up for MVP)**
+- [ ] **ID VERIFICATION**: Legacy webhook (use specific ones above instead)
+- [ ] **COMPANY REVIEW**: Company verification completion
+- [ ] **COMPANY DELETE**: Company deletion
+- [ ] **COMPANY AML REVIEW**: Company AML review status updates
+- [ ] **COMPANY INFO REQUEST**: Additional company info requests
+- [ ] **COMPANY EXPIRATION**: Company verification expiration
+- [ ] **COMPANY SUBMIT**: Company information submission
+- [ ] **ACCOUNT CHECK**: Social media account verification
+- [ ] **BANK_VERIFICATION**: Bank verification completion
+- [ ] **GOV ORDERED DOCUMENT**: Government document delivery
+- [ ] **SOS_REPORT**: SOS filing report delivery
+
+#### **Webhook Payload Documentation**
+- [ ] **Get Sample Payloads**: Request sample JSON responses from iDenfy support
+- [ ] **Test Webhook Delivery**: Send test webhooks to capture real payloads
+- [ ] **Review Payload Documentation**: Check `docs/IDENFY_WEBHOOK_PAYLOADS.md` for AI agent reference
+- [ ] **Validate Payload Handling**: Ensure backend can process all webhook types
+- [ ] **Update Payload Examples**: Replace example payloads with real ones from testing
 
 #### **Webhook Testing**
 - [ ] **Test Webhook Delivery**: Send test webhook from iDenfy dashboard
 - [ ] **Verify Signature Validation**: Check backend logs for successful validation
 - [ ] **Monitor ngrok Traffic**: View webhook requests at `http://localhost:4040`
 - [ ] **Check Backend Logs**: Verify webhook processing in application logs
+- [ ] **Test All Webhook Types**: Verify each webhook type is processed correctly
+- [ ] **Validate Payload Parsing**: Ensure different webhook types are handled properly
 
 ---
 
