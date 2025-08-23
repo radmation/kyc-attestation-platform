@@ -29,7 +29,6 @@ This is a Know Your Customer (KYC) Attestation Platform designed for token issue
 
 ### Development Guidelines
 - **Branch Strategy**: `.github/BRANCH_STRATEGY.md` - Git workflow and commit conventions
-- **Task Templates**: `docs/TASK_IMPORT_TEMPLATES.md` - Task creation templates and examples
 - **Knowledge Base**: `tasks/automation/knowledge-base.md` - Development patterns and best practices
 
 ### Implementation References

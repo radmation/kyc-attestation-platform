@@ -13,7 +13,7 @@ This directory contains comprehensive documentation for the KYC Attestation Plat
 | [BLOCKCHAIN_INFRASTRUCTURE_DECISION.md](BLOCKCHAIN_INFRASTRUCTURE_DECISION.md) | Blockchain Platform Analysis | Engineering, Architecture | ✅ Complete |
 | [TECHNICAL_SPECIFICATIONS.md](TECHNICAL_SPECIFICATIONS.md) | Detailed Technical Specs | Engineering | ✅ Complete |
 | [DEVELOPMENT_ENVIRONMENT_SETUP.md](DEVELOPMENT_ENVIRONMENT_SETUP.md) | Dev Environment Guide | Engineering | ✅ Complete |
-| [TASK_IMPORT_TEMPLATES.md](TASK_IMPORT_TEMPLATES.md) | Project Management Templates | PM, Engineering | ✅ Complete |
+
 | [MISSING_INFRASTRUCTURE_DECISIONS.md](MISSING_INFRASTRUCTURE_DECISIONS.md) | Infrastructure Decision Status | Engineering, DevOps | ✅ Complete |
 
 ---
@@ -139,7 +139,6 @@ The KYC Attestation Platform is a blockchain-based compliance solution that enab
 ### For **Product Managers**
 1. **Read**: [PRD.md](PRD.md) for business context and requirements
 2. **Review**: [TASK_ORGANIZATION.md](TASK_ORGANIZATION.md) for sprint planning
-3. **Import**: Use [TASK_IMPORT_TEMPLATES.md](TASK_IMPORT_TEMPLATES.md) for your PM tool
 
 ### For **Engineering Teams**
 1. **Setup**: Follow [DEVELOPMENT_ENVIRONMENT_SETUP.md](DEVELOPMENT_ENVIRONMENT_SETUP.md)
