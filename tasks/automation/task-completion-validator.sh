@@ -182,11 +182,11 @@ case "$TASK_ID" in
     *"ATT-001"*)
         echo "👤 KYC Integration Validation:"
         
-        # Check Persona service
-        if [[ -f "apps/backend/src/modules/kyc/infrastructure/services/persona.service.ts" ]]; then
-            echo "✅ Persona service created"
+        # Check iDenfy service
+        if [[ -f "apps/backend/src/modules/kyc/infrastructure/services/idenfy.service.ts" ]]; then
+            echo "✅ iDenfy service created"
         else
-            echo "❌ Persona service missing"
+            echo "❌ iDenfy service missing"
             exit 1
         fi
         
