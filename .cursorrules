@@ -2,12 +2,22 @@
 
 ## ⚠️ CRITICAL: MANDATORY FIRST STEPS FOR ANY TASK ASSESSMENT
 **BEFORE assessing any task completion or starting work, ALWAYS:**
-1. **Check git context**: `git status` and `git branch -a`
-2. **Use task utilities**: `./task-utils.sh status` for proper task state
-3. **Check develop branch**: `git checkout develop` to see merged work
-4. **Verify task branch**: Check if `task/TASK-ID` branch exists and was merged
+1. **Read the Automation Guide**: `tasks/AUTOMATION_OVERVIEW.md` - COMPLETE workflow reference
+2. **Check git context**: `git status` and `git branch -a`
+3. **Use task utilities**: `./task-utils.sh status` for proper task state
+4. **Check develop branch**: `git checkout develop` to see merged work
+5. **Verify task branch**: Check if `task/TASK-ID` branch exists and was merged
 
 **NEVER assess task completion without following this workflow!**
+
+## 📖 ESSENTIAL AGENT DOCUMENTATION
+**Primary Reference**: `tasks/AUTOMATION_OVERVIEW.md` - Complete AI Agent Task Automation Guide
+- ✅ Complete workflow steps (status → next → start → complete)
+- ✅ Task automation scripts usage and PR template generation
+- ✅ Critical rules, best practices, and troubleshooting
+- ✅ All commands and validation protocols
+
+**Documentation Hub**: `docs/agent-guides/README.md` - Organized index of all agent documentation
 
 ## Project Overview
 This is a Know Your Customer (KYC) Attestation Platform designed for token issuers to achieve compliance with the GENIUS Act and other regulatory requirements. The platform creates on-chain attestations for verified identities and provides smart contract integration for automated compliance enforcement.
