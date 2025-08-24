@@ -26,13 +26,13 @@ This checklist guides developers through setting up all external services, accou
 ## 🌐 **ngrok Setup for Development Webhooks**
 
 ### **3. ngrok Account & Configuration**
-- [ ] **Sign Up**: Create account at [ngrok.com](https://ngrok.com)
-- [ ] **Get Auth Token**: Navigate to [Auth Token](https://dashboard.ngrok.com/get-started/your-authtoken)
-- [ ] **Copy Auth Token**: Save your auth token securely
-- [ ] **Choose Plan**: Free plan works for basic development (paid plans for custom domains)
+- [x] **Sign Up**: Create account at [ngrok.com](https://ngrok.com)
+- [x] **Get Auth Token**: Navigate to [Auth Token](https://dashboard.ngrok.com/get-started/your-authtoken)
+- [x] **Copy Auth Token**: Save your auth token securely
+- [x] **Choose Plan**: Free plan works for basic development (paid plans for custom domains)
 
 #### **ngrok Configuration Steps**
-- [ ] **Add to Environment**: Update `apps/backend/.env` with:
+- [x] **Add to Environment**: Update `apps/backend/.env` with:
   ```env
   ENABLE_NGROK="true"
   NGROK_AUTH_TOKEN="your_actual_auth_token_here"
@@ -41,11 +41,25 @@ This checklist guides developers through setting up all external services, accou
 - [ ] **Test ngrok**: Run `./scripts/dev-setup.sh` to verify ngrok works
 - [ ] **Get Public URL**: Check `http://localhost:4040` for your ngrok URL
 - [ ] **Verify HTTPS**: Ensure ngrok tunnel is accessible from internet
+- [ ] **Test Public Access**: Visit your ngrok URL from another device/network
+- [ ] **Check Backend Health**: Verify `https://your-ngrok-url.ngrok.io/api/health` works
+- [ ] **Test Webhook Endpoint**: Ensure `https://your-ngrok-url.ngrok.io/api/v1/webhooks/idenfy` is accessible
 
 #### **ngrok Security Considerations**
 - [ ] **Basic Auth**: Consider enabling basic auth for development (configured in `ngrok.yml`)
 - [ ] **Rate Limiting**: Free plan has 100 requests/minute limit
 - [ ] **Tunnel Inspection**: Monitor webhook traffic at ngrok dashboard
+
+#### **ngrok Testing & Validation**
+- [ ] **Start ngrok Service**: Run `./scripts/dev-setup.sh start` or `docker-compose up ngrok`
+- [ ] **Check ngrok Dashboard**: Open `http://localhost:4040` to see tunnel status
+- [ ] **Verify Public URL**: Note your public ngrok URL (e.g., `https://abc123.ngrok.io`)
+- [ ] **Test Public Access**: Visit your ngrok URL from another device/network
+- [ ] **Check Backend Health**: Test `https://your-ngrok-url.ngrok.io/api/health`
+- [ ] **Test Webhook Endpoint**: Verify `https://your-ngrok-url.ngrok.io/api/v1/webhooks/idenfy` is accessible
+- [ ] **Monitor Traffic**: Use ngrok dashboard to see incoming requests
+- [ ] **Test with curl**: Use `curl -X GET https://your-ngrok-url.ngrok.io/api/health`
+- [ ] **Run Comprehensive Test**: Execute `./scripts/test-ngrok.sh` for automated testing
 
 ---
 
