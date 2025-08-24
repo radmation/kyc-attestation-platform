@@ -58,9 +58,9 @@ services:
       - "4041:4041" # Ngrok API
     volumes:
       - ./ngrok.yml:/etc/ngrok.yml:ro # Ngrok configuration file
-    command: http backend:3000 --config=/etc/ngrok.yml
-    depends_on:
-      - backend
+    command: http host.docker.internal:3000 --config=/etc/ngrok.yml
+    # depends_on:
+    #   - backend  # Commented out since backend might run locally
     networks:
       - app-network
     profiles:

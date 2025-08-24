@@ -2,8 +2,8 @@
 # This file configures ngrok for local development webhook exposure
 
 version: "2"
-authtoken: ${NGROK_AUTH_TOKEN}
-region: ${NGROK_REGION:-us}
+authtoken: 1PA4i5tCqFjO8lfaegwzZscASaD_UxqPRgi948Dj3PrsVST2
+region: us
 
 # Tunnel configuration for the backend API
 tunnels:

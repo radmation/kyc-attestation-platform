@@ -66,32 +66,32 @@ This checklist guides developers through setting up all external services, accou
 ## 📧 **SendGrid Setup for Production Email**
 
 ### **4. SendGrid Account & Domain Configuration**
-- [ ] **Sign Up**: Create account at [sendgrid.com](https://sendgrid.com)
-- [ ] **Verify Email**: Confirm your email address
+- [x] **Sign Up**: Create account at [sendgrid.com](https://sendgrid.com)
+- [x] **Verify Email**: Confirm your email address
 - [ ] **Add Payment Method**: Required for production use
-- [ ] **Choose Plan**: Free plan available (100 emails/day), paid plans for higher volume
+- [x] **Choose Plan**: Free plan available (100 emails/day), paid plans for higher volume
 
 #### **Domain Setup**
-- [ ] **Add Domain**: Add `mail.identhor.com` as your sending domain
-- [ ] **Verify Domain**: Complete domain verification process
-- [ ] **Get API Key**: Copy your SendGrid API key from dashboard
-- [ ] **Get Domain Info**: Note your domain region (US/EU)
+- [x] **Add Domain**: Add `mail.identhor.com` as your sending domain
+- [x] **Verify Domain**: Complete domain verification process
+- [x] **Get API Key**: Copy your SendGrid API key from dashboard
+- [x] **Get Domain Info**: Note your domain region (US/EU)
 
 #### **DNS Configuration for identhor.com**
-- [ ] **SPF Record**: Add to DNS:
+- [x] **SPF Record**: Add to DNS:
   ```
   mail.identhor.com. IN TXT "v=spf1 include:sendgrid.net ~all"
   ```
-- [ ] **DKIM Record**: Add the DKIM record provided by SendGrid
-- [ ] **DMARC Record**: Add to DNS:
+- [x] **DKIM Record**: Add the DKIM record provided by SendGrid
+- [x] **DMARC Record**: Add to DNS:
   ```
   _dmarc.mail.identhor.com. IN TXT "v=DMARC1; p=quarantine; rua=mailto:dmarc@identhor.com"
   ```
-- [ ] **MX Record**: Add SendGrid MX record if required
+- [x] **MX Record**: Add SendGrid MX record if required
 - [ ] **Verify DNS**: Use SendGrid's DNS verification tool
 
 #### **SendGrid Environment Configuration**
-- [ ] **Add to Environment**: Update `apps/backend/.env` with:
+- [x] **Add to Environment**: Update `apps/backend/.env` with:
   ```env
   SENDGRID_API_KEY="your_sendgrid_api_key_here"
   SENDGRID_DOMAIN="mail.identhor.com"
@@ -130,8 +130,8 @@ This checklist guides developers through setting up all external services, accou
 ## 🌐 **Webhook Configuration**
 
 ### **6. iDenfy Webhook Setup**
-- [ ] **Login to iDenfy Dashboard**: Access webhook configuration
-- [ ] **Configure Single Webhook Endpoint**: Use one endpoint for all webhook types:
+- [x] **Login to iDenfy Dashboard**: Access webhook configuration
+- [x] **Configure Single Webhook Endpoint**: Use one endpoint for all webhook types:
   - **Development URL**: `https://b16b595e873a.ngrok-free.app/api/v1/webhooks/idenfy`
   - **Production URL**: `https://identhor.com/api/v1/webhooks/idenfy`
   - **Signing Key**: `719d19af4f57508df8e0eaab21bf4a5f5cb61e0bf50282cec5514bf36501c4e2`
@@ -139,15 +139,15 @@ This checklist guides developers through setting up all external services, accou
   - **OAuth**: ❌ Disable (use webhook signatures instead)
 
 #### **Required Webhook Types (Set These Up for MVP)**
-- [ ] **ID VERIFICATION AUTO FINISHED**: When identity verification is completed automatically
-- [ ] **ID VERIFICATION MANUAL FINISHED**: When identity verification is manually approved/denied
-- [ ] **ID VERIFICATION EXPIRED**: When identity verification expires
-- [ ] **ID VERIFICATION CANCELED**: When identity verification is cancelled
-- [ ] **ID VERIFICATION RESUBMITTED**: When client resubmits verification
-- [ ] **AML MONITORING**: When AML monitoring user is checked/accepted/declined
-- [ ] **AML MONITORING EXPIRATION**: When AML monitoring user expires
-- [ ] **DOCUMENT EXPIRATION**: When client's identity document expires
-- [ ] **FACIAL AUTHENTICATION**: When facial authentication session ends
+- [x] **ID VERIFICATION AUTO FINISHED**: When identity verification is completed automatically
+- [x] **ID VERIFICATION MANUAL FINISHED**: When identity verification is manually approved/denied
+- [x] **ID VERIFICATION EXPIRED**: When identity verification expires
+- [x] **ID VERIFICATION CANCELED**: When identity verification is cancelled
+- [x] **ID VERIFICATION RESUBMITTED**: When client resubmits verification
+- [x] **AML MONITORING**: When AML monitoring user is checked/accepted/declined
+- [x] **AML MONITORING EXPIRATION**: When AML monitoring user expires
+- [x] **DOCUMENT EXPIRATION**: When client's identity document expires
+- [x] **FACIAL AUTHENTICATION**: When facial authentication session ends
 
 #### **Optional Webhook Types (Don't Set Up for MVP)**
 - [ ] **ID VERIFICATION**: Legacy webhook (use specific ones above instead)
@@ -163,7 +163,7 @@ This checklist guides developers through setting up all external services, accou
 - [ ] **SOS_REPORT**: SOS filing report delivery
 
 #### **Webhook Payload Documentation**
-- [ ] **Get Sample Payloads**: Request sample JSON responses from iDenfy support
+- [x] **Get Sample Payloads**: Request sample JSON responses from iDenfy support
 - [ ] **Test Webhook Delivery**: Send test webhooks to capture real payloads
 - [ ] **Review Payload Documentation**: Check `docs/IDENFY_WEBHOOK_PAYLOADS.md` for AI agent reference
 - [ ] **Validate Payload Handling**: Ensure backend can process all webhook types
@@ -182,10 +182,10 @@ This checklist guides developers through setting up all external services, accou
 ## 🗄️ **Database & Infrastructure**
 
 ### **7. PostgreSQL Database Setup**
-- [ ] **Local Development**: Ensure PostgreSQL is running locally or via Docker
-- [ ] **Connection String**: Verify `DATABASE_URL` in `.env` is correct
-- [ ] **Database Creation**: Create database if it doesn't exist
-- [ ] **Prisma Migration**: Run `npm run migration:deploy` to set up schema
+- [x] **Local Development**: Ensure PostgreSQL is running locally or via Docker
+- [x] **Connection String**: Verify `DATABASE_URL` in `.env` is correct
+- [x] **Database Creation**: Create database if it doesn't exist
+- [x] **Prisma Migration**: Run `npm run migration:deploy` to set up schema
 
 ### **8. Redis Cache Setup**
 - [ ] **Local Redis**: Ensure Redis is running locally or via Docker
