@@ -51,15 +51,15 @@ This checklist guides developers through setting up all external services, accou
 - [ ] **Tunnel Inspection**: Monitor webhook traffic at ngrok dashboard
 
 #### **ngrok Testing & Validation**
-- [ ] **Start ngrok Service**: Run `./scripts/dev-setup.sh start` or `docker-compose up ngrok`
-- [ ] **Check ngrok Dashboard**: Open `http://localhost:4040` to see tunnel status
-- [ ] **Verify Public URL**: Note your public ngrok URL (e.g., `https://abc123.ngrok.io`)
-- [ ] **Test Public Access**: Visit your ngrok URL from another device/network
-- [ ] **Check Backend Health**: Test `https://your-ngrok-url.ngrok.io/api/health`
-- [ ] **Test Webhook Endpoint**: Verify `https://your-ngrok-url.ngrok.io/api/v1/webhooks/idenfy` is accessible
-- [ ] **Monitor Traffic**: Use ngrok dashboard to see incoming requests
-- [ ] **Test with curl**: Use `curl -X GET https://your-ngrok-url.ngrok.io/api/health`
-- [ ] **Run Comprehensive Test**: Execute `./scripts/test-ngrok.sh` for automated testing
+- [x] **Start ngrok Service**: Run `./scripts/dev-setup.sh start` or `docker-compose up ngrok`
+- [x] **Check ngrok Dashboard**: Open `http://localhost:4040` to see tunnel status
+- [x] **Verify Public URL**: Note your public ngrok URL (e.g., `https://abc123.ngrok.io`)
+- [x] **Test Public Access**: Visit your ngrok URL from another device/network
+- [x] **Check Backend Health**: Test `https://your-ngrok-url.ngrok.io/api/health`
+- [x] **Test Webhook Endpoint**: Verify `https://your-ngrok-url.ngrok.io/api/v1/webhooks/idenfy` is accessible
+- [x] **Monitor Traffic**: Use ngrok dashboard to see incoming requests
+- [x] **Test with curl**: Use `curl -X GET https://your-ngrok-url.ngrok.io/api/health`
+- [x] **Run Comprehensive Test**: Execute `./scripts/test-ngrok.sh` for automated testing
 
 ---
 
@@ -134,7 +134,7 @@ This checklist guides developers through setting up all external services, accou
 ### **6. iDenfy Webhook Setup**
 - [ ] **Login to iDenfy Dashboard**: Access webhook configuration
 - [ ] **Configure Single Webhook Endpoint**: Use one endpoint for all webhook types:
-  - **Development URL**: `https://your-ngrok-url.ngrok.io/api/v1/webhooks/idenfy`
+  - **Development URL**: `https://b16b595e873a.ngrok-free.app/api/v1/webhooks/idenfy`
   - **Production URL**: `https://identhor.com/api/v1/webhooks/idenfy`
   - **Signing Key**: `719d19af4f57508df8e0eaab21bf4a5f5cb61e0bf50282cec5514bf36501c4e2`
   - **HTTP Method**: POST
