@@ -96,9 +96,7 @@ This checklist guides developers through setting up all external services, accou
   SENDGRID_API_KEY="your_sendgrid_api_key_here"
   SENDGRID_DOMAIN="mail.identhor.com"
   SENDGRID_REGION="US"  # or EU
-  SENDGRID_WEBHOOK_SECRET="your_generated_webhook_secret_here"
   ```
-- [ ] **Generate Webhook Secret**: Create secure webhook secret for SendGrid
 - [ ] **Test Email Sending**: Verify emails can be sent via SendGrid
 
 ---

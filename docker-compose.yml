@@ -21,7 +21,6 @@ services:
       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       SENDGRID_DOMAIN: ${SENDGRID_DOMAIN}
       SENDGRID_REGION: ${SENDGRID_REGION}
-      SENDGRID_WEBHOOK_SECRET: ${SENDGRID_WEBHOOK_SECRET}
       # Add any other environment variables your backend needs
     depends_on:
       - db # Ensure the database service starts before the backend
