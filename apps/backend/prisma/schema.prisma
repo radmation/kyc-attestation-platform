@@ -36,6 +36,8 @@ enum AttestationStatus {
 enum KycStatus {
   PENDING
   IN_PROGRESS
+  UNDER_REVIEW
+  MANUAL_REVIEW
   APPROVED
   REJECTED
   EXPIRED
@@ -195,10 +197,20 @@ model Wallet {
 /// Stores the results of KYC verification processes
 model KycVerification {
   id              String   @id @unique
-  providerId      String   @unique
+  providerId      String   @unique // Internal provider reference
+  externalId      String?  @unique // External provider's verification ID (e.g., Idenfy scanRef)
+  provider        String   @default("idenfy") // KYC provider name
   status          KycStatus @default(PENDING)
   lastCheckedAt   DateTime @default(now())
   webhookReceived Boolean  @default(false)
+  
+  // Timestamp fields for verification lifecycle
+  verifiedAt      DateTime? // When verification was approved
+  rejectedAt      DateTime? // When verification was rejected
+  completedAt     DateTime? // When verification was completed (before approval/rejection)
+  
+  // Store raw inquiry data from provider (JSON)
+  inquiryData     Json?    // Provider's verification data and results
   
   // Foreign key to the Profile who is being verified
   profileId       String?

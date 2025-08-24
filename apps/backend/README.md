@@ -1,3 +1,95 @@
+# KYC Attestation Platform - Backend
+
+## Overview
+This backend provides KYC (Know Your Customer) verification services with on-chain attestation capabilities.
+
+## Environment Setup
+
+Create a `.env` file in this directory with the following variables:
+
+```bash
+# Database Configuration
+DATABASE_URL="postgresql://username:password@localhost:5432/mydatabase?schema=public"
+
+# Application Configuration
+APP_BASE_URL="http://localhost:3000"
+JWT_SECRET="your-jwt-secret-here"
+NODE_ENV="development"
+
+# Idenfy KYC Provider Configuration
+IDENFY_API_KEY="your-idenfy-api-key"
+IDENFY_API_SECRET="your-idenfy-api-secret"
+IDENFY_ENVIRONMENT="sandbox"
+IDENFY_WEBHOOK_SECRET="your-webhook-secret"
+
+# AWS Configuration (for production)
+# AWS_ACCESS_KEY_ID=""
+# AWS_SECRET_ACCESS_KEY=""
+# AWS_REGION="us-east-1"
+
+# IPFS Configuration (for attestation metadata)
+# IPFS_API_URL="http://localhost:5001"
+# FILEBASE_ACCESS_KEY=""
+# FILEBASE_SECRET_KEY=""
+```
+
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Set up the database:
+   ```bash
+   npx prisma migrate dev
+   npx prisma generate
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run start:dev
+   ```
+
+## KYC Integration (P0-ATT-001)
+
+The Idenfy KYC integration has been implemented with the following endpoints:
+
+### POST /kyc/verify
+Initiates a KYC verification process for a user.
+
+Request body:
+```json
+{
+  "userId": "user-uuid",
+  "redirectUri": "https://your-app.com/kyc/complete",
+  "referenceId": "optional-reference"
+}
+```
+
+### POST /kyc/webhook
+Receives webhook notifications from Idenfy about verification status changes.
+
+### GET /kyc/status/:userId
+Retrieves the current KYC status for a user.
+
+## Architecture
+
+The KYC module follows clean architecture principles:
+- **Domain**: KYC entities and business logic
+- **Infrastructure**: External service integrations (Idenfy)
+- **Presentation**: REST API controllers
+
+## Database Schema
+
+The KYC verification data is stored in the `kyc_verifications` table with the following key fields:
+- `id`: Unique identifier
+- `providerId`: Internal provider reference
+- `externalId`: External provider verification ID
+- `status`: Current verification status
+- `profileId`: Link to user profile
+- `inquiryData`: Raw verification data from provider
+
 # Prisma
 
 ## Database Migrations
