@@ -10,7 +10,7 @@
 
 ## Dependencies
 - [x] P0-INF-001: Authentication & Authorization System (needs frontend auth)
-- [ ] P0-INF-005: Email Infrastructure with Mailgun Integration (needs email templates)
+- [ ] P0-INF-005: Email Infrastructure with SendGrid Integration (needs email templates)
 
 ## Context for AI
 **Project Structure**: This is a KYC attestation platform built with:

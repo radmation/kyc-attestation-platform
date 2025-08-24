@@ -1,4 +1,4 @@
-# Task: Email Infrastructure with Mailgun Integration
+# Task: Email Infrastructure with SendGrid Integration
 
 ## Meta Information
 - **Task ID**: P0-INF-005
@@ -25,22 +25,22 @@
 - Database: `/apps/backend/prisma/schema.prisma` (email-related models exist)
 
 ## Objective
-Replace the mock email service with a production-ready Mailgun integration that supports email verification, password resets, user invitations, and white-labeling for multi-tenant clients.
+Replace the mock email service with a production-ready SendGrid integration that supports email verification, password resets, user invitations, and white-labeling for multi-tenant clients.
 
 ## 🎯 **TASK BREAKDOWN INTO MANAGEABLE CHUNKS**
 
-### **Phase 1: Mailgun Service Integration (Week 1)**
-**Goal**: Set up Mailgun service and replace mock email service
+### **Phase 1: SendGrid Service Integration (Week 1)**
+**Goal**: Set up SendGrid service and replace mock email service
 
 #### **Chunk 1.1: Environment & Dependencies Setup**
-- [ ] Install Mailgun SDK: `npm install mailgun.js form-data`
-- [ ] Configure environment variables for Mailgun
-- [ ] Set up Mailgun domain configuration
-- [ ] Create Mailgun service configuration
+- [ ] Install SendGrid SDK: `npm install @sendgrid/mail`
+- [ ] Configure environment variables for SendGrid
+- [ ] Set up SendGrid domain configuration
+- [ ] Create SendGrid service configuration
 
-#### **Chunk 1.2: Mailgun Service Implementation**
-- [ ] Create `MailgunEmailService` implementing `EmailService` interface
-- [ ] Implement email sending with Mailgun API
+#### **Chunk 1.2: SendGrid Service Implementation**
+- [ ] Create `SendGridEmailService` implementing `EmailService` interface
+- [ ] Implement email sending with SendGrid API
 - [ ] Add error handling and retry logic
 - [ ] Add email delivery tracking
 
@@ -88,13 +88,13 @@ Replace the mock email service with a production-ready Mailgun integration that 
 
 ## 🔧 **IMPLEMENTATION APPROACH**
 
-### **1. Mailgun Configuration**
+### **1. SendGrid Configuration**
 ```typescript
 // Environment variables
-MAILGUN_API_KEY=your_mailgun_api_key
-MAILGUN_DOMAIN=mail.identhor.com
-MAILGUN_REGION=US  // or EU
-MAILGUN_WEBHOOK_SECRET=your_webhook_secret
+SENDGRID_API_KEY=your_sendgrid_api_key
+SENDGRID_DOMAIN=mail.identhor.com
+SENDGRID_REGION=US  // or EU
+SENDGRID_WEBHOOK_SECRET=your_webhook_secret
 ```
 
 ### **2. Domain Structure Recommendation**
@@ -115,10 +115,10 @@ Based on your `identhor.com` domain, here's the recommended structure to avoid b
 #### **DNS Configuration**
 ```dns
 # SPF Record
-mail.identhor.com. IN TXT "v=spf1 include:_spf.mailgun.org ~all"
+mail.identhor.com. IN TXT "v=spf1 include:sendgrid.net ~all"
 
-# DKIM Record (provided by Mailgun)
-mailgun._domainkey.mail.identhor.com. IN TXT "k=rsa; p=YOUR_PUBLIC_KEY"
+# DKIM Record (provided by SendGrid)
+s1._domainkey.mail.identhor.com. IN TXT "k=rsa; p=YOUR_PUBLIC_KEY"
 
 # DMARC Record
 _dmarc.mail.identhor.com. IN TXT "v=DMARC1; p=quarantine; rua=mailto:dmarc@identhor.com"
@@ -127,26 +127,22 @@ _dmarc.mail.identhor.com. IN TXT "v=DMARC1; p=quarantine; rua=mailto:dmarc@ident
 ### **3. Service Implementation**
 ```typescript
 @Injectable()
-export class MailgunEmailService implements EmailService {
-  private readonly mailgun: Mailgun;
+export class SendGridEmailService implements EmailService {
   private readonly domain: string;
 
   constructor(
     private configService: ConfigService,
     private prismaService: PrismaService,
   ) {
-    this.mailgun = new Mailgun(formData).client({
-      username: 'api',
-      key: this.configService.get('MAILGUN_API_KEY'),
-    });
-    this.domain = this.configService.get('MAILGUN_DOMAIN');
+    sgMail.setApiKey(this.configService.get('SENDGRID_API_KEY'));
+    this.domain = this.configService.get('SENDGRID_DOMAIN');
   }
 
   async sendVerificationEmail(email: string, token: string, clientId?: string): Promise<void> {
     const client = clientId ? await this.getClientBranding(clientId) : null;
     const template = await this.renderTemplate('verification', { token, client });
     
-    await this.mailgun.messages.create(this.domain, {
+    await sgMail.send({
       from: this.getFromAddress(client),
       to: email,
       subject: 'Verify Your Email Address',
@@ -206,9 +202,9 @@ export class MailgunEmailService implements EmailService {
 ## 📋 **DELIVERABLES BY PHASE**
 
 ### **Phase 1 Deliverables**
-- ✅ Mailgun SDK installed and configured
+- ✅ SendGrid SDK installed and configured
 - ✅ Environment variables configured
-- ✅ Mailgun service implemented
+- ✅ SendGrid service implemented
 - ✅ Basic email template system working
 
 ### **Phase 2 Deliverables**
@@ -248,7 +244,7 @@ export class MailgunEmailService implements EmailService {
 ## 🔍 **TESTING STRATEGY**
 
 ### **Unit Testing**
-- Mailgun service methods
+- SendGrid service methods
 - Template rendering
 - Branding integration
 - Error handling
@@ -268,7 +264,7 @@ export class MailgunEmailService implements EmailService {
 ## 📚 **RESOURCES & REFERENCES**
 
 ### **Primary Documentation**
-- **Mailgun API Docs**: [Mailgun Documentation](https://documentation.mailgun.com/)
+- **SendGrid API Docs**: [SendGrid Documentation](https://docs.sendgrid.com/)
 - **Email Templates**: Create in `/apps/backend/src/modules/auth/infrastructure/email/templates/`
 - **Branding Integration**: Use existing `Branding` model in Prisma schema
 

@@ -10,7 +10,7 @@
 
 ## Dependencies
 - [x] P0-INF-001: Authentication & Authorization System (needs user management)
-- [ ] P0-INF-005: Email Infrastructure with Mailgun Integration (needs invitation emails)
+- [ ] P0-INF-005: Email Infrastructure with SendGrid Integration (needs invitation emails)
 - [ ] P0-INF-006: Frontend React Application (needs invitation UI)
 
 ## Context for AI
@@ -96,7 +96,7 @@ Implement a comprehensive user invitation system that allows client administrato
 **Goal**: Integrate with email system and create frontend components
 
 #### **Chunk 4.1: Email Integration**
-- [ ] Integrate with Mailgun email service
+- [ ] Integrate with SendGrid email service
 - [ ] Create invitation email templates
 - [ ] Add email tracking and analytics
 - [ ] Implement email fallback handling
@@ -559,7 +559,7 @@ export class InvitationController {
 - **Error Handling**: Follow NestJS exception patterns
 
 ### **Key Integration Points**
-- **Email Service**: Integrate with Mailgun email service
+- **Email Service**: Integrate with SendGrid email service
 - **User Management**: Connect with existing user system
 - **Role Management**: Integrate with RBAC system
 - **Client Management**: Connect with multi-tenant architecture
@@ -590,7 +590,7 @@ export class InvitationController {
 2. **Focus on security**: Implement secure token generation
 3. **Build service layer**: Create robust invitation business logic
 4. **Implement API endpoints**: Create RESTful invitation management
-5. **Integrate with email**: Connect with Mailgun email service
+5. **Integrate with email**: Connect with SendGrid email service
 6. **Add frontend components**: Create invitation management UI
 7. **Test user flows**: Validate complete invitation process
 8. **Document everything**: Create API and integration guides

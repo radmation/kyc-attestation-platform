@@ -38,11 +38,11 @@ This checklist guides developers through setting up all external services, accou
   NGROK_AUTH_TOKEN="your_actual_auth_token_here"
   NGROK_REGION="us"  # or eu, au, ap, sa, jp, in
   ```
-- [ ] **Test ngrok**: Run `./scripts/dev-setup.sh` to verify ngrok works
+- [x] **Test ngrok**: Run `./scripts/dev-setup.sh` to verify ngrok works
 - [ ] **Get Public URL**: Check `http://localhost:4040` for your ngrok URL
-- [ ] **Verify HTTPS**: Ensure ngrok tunnel is accessible from internet
-- [ ] **Test Public Access**: Visit your ngrok URL from another device/network
-- [ ] **Check Backend Health**: Verify `https://your-ngrok-url.ngrok.io/api/health` works
+- [x] **Verify HTTPS**: Ensure ngrok tunnel is accessible from internet
+- [x] **Test Public Access**: Visit your ngrok URL from another device/network
+- [x] **Check Backend Health**: Verify `https://your-ngrok-url.ngrok.io/api/health` works
 - [ ] **Test Webhook Endpoint**: Ensure `https://your-ngrok-url.ngrok.io/api/v1/webhooks/idenfy` is accessible
 
 #### **ngrok Security Considerations**
@@ -63,43 +63,43 @@ This checklist guides developers through setting up all external services, accou
 
 ---
 
-## 📧 **Mailgun Setup for Production Email**
+## 📧 **SendGrid Setup for Production Email**
 
-### **4. Mailgun Account & Domain Configuration**
-- [ ] **Sign Up**: Create account at [mailgun.com](https://mailgun.com)
+### **4. SendGrid Account & Domain Configuration**
+- [ ] **Sign Up**: Create account at [sendgrid.com](https://sendgrid.com)
 - [ ] **Verify Email**: Confirm your email address
 - [ ] **Add Payment Method**: Required for production use
-- [ ] **Choose Region**: US or EU (affects data residency)
+- [ ] **Choose Plan**: Free plan available (100 emails/day), paid plans for higher volume
 
 #### **Domain Setup**
 - [ ] **Add Domain**: Add `mail.identhor.com` as your sending domain
 - [ ] **Verify Domain**: Complete domain verification process
-- [ ] **Get API Key**: Copy your Mailgun API key from dashboard
+- [ ] **Get API Key**: Copy your SendGrid API key from dashboard
 - [ ] **Get Domain Info**: Note your domain region (US/EU)
 
 #### **DNS Configuration for identhor.com**
 - [ ] **SPF Record**: Add to DNS:
   ```
-  mail.identhor.com. IN TXT "v=spf1 include:_spf.mailgun.org ~all"
+  mail.identhor.com. IN TXT "v=spf1 include:sendgrid.net ~all"
   ```
-- [ ] **DKIM Record**: Add the DKIM record provided by Mailgun
+- [ ] **DKIM Record**: Add the DKIM record provided by SendGrid
 - [ ] **DMARC Record**: Add to DNS:
   ```
   _dmarc.mail.identhor.com. IN TXT "v=DMARC1; p=quarantine; rua=mailto:dmarc@identhor.com"
   ```
-- [ ] **MX Record**: Add Mailgun MX record if required
-- [ ] **Verify DNS**: Use Mailgun's DNS verification tool
+- [ ] **MX Record**: Add SendGrid MX record if required
+- [ ] **Verify DNS**: Use SendGrid's DNS verification tool
 
-#### **Mailgun Environment Configuration**
+#### **SendGrid Environment Configuration**
 - [ ] **Add to Environment**: Update `apps/backend/.env` with:
   ```env
-  MAILGUN_API_KEY="your_mailgun_api_key_here"
-  MAILGUN_DOMAIN="mail.identhor.com"
-  MAILGUN_REGION="US"  # or EU
-  MAILGUN_WEBHOOK_SECRET="your_generated_webhook_secret_here"
+  SENDGRID_API_KEY="your_sendgrid_api_key_here"
+  SENDGRID_DOMAIN="mail.identhor.com"
+  SENDGRID_REGION="US"  # or EU
+  SENDGRID_WEBHOOK_SECRET="your_generated_webhook_secret_here"
   ```
-- [ ] **Generate Webhook Secret**: Create secure webhook secret for Mailgun
-- [ ] **Test Email Sending**: Verify emails can be sent via Mailgun
+- [ ] **Generate Webhook Secret**: Create secure webhook secret for SendGrid
+- [ ] **Test Email Sending**: Verify emails can be sent via SendGrid
 
 ---
 
@@ -236,6 +236,7 @@ This checklist guides developers through setting up all external services, accou
 ### **13. Email Testing**
 - [ ] **Mailhog Interface**: Access Mailhog at `http://localhost:8025`
 - [ ] **SMTP Testing**: Test email sending via SMTP
+- [ ] **SendGrid Testing**: Test email sending via SendGrid API
 - [ ] **Email Templates**: Verify email templates render correctly
 
 ---
@@ -261,7 +262,7 @@ This checklist guides developers through setting up all external services, accou
 ### **16. Pre-Launch Checklist**
 - [ ] **All Services Running**: Verify backend, database, Redis are operational
 - [ ] **Webhooks Configured**: Confirm iDenfy webhooks are working
-- [ ] **Email Service**: Verify Mailgun is configured and tested
+- [ ] **Email Service**: Verify SendGrid is configured and tested
 - [ ] **API Endpoints**: Test all API endpoints are accessible
 - [ ] **Documentation**: Ensure all documentation is up to date
 - [ ] **Environment Variables**: Confirm all environment variables are set
@@ -281,11 +282,11 @@ This checklist guides developers through setting up all external services, accou
 - [ ] **ngrok Not Working**: Check auth token and tunnel status
 - [ ] **Webhook Failures**: Verify signature validation and endpoint accessibility
 - [ ] **Database Connection**: Check connection string and service status
-- [ ] **Email Not Sending**: Verify Mailgun configuration and DNS settings
+- [ ] **Email Not Sending**: Verify SendGrid configuration and DNS settings
 
 ### **Support Resources**
 - [ ] **ngrok Documentation**: [docs.ngrok.com](https://docs.ngrok.com)
-- [ ] **Mailgun Documentation**: [documentation.mailgun.com](https://documentation.mailgun.com)
+- [ ] **SendGrid Documentation**: [docs.sendgrid.com](https://docs.sendgrid.com)
 - [ ] **iDenfy Documentation**: [documentation.idenfy.com](https://documentation.idenfy.com)
 - [ ] **Project Documentation**: Check `docs/` directory for platform-specific guides
 
