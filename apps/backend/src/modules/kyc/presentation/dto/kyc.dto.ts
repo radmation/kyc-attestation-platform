@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class CreateVerificationDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Redirect URI after KYC completion',
     example: 'https://app.example.com/kyc/complete',
     required: false,
@@ -11,7 +11,7 @@ export class CreateVerificationDto {
   @IsUrl()
   redirectUri?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Reference ID for tracking',
     example: 'user-123-kyc',
     required: false,
@@ -39,4 +39,4 @@ export interface IdenfyWebhookDto {
     id: string;
     attributes: Record<string, any>;
   };
-} 
+}

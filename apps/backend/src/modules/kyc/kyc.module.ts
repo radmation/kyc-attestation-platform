@@ -5,10 +5,7 @@ import { IdenfyService } from './infrastructure/services/idenfy.service';
 import { KycController } from './presentation/controllers/kyc.controller';
 
 @Module({
-  imports: [
-    ConfigModule,
-    DatabaseModule,
-  ],
+  imports: [ConfigModule, DatabaseModule],
   controllers: [KycController],
   providers: [IdenfyService],
   exports: [IdenfyService],

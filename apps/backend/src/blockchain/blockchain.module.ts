@@ -4,7 +4,11 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [ConfigModule],
-  providers: [/* FabricService */],
-  exports: [/* FabricService */],
+  providers: [
+    /* FabricService */
+  ],
+  exports: [
+    /* FabricService */
+  ],
 })
-export class BlockchainModule {} 
+export class BlockchainModule {}

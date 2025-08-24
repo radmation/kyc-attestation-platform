@@ -1,4 +1,9 @@
-import { Injectable, Logger, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../../../database/prisma.service';
 import { KycStatus } from '@prisma/client';
@@ -53,18 +58,21 @@ export class IdenfyService {
   ) {
     this.apiKey = this.configService.get<string>('IDENFY_API_KEY') || '';
     this.apiSecret = this.configService.get<string>('IDENFY_API_SECRET') || '';
-    const environment = this.configService.get<string>('IDENFY_ENVIRONMENT') || 'sandbox';
-    
+    const environment =
+      this.configService.get<string>('IDENFY_ENVIRONMENT') || 'sandbox';
+
     if (!this.apiKey || !this.apiSecret) {
       throw new Error('IDENFY_API_KEY and IDENFY_API_SECRET are required');
     }
 
     // Set base URL based on environment
-    this.baseUrl = environment === 'production' 
-      ? 'https://ivs.idenfy.com/api/v2'
-      : 'https://ivs.test.idenfy.com/api/v2';
+    this.baseUrl =
+      environment === 'production'
+        ? 'https://ivs.idenfy.com/api/v2'
+        : 'https://ivs.test.idenfy.com/api/v2';
 
-    this.appBaseUrl = this.configService.get<string>('APP_BASE_URL') || 'http://localhost:3000';
+    this.appBaseUrl =
+      this.configService.get<string>('APP_BASE_URL') || 'http://localhost:3000';
 
     // Create HTTP client with authentication
     this.httpClient = axios.create({
@@ -72,7 +80,7 @@ export class IdenfyService {
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
       auth: {
         username: this.apiKey,
@@ -83,33 +91,43 @@ export class IdenfyService {
     // Add request/response interceptors for logging
     this.httpClient.interceptors.request.use(
       (config) => {
-        this.logger.debug(`Making request to: ${config.method?.toUpperCase()} ${config.url}`);
+        this.logger.debug(
+          `Making request to: ${config.method?.toUpperCase()} ${config.url}`,
+        );
         return config;
       },
       (error) => {
         this.logger.error(`Request error: ${error.message}`);
         return Promise.reject(error);
-      }
+      },
     );
 
     this.httpClient.interceptors.response.use(
       (response) => {
-        this.logger.debug(`Response received: ${response.status} from ${response.config.url}`);
+        this.logger.debug(
+          `Response received: ${response.status} from ${response.config.url}`,
+        );
         return response;
       },
       (error) => {
-        this.logger.error(`Response error: ${error.response?.status} - ${error.message}`);
+        this.logger.error(
+          `Response error: ${error.response?.status} - ${error.message}`,
+        );
         return Promise.reject(error);
-      }
+      },
     );
   }
 
   /**
    * Create a new KYC verification for a user
    */
-  async createVerification(request: CreateVerificationRequest): Promise<VerificationResult> {
+  async createVerification(
+    request: CreateVerificationRequest,
+  ): Promise<VerificationResult> {
     try {
-      this.logger.log(`Creating Idenfy verification for user: ${request.userId}`);
+      this.logger.log(
+        `Creating Idenfy verification for user: ${request.userId}`,
+      );
 
       // First find the user's profile
       const user = await this.prismaService.user.findUnique({
@@ -145,15 +163,22 @@ export class IdenfyService {
       });
 
       if (existingKyc) {
-        throw new BadRequestException('User already has an active KYC verification in progress');
+        throw new BadRequestException(
+          'User already has an active KYC verification in progress',
+        );
       }
 
       // Create verification token request payload
       const tokenPayload = {
         clientId: request.referenceId || request.userId,
-        successUrl: request.redirectUri || `${this.appBaseUrl}/kyc/complete?status=success`,
-        errorUrl: request.redirectUri || `${this.appBaseUrl}/kyc/complete?status=error`,
-        unverifiedUrl: request.redirectUri || `${this.appBaseUrl}/kyc/complete?status=unverified`,
+        successUrl:
+          request.redirectUri ||
+          `${this.appBaseUrl}/kyc/complete?status=success`,
+        errorUrl:
+          request.redirectUri || `${this.appBaseUrl}/kyc/complete?status=error`,
+        unverifiedUrl:
+          request.redirectUri ||
+          `${this.appBaseUrl}/kyc/complete?status=unverified`,
         locale: 'en',
         tokenType: 'TEMPORARY',
         durationHours: 1, // Token valid for 1 hour
@@ -161,7 +186,7 @@ export class IdenfyService {
 
       // Create verification session with Idenfy
       const response = await this.httpClient.post('/token', tokenPayload);
-      
+
       const verificationData = response.data;
 
       // Store verification in database
@@ -178,34 +203,47 @@ export class IdenfyService {
         },
       });
 
-      this.logger.log(`Created Idenfy verification: ${verificationData.scanRef} for user: ${request.userId}`);
+      this.logger.log(
+        `Created Idenfy verification: ${verificationData.scanRef} for user: ${request.userId}`,
+      );
 
       return {
         verificationId: verificationData.scanRef || verificationData.authToken,
         sessionToken: verificationData.authToken,
-        url: verificationData.clientRedirectUrl || `${this.baseUrl.replace('/api/v2', '')}/api/v2/redirect?token=${verificationData.authToken}`,
+        url:
+          verificationData.clientRedirectUrl ||
+          `${this.baseUrl.replace('/api/v2', '')}/api/v2/redirect?token=${verificationData.authToken}`,
         status: 'created',
       };
     } catch (error) {
-      this.logger.error(`Failed to create Idenfy verification: ${error.message}`, error.stack);
-      
+      this.logger.error(
+        `Failed to create Idenfy verification: ${error.message}`,
+        error.stack,
+      );
+
       if (error.response?.status === 400) {
-        throw new BadRequestException(`Invalid request: ${error.response.data?.message || error.message}`);
+        throw new BadRequestException(
+          `Invalid request: ${error.response.data?.message || error.message}`,
+        );
       }
-      
-      throw new InternalServerErrorException('Failed to create KYC verification');
+
+      throw new InternalServerErrorException(
+        'Failed to create KYC verification',
+      );
     }
   }
 
   /**
    * Retrieve verification status from Idenfy
    */
-  async getVerificationStatus(verificationId: string): Promise<IdenfyVerification> {
+  async getVerificationStatus(
+    verificationId: string,
+  ): Promise<IdenfyVerification> {
     try {
       const response = await this.httpClient.get(`/status/${verificationId}`);
-      
+
       const data = response.data;
-      
+
       return {
         id: data.scanRef || verificationId,
         status: data.overall || data.status,
@@ -216,13 +254,17 @@ export class IdenfyService {
         accountId: data.accountId || this.apiKey,
       };
     } catch (error) {
-      this.logger.error(`Failed to retrieve Idenfy verification: ${error.message}`);
-      
+      this.logger.error(
+        `Failed to retrieve Idenfy verification: ${error.message}`,
+      );
+
       if (error.response?.status === 404) {
         throw new BadRequestException('Verification not found');
       }
-      
-      throw new InternalServerErrorException('Failed to retrieve verification status');
+
+      throw new InternalServerErrorException(
+        'Failed to retrieve verification status',
+      );
     }
   }
 
@@ -231,7 +273,9 @@ export class IdenfyService {
    */
   async processWebhookEvent(event: IdenfyWebhookEvent): Promise<void> {
     try {
-      this.logger.log(`Processing Idenfy webhook event: ${event.type} for ${event.data.id}`);
+      this.logger.log(
+        `Processing Idenfy webhook event: ${event.type} for ${event.data.id}`,
+      );
 
       switch (event.type) {
         case 'verification.started':
@@ -255,17 +299,24 @@ export class IdenfyService {
           await this.handleVerificationRequiresReview(event);
           break;
         default:
-          this.logger.warn(`Unhandled Idenfy webhook event type: ${event.type}`);
+          this.logger.warn(
+            `Unhandled Idenfy webhook event type: ${event.type}`,
+          );
       }
     } catch (error) {
-      this.logger.error(`Failed to process Idenfy webhook: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to process Idenfy webhook: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
-  private async handleVerificationStarted(event: IdenfyWebhookEvent): Promise<void> {
+  private async handleVerificationStarted(
+    event: IdenfyWebhookEvent,
+  ): Promise<void> {
     const verificationId = event.data.id;
-    
+
     await this.prismaService.kycVerification.updateMany({
       where: { externalId: verificationId },
       data: {
@@ -275,12 +326,16 @@ export class IdenfyService {
       },
     });
 
-    this.logger.log(`Updated verification ${verificationId} status to IN_PROGRESS`);
+    this.logger.log(
+      `Updated verification ${verificationId} status to IN_PROGRESS`,
+    );
   }
 
-  private async handleVerificationCompleted(event: IdenfyWebhookEvent): Promise<void> {
+  private async handleVerificationCompleted(
+    event: IdenfyWebhookEvent,
+  ): Promise<void> {
     const verificationId = event.data.id;
-    
+
     await this.prismaService.kycVerification.updateMany({
       where: { externalId: verificationId },
       data: {
@@ -291,12 +346,16 @@ export class IdenfyService {
       },
     });
 
-    this.logger.log(`Updated verification ${verificationId} status to UNDER_REVIEW`);
+    this.logger.log(
+      `Updated verification ${verificationId} status to UNDER_REVIEW`,
+    );
   }
 
-  private async handleVerificationApproved(event: IdenfyWebhookEvent): Promise<void> {
+  private async handleVerificationApproved(
+    event: IdenfyWebhookEvent,
+  ): Promise<void> {
     const verificationId = event.data.id;
-    
+
     // Update KYC record
     await this.prismaService.kycVerification.updateMany({
       where: { externalId: verificationId },
@@ -310,13 +369,15 @@ export class IdenfyService {
 
     // TODO: Trigger attestation creation workflow
     // This will be implemented in a later task (P0-ATT-005)
-    
+
     this.logger.log(`KYC approved for verification ${verificationId}`);
   }
 
-  private async handleVerificationDeclined(event: IdenfyWebhookEvent): Promise<void> {
+  private async handleVerificationDeclined(
+    event: IdenfyWebhookEvent,
+  ): Promise<void> {
     const verificationId = event.data.id;
-    
+
     await this.prismaService.kycVerification.updateMany({
       where: { externalId: verificationId },
       data: {
@@ -330,9 +391,11 @@ export class IdenfyService {
     this.logger.log(`KYC declined for verification ${verificationId}`);
   }
 
-  private async handleVerificationRequiresReview(event: IdenfyWebhookEvent): Promise<void> {
+  private async handleVerificationRequiresReview(
+    event: IdenfyWebhookEvent,
+  ): Promise<void> {
     const verificationId = event.data.id;
-    
+
     await this.prismaService.kycVerification.updateMany({
       where: { externalId: verificationId },
       data: {
@@ -342,7 +405,9 @@ export class IdenfyService {
       },
     });
 
-    this.logger.log(`KYC requires manual review for verification ${verificationId}`);
+    this.logger.log(
+      `KYC requires manual review for verification ${verificationId}`,
+    );
   }
 
   /**
@@ -352,7 +417,7 @@ export class IdenfyService {
     // First find the user's profile
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
-      include: { 
+      include: {
         profiles: {
           include: {
             kycChecks: {
@@ -374,20 +439,29 @@ export class IdenfyService {
     }
 
     // Sync with Idenfy if status is still pending/in-progress
-    const syncableStatuses: KycStatus[] = [KycStatus.PENDING, KycStatus.IN_PROGRESS, KycStatus.UNDER_REVIEW, KycStatus.MANUAL_REVIEW];
+    const syncableStatuses: KycStatus[] = [
+      KycStatus.PENDING,
+      KycStatus.IN_PROGRESS,
+      KycStatus.UNDER_REVIEW,
+      KycStatus.MANUAL_REVIEW,
+    ];
     if (syncableStatuses.includes(kycRecord.status)) {
       try {
-        const idenfyStatus = await this.getVerificationStatus(kycRecord.externalId);
-        
+        const idenfyStatus = await this.getVerificationStatus(
+          kycRecord.externalId,
+        );
+
         // Update local status if it differs
-        const mappedStatus = this.mapIdenfyStatusToKycStatus(idenfyStatus.status);
+        const mappedStatus = this.mapIdenfyStatusToKycStatus(
+          idenfyStatus.status,
+        );
         if (mappedStatus !== kycRecord.status) {
           await this.syncVerificationStatus(kycRecord.externalId);
-          
+
           // Refetch the updated record
           const updatedUser = await this.prismaService.user.findUnique({
             where: { id: userId },
-            include: { 
+            include: {
               profiles: {
                 include: {
                   kycChecks: {
@@ -401,7 +475,9 @@ export class IdenfyService {
           return updatedUser?.profiles[0]?.kycChecks[0] || null;
         }
       } catch (error) {
-        this.logger.warn(`Failed to sync KYC status for user ${userId}: ${error.message}`);
+        this.logger.warn(
+          `Failed to sync KYC status for user ${userId}: ${error.message}`,
+        );
       }
     }
 
@@ -410,8 +486,11 @@ export class IdenfyService {
 
   private async syncVerificationStatus(verificationId: string): Promise<void> {
     try {
-      const idenfyVerification = await this.getVerificationStatus(verificationId);
-      const kycStatus = this.mapIdenfyStatusToKycStatus(idenfyVerification.status);
+      const idenfyVerification =
+        await this.getVerificationStatus(verificationId);
+      const kycStatus = this.mapIdenfyStatusToKycStatus(
+        idenfyVerification.status,
+      );
 
       await this.prismaService.kycVerification.updateMany({
         where: { externalId: verificationId },
@@ -421,7 +500,9 @@ export class IdenfyService {
         },
       });
 
-      this.logger.log(`Synced verification ${verificationId} status to ${kycStatus}`);
+      this.logger.log(
+        `Synced verification ${verificationId} status to ${kycStatus}`,
+      );
     } catch (error) {
       this.logger.error(`Failed to sync verification status: ${error.message}`);
       throw error;
@@ -430,7 +511,7 @@ export class IdenfyService {
 
   private mapIdenfyStatusToKycStatus(idenfyStatus: string): KycStatus {
     const status = idenfyStatus?.toLowerCase();
-    
+
     switch (status) {
       case 'created':
       case 'pending':
@@ -453,7 +534,9 @@ export class IdenfyService {
       case 'suspected':
         return KycStatus.MANUAL_REVIEW;
       default:
-        this.logger.warn(`Unknown Idenfy status: ${idenfyStatus}, defaulting to PENDING`);
+        this.logger.warn(
+          `Unknown Idenfy status: ${idenfyStatus}, defaulting to PENDING`,
+        );
         return KycStatus.PENDING;
     }
   }
@@ -463,9 +546,13 @@ export class IdenfyService {
    */
   validateWebhookSignature(payload: string, signature: string): boolean {
     try {
-      const webhookSecret = this.configService.get<string>('IDENFY_WEBHOOK_SECRET');
+      const webhookSecret = this.configService.get<string>(
+        'IDENFY_WEBHOOK_SECRET',
+      );
       if (!webhookSecret) {
-        this.logger.warn('IDENFY_WEBHOOK_SECRET not configured, skipping validation');
+        this.logger.warn(
+          'IDENFY_WEBHOOK_SECRET not configured, skipping validation',
+        );
         return true; // In development, allow without validation
       }
 
@@ -479,11 +566,13 @@ export class IdenfyService {
 
       return crypto.timingSafeEqual(
         Buffer.from(expectedSignature, 'hex'),
-        Buffer.from(providedSignature, 'hex')
+        Buffer.from(providedSignature, 'hex'),
       );
     } catch (error) {
-      this.logger.error(`Webhook signature validation failed: ${error.message}`);
+      this.logger.error(
+        `Webhook signature validation failed: ${error.message}`,
+      );
       return false;
     }
   }
-} 
+}
