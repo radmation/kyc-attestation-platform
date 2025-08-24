@@ -4,8 +4,11 @@ import { SendGridEmailService } from './sendgrid-email.service';
 
 // Mock SendGrid
 jest.mock('@sendgrid/mail', () => ({
-  setApiKey: jest.fn(),
-  send: jest.fn(),
+  __esModule: true,
+  default: {
+    setApiKey: jest.fn(),
+    send: jest.fn(),
+  },
 }));
 
 import sgMail from '@sendgrid/mail';
@@ -56,21 +59,19 @@ describe('SendGridEmailService', () => {
     });
 
     it('should throw error if SENDGRID_API_KEY is not configured', async () => {
-      const testModule = await Test.createTestingModule({
-        providers: [
-          SendGridEmailService,
-          {
-            provide: ConfigService,
-            useValue: {
-              get: jest.fn().mockReturnValue(undefined),
+      expect(async () => {
+        await Test.createTestingModule({
+          providers: [
+            SendGridEmailService,
+            {
+              provide: ConfigService,
+              useValue: {
+                get: jest.fn().mockReturnValue(undefined),
+              },
             },
-          },
-        ],
-      }).compile();
-
-      expect(() => {
-        testModule.get<SendGridEmailService>(SendGridEmailService);
-      }).toThrow('SENDGRID_API_KEY is required but not configured');
+          ],
+        }).compile();
+      }).rejects.toThrow('SENDGRID_API_KEY is required but not configured');
     });
   });
 
