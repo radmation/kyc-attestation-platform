@@ -26,13 +26,13 @@ This is a Know Your Customer (KYC) Attestation Platform designed for token issue
 **For comprehensive project context, refer to these key documentation files:**
 
 ### Core Documentation
-- **Product Requirements**: `docs/PRD.md` - Complete product specifications and user stories
-- **Technical Architecture**: `docs/TECHNICAL_SPECIFICATIONS.md` - Detailed system architecture and integration patterns
-- **Development Setup**: `docs/DEVELOPMENT_ENVIRONMENT_SETUP.md` - Environment configuration and setup instructions
-- **Project Overview**: `docs/PROJECT_OVERVIEW.md` - High-level project overview and technology stack
+- **Product Requirements**: `docs/project-management/PRD.md` - Complete product specifications and user stories
+- **Technical Architecture**: `docs/architecture/TECHNICAL_SPECIFICATIONS.md` - Detailed system architecture and integration patterns
+- **Development Setup**: `docs/architecture/DEVELOPMENT_ENVIRONMENT_SETUP.md` - Environment configuration and setup instructions
+- **Project Overview**: `docs/architecture/PROJECT_OVERVIEW.md` - High-level project overview and technology stack
 
 ### Task Management & Workflow
-- **Task Organization**: `tasks/README.md` - Complete task structure and management guidelines
+- **Task Organization**: `docs/project-management/TASK_ORGANIZATION.md` - Complete task structure and management guidelines
 - **Quick Start Guide**: `tasks/QUICK_START.md` - Step-by-step development workflow
 - **Automation Overview**: `tasks/AUTOMATION_OVERVIEW.md` - Task automation patterns and utilities
 - **Epic Information**: `tasks/01-identity-attestation/epic-info.md` - Identity attestation epic goals and phases
@@ -43,7 +43,7 @@ This is a Know Your Customer (KYC) Attestation Platform designed for token issue
 
 ### Implementation References
 - **Current KYC Task**: `tasks/01-identity-attestation/phase-1-verification/todo/P0-ATT-001-idenfy-kyc-integration.md` - Active iDenfy integration task
-- **iDenfy Integration Guide**: `docs/IDENFY_INTEGRATION_GUIDE.md` - Complete iDenfy API and webhook documentation
+- **iDenfy Integration Guide**: `docs/integration-guides/IDENFY_INTEGRATION_GUIDE.md` - Complete iDenfy API and webhook documentation
 - **Database Schema**: `apps/backend/prisma/schema.prisma` - Current database structure
 - **API Documentation**: Generated Swagger docs at `/api/docs` when running backend
 
