@@ -7,4 +7,4 @@ import { FabricService } from './fabric.service';
   providers: [FabricService],
   exports: [FabricService],
 })
-export class BlockchainModule {} 
+export class BlockchainModule {}

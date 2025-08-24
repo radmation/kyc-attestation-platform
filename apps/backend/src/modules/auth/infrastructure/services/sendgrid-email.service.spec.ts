@@ -19,7 +19,6 @@ describe('SendGridEmailService', () => {
   let configService: ConfigService;
 
   beforeEach(async () => {
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SendGridEmailService,
@@ -79,7 +78,7 @@ describe('SendGridEmailService', () => {
     it('should send verification email successfully', async () => {
       const testEmail = 'test@example.com';
       const testToken = 'test-token';
-      
+
       mockSgMail.send.mockResolvedValueOnce([{} as any, {}]);
 
       await service.sendVerificationEmail(testEmail, testToken);
@@ -92,9 +91,13 @@ describe('SendGridEmailService', () => {
             name: 'KYC Attestation Platform',
           },
           subject: 'Verify Your Email Address',
-          html: expect.stringContaining('https://test.identhor.com/auth/verify-email?token=test-token'),
-          text: expect.stringContaining('https://test.identhor.com/auth/verify-email?token=test-token'),
-        })
+          html: expect.stringContaining(
+            'https://test.identhor.com/auth/verify-email?token=test-token',
+          ),
+          text: expect.stringContaining(
+            'https://test.identhor.com/auth/verify-email?token=test-token',
+          ),
+        }),
       );
     });
 
@@ -102,11 +105,14 @@ describe('SendGridEmailService', () => {
       const testEmail = 'test@example.com';
       const testToken = 'test-token';
       const apiError = new Error('SendGrid API Error');
-      
+
       mockSgMail.send.mockRejectedValueOnce(apiError);
 
-      await expect(service.sendVerificationEmail(testEmail, testToken))
-        .rejects.toThrow('Failed to send verification email: SendGrid API Error');
+      await expect(
+        service.sendVerificationEmail(testEmail, testToken),
+      ).rejects.toThrow(
+        'Failed to send verification email: SendGrid API Error',
+      );
     });
   });
 
@@ -114,7 +120,7 @@ describe('SendGridEmailService', () => {
     it('should send password reset email successfully', async () => {
       const testEmail = 'test@example.com';
       const testToken = 'reset-token';
-      
+
       mockSgMail.send.mockResolvedValueOnce([{} as any, {}]);
 
       await service.sendPasswordResetEmail(testEmail, testToken);
@@ -127,9 +133,13 @@ describe('SendGridEmailService', () => {
             name: 'KYC Attestation Platform',
           },
           subject: 'Reset Your Password',
-          html: expect.stringContaining('https://test.identhor.com/auth/reset-password?token=reset-token'),
-          text: expect.stringContaining('https://test.identhor.com/auth/reset-password?token=reset-token'),
-        })
+          html: expect.stringContaining(
+            'https://test.identhor.com/auth/reset-password?token=reset-token',
+          ),
+          text: expect.stringContaining(
+            'https://test.identhor.com/auth/reset-password?token=reset-token',
+          ),
+        }),
       );
     });
 
@@ -137,11 +147,12 @@ describe('SendGridEmailService', () => {
       const testEmail = 'test@example.com';
       const testToken = 'reset-token';
       const apiError = new Error('Network timeout');
-      
+
       mockSgMail.send.mockRejectedValueOnce(apiError);
 
-      await expect(service.sendPasswordResetEmail(testEmail, testToken))
-        .rejects.toThrow('Failed to send password reset email: Network timeout');
+      await expect(
+        service.sendPasswordResetEmail(testEmail, testToken),
+      ).rejects.toThrow('Failed to send password reset email: Network timeout');
     });
   });
 
@@ -149,7 +160,7 @@ describe('SendGridEmailService', () => {
     it('should send welcome email with first name', async () => {
       const testEmail = 'test@example.com';
       const firstName = 'John';
-      
+
       mockSgMail.send.mockResolvedValueOnce([{} as any, {}]);
 
       await service.sendWelcomeEmail(testEmail, firstName);
@@ -163,14 +174,16 @@ describe('SendGridEmailService', () => {
           },
           subject: 'Welcome to KYC Attestation Platform',
           html: expect.stringContaining('Hi John'),
-          text: expect.stringContaining('Welcome to KYC Attestation Platform, John!'),
-        })
+          text: expect.stringContaining(
+            'Welcome to KYC Attestation Platform, John!',
+          ),
+        }),
       );
     });
 
     it('should send welcome email without first name', async () => {
       const testEmail = 'test@example.com';
-      
+
       mockSgMail.send.mockResolvedValueOnce([{} as any, {}]);
 
       await service.sendWelcomeEmail(testEmail);
@@ -180,18 +193,19 @@ describe('SendGridEmailService', () => {
           to: testEmail,
           html: expect.stringContaining('Welcome'),
           text: expect.stringContaining('Welcome to KYC Attestation Platform!'),
-        })
+        }),
       );
     });
 
     it('should handle SendGrid API errors', async () => {
       const testEmail = 'test@example.com';
       const apiError = new Error('Invalid API key');
-      
+
       mockSgMail.send.mockRejectedValueOnce(apiError);
 
-      await expect(service.sendWelcomeEmail(testEmail))
-        .rejects.toThrow('Failed to send welcome email: Invalid API key');
+      await expect(service.sendWelcomeEmail(testEmail)).rejects.toThrow(
+        'Failed to send welcome email: Invalid API key',
+      );
     });
   });
 
@@ -199,7 +213,7 @@ describe('SendGridEmailService', () => {
     it('should send account suspended email successfully', async () => {
       const testEmail = 'test@example.com';
       const reason = 'Suspicious activity detected';
-      
+
       mockSgMail.send.mockResolvedValueOnce([{} as any, {}]);
 
       await service.sendAccountSuspendedEmail(testEmail, reason);
@@ -214,7 +228,7 @@ describe('SendGridEmailService', () => {
           subject: 'Account Suspended - Action Required',
           html: expect.stringContaining('Suspicious activity detected'),
           text: expect.stringContaining('Suspicious activity detected'),
-        })
+        }),
       );
     });
 
@@ -222,11 +236,14 @@ describe('SendGridEmailService', () => {
       const testEmail = 'test@example.com';
       const reason = 'Test reason';
       const apiError = new Error('Rate limit exceeded');
-      
+
       mockSgMail.send.mockRejectedValueOnce(apiError);
 
-      await expect(service.sendAccountSuspendedEmail(testEmail, reason))
-        .rejects.toThrow('Failed to send account suspended email: Rate limit exceeded');
+      await expect(
+        service.sendAccountSuspendedEmail(testEmail, reason),
+      ).rejects.toThrow(
+        'Failed to send account suspended email: Rate limit exceeded',
+      );
     });
   });
 
@@ -234,7 +251,7 @@ describe('SendGridEmailService', () => {
     it('should generate proper HTML templates', async () => {
       const testEmail = 'test@example.com';
       const testToken = 'test-token';
-      
+
       mockSgMail.send.mockResolvedValueOnce([{} as any, {}]);
 
       await service.sendVerificationEmail(testEmail, testToken);
@@ -243,13 +260,15 @@ describe('SendGridEmailService', () => {
       expect(sentEmail.html).toContain('<!DOCTYPE html>');
       expect(sentEmail.html).toContain('KYC Attestation Platform');
       expect(sentEmail.html).toContain('Verify Your Email Address');
-      expect(sentEmail.html).toContain('https://test.identhor.com/auth/verify-email?token=test-token');
+      expect(sentEmail.html).toContain(
+        'https://test.identhor.com/auth/verify-email?token=test-token',
+      );
     });
 
     it('should include both HTML and text versions', async () => {
       const testEmail = 'test@example.com';
       const testToken = 'test-token';
-      
+
       mockSgMail.send.mockResolvedValueOnce([{} as any, {}]);
 
       await service.sendVerificationEmail(testEmail, testToken);
@@ -257,7 +276,9 @@ describe('SendGridEmailService', () => {
       const sentEmail = mockSgMail.send.mock.calls[0]?.[0] as any;
       expect(sentEmail.html).toBeDefined();
       expect(sentEmail.text).toBeDefined();
-      expect(sentEmail.text).toContain('https://test.identhor.com/auth/verify-email?token=test-token');
+      expect(sentEmail.text).toContain(
+        'https://test.identhor.com/auth/verify-email?token=test-token',
+      );
     });
   });
-}); 
+});

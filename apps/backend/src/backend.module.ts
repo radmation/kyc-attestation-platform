@@ -43,8 +43,6 @@ import { createRateLimitConfig } from './shared/config/rate-limit.config';
 })
 export class BackendModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(SecurityMiddleware, LoggingMiddleware)
-      .forRoutes('*');
+    consumer.apply(SecurityMiddleware, LoggingMiddleware).forRoutes('*');
   }
 }

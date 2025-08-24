@@ -18,7 +18,10 @@ export class SendGridEmailService implements EmailService {
   constructor(private readonly configService: ConfigService) {
     this.config = {
       apiKey: this.configService.get<string>('SENDGRID_API_KEY'),
-      domain: this.configService.get<string>('SENDGRID_DOMAIN', 'mail.identhor.com'),
+      domain: this.configService.get<string>(
+        'SENDGRID_DOMAIN',
+        'mail.identhor.com',
+      ),
       region: this.configService.get<string>('SENDGRID_REGION', 'US'),
     };
 
@@ -27,17 +30,19 @@ export class SendGridEmailService implements EmailService {
     }
 
     this.fromEmail = `noreply@${this.config.domain}`;
-    
+
     // Initialize SendGrid
     sgMail.setApiKey(this.config.apiKey);
-    
-    this.logger.log(`SendGrid email service initialized with domain: ${this.config.domain}`);
+
+    this.logger.log(
+      `SendGrid email service initialized with domain: ${this.config.domain}`,
+    );
   }
 
   async sendVerificationEmail(email: string, token: string): Promise<void> {
     try {
       const verificationUrl = `${this.configService.get('PLATFORM_DOMAIN', 'https://identhor.com')}/auth/verify-email?token=${token}`;
-      
+
       const msg = {
         to: email,
         from: {
@@ -52,7 +57,10 @@ export class SendGridEmailService implements EmailService {
       await sgMail.send(msg);
       this.logger.log(`Verification email sent successfully to ${email}`);
     } catch (error) {
-      this.logger.error(`Failed to send verification email to ${email}:`, error);
+      this.logger.error(
+        `Failed to send verification email to ${email}:`,
+        error,
+      );
       throw new Error(`Failed to send verification email: ${error.message}`);
     }
   }
@@ -60,7 +68,7 @@ export class SendGridEmailService implements EmailService {
   async sendPasswordResetEmail(email: string, token: string): Promise<void> {
     try {
       const resetUrl = `${this.configService.get('PLATFORM_DOMAIN', 'https://identhor.com')}/auth/reset-password?token=${token}`;
-      
+
       const msg = {
         to: email,
         from: {
@@ -75,7 +83,10 @@ export class SendGridEmailService implements EmailService {
       await sgMail.send(msg);
       this.logger.log(`Password reset email sent successfully to ${email}`);
     } catch (error) {
-      this.logger.error(`Failed to send password reset email to ${email}:`, error);
+      this.logger.error(
+        `Failed to send password reset email to ${email}:`,
+        error,
+      );
       throw new Error(`Failed to send password reset email: ${error.message}`);
     }
   }
@@ -83,7 +94,7 @@ export class SendGridEmailService implements EmailService {
   async sendWelcomeEmail(email: string, firstName?: string): Promise<void> {
     try {
       const dashboardUrl = `${this.configService.get('PLATFORM_DOMAIN', 'https://identhor.com')}/dashboard`;
-      
+
       const msg = {
         to: email,
         from: {
@@ -103,10 +114,13 @@ export class SendGridEmailService implements EmailService {
     }
   }
 
-  async sendAccountSuspendedEmail(email: string, reason: string): Promise<void> {
+  async sendAccountSuspendedEmail(
+    email: string,
+    reason: string,
+  ): Promise<void> {
     try {
       const supportUrl = `${this.configService.get('PLATFORM_DOMAIN', 'https://identhor.com')}/support`;
-      
+
       const msg = {
         to: email,
         from: {
@@ -121,8 +135,13 @@ export class SendGridEmailService implements EmailService {
       await sgMail.send(msg);
       this.logger.log(`Account suspended email sent successfully to ${email}`);
     } catch (error) {
-      this.logger.error(`Failed to send account suspended email to ${email}:`, error);
-      throw new Error(`Failed to send account suspended email: ${error.message}`);
+      this.logger.error(
+        `Failed to send account suspended email to ${email}:`,
+        error,
+      );
+      throw new Error(
+        `Failed to send account suspended email: ${error.message}`,
+      );
     }
   }
 
@@ -198,7 +217,10 @@ export class SendGridEmailService implements EmailService {
 </html>`;
   }
 
-  private getWelcomeEmailTemplate(firstName: string | undefined, dashboardUrl: string): string {
+  private getWelcomeEmailTemplate(
+    firstName: string | undefined,
+    dashboardUrl: string,
+  ): string {
     const greeting = firstName ? `Hi ${firstName}` : 'Welcome';
     return `
 <!DOCTYPE html>
@@ -239,7 +261,10 @@ export class SendGridEmailService implements EmailService {
 </html>`;
   }
 
-  private getAccountSuspendedEmailTemplate(reason: string, supportUrl: string): string {
+  private getAccountSuspendedEmailTemplate(
+    reason: string,
+    supportUrl: string,
+  ): string {
     return `
 <!DOCTYPE html>
 <html>
@@ -277,4 +302,4 @@ export class SendGridEmailService implements EmailService {
 </body>
 </html>`;
   }
-} 
+}
