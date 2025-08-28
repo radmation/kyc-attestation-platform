@@ -8,70 +8,70 @@
 
 /* Base CSS Custom Properties - Default Theme */
 :root {
-  /* Primary Brand Colors */
-  --color-primary-50: #f0f9ff;
-  --color-primary-100: #e0f2fe;
-  --color-primary-200: #bae6fd;
-  --color-primary-300: #7dd3fc;
-  --color-primary-400: #38bdf8;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-  --color-primary-700: #0369a1;
-  --color-primary-800: #075985;
-  --color-primary-900: #0c4a6e;
-  --color-primary-950: #082f49;
-  --color-primary: var(--color-primary-600);
-  --color-primary-foreground: #ffffff;
+  /* Primary Brand Colors (HSL format for Tailwind compatibility) */
+  --color-primary-50: 198 100% 97%;
+  --color-primary-100: 197 100% 94%;
+  --color-primary-200: 198 100% 85%;
+  --color-primary-300: 198 93% 72%;
+  --color-primary-400: 199 89% 59%;
+  --color-primary-500: 199 88% 46%;
+  --color-primary-600: 200 94% 37%;
+  --color-primary-700: 200 81% 31%;
+  --color-primary-800: 201 69% 26%;
+  --color-primary-900: 201 83% 23%;
+  --color-primary-950: 202 87% 15%;
+  --color-primary: 200 94% 37%;
+  --color-primary-foreground: 0 0% 100%;
 
-  /* Secondary Brand Colors */
-  --color-secondary-50: #f8fafc;
-  --color-secondary-100: #f1f5f9;
-  --color-secondary-200: #e2e8f0;
-  --color-secondary-300: #cbd5e1;
-  --color-secondary-400: #94a3b8;
-  --color-secondary-500: #64748b;
-  --color-secondary-600: #475569;
-  --color-secondary-700: #334155;
-  --color-secondary-800: #1e293b;
-  --color-secondary-900: #0f172a;
-  --color-secondary-950: #020617;
-  --color-secondary: var(--color-secondary-100);
-  --color-secondary-foreground: var(--color-secondary-900);
+  /* Secondary Brand Colors (HSL format) */
+  --color-secondary-50: 210 20% 98%;
+  --color-secondary-100: 210 17% 95%;
+  --color-secondary-200: 214 15% 89%;
+  --color-secondary-300: 213 11% 83%;
+  --color-secondary-400: 215 8% 66%;
+  --color-secondary-500: 217 9% 45%;
+  --color-secondary-600: 215 14% 34%;
+  --color-secondary-700: 217 19% 27%;
+  --color-secondary-800: 215 28% 17%;
+  --color-secondary-900: 221 39% 11%;
+  --color-secondary-950: 224 71% 4%;
+  --color-secondary: 210 17% 95%;
+  --color-secondary-foreground: 224 71% 4%;
 
   /* Accent Colors */
-  --color-accent: var(--color-secondary-100);
-  --color-accent-foreground: var(--color-secondary-900);
+  --color-accent: 210 17% 95%;
+  --color-accent-foreground: 224 71% 4%;
 
   /* Base Colors */
-  --color-background: #ffffff;
-  --color-foreground: var(--color-secondary-950);
+  --color-background: 0 0% 100%;
+  --color-foreground: 224 71% 4%;
 
   /* Muted Colors */
-  --color-muted: var(--color-secondary-100);
-  --color-muted-foreground: var(--color-secondary-500);
+  --color-muted: 210 17% 95%;
+  --color-muted-foreground: 217 9% 45%;
 
   /* Card Colors */
-  --color-card: #ffffff;
-  --color-card-foreground: var(--color-secondary-950);
+  --color-card: 0 0% 100%;
+  --color-card-foreground: 224 71% 4%;
 
   /* Popover Colors */
-  --color-popover: #ffffff;
-  --color-popover-foreground: var(--color-secondary-950);
+  --color-popover: 0 0% 100%;
+  --color-popover-foreground: 224 71% 4%;
 
   /* Border and Input */
-  --color-border: var(--color-secondary-200);
-  --color-input: var(--color-secondary-200);
-  --color-ring: var(--color-primary-600);
+  --color-border: 214 15% 89%;
+  --color-input: 214 15% 89%;
+  --color-ring: 200 94% 37%;
 
   /* Status Colors */
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #ffffff;
-  --color-success: #10b981;
-  --color-success-foreground: #ffffff;
-  --color-warning: #f59e0b;
-  --color-warning-foreground: #ffffff;
-  --color-info: #3b82f6;
-  --color-info-foreground: #ffffff;
+  --color-destructive: 0 84% 60%;
+  --color-destructive-foreground: 0 0% 100%;
+  --color-success: 142 76% 36%;
+  --color-success-foreground: 0 0% 100%;
+  --color-warning: 38 92% 50%;
+  --color-warning-foreground: 0 0% 100%;
+  --color-info: 221 83% 53%;
+  --color-info-foreground: 0 0% 100%;
 
   /* Typography */
   --font-family-sans: 'Inter', 'system-ui', 'sans-serif';
@@ -131,26 +131,26 @@
 
 /* Dark Theme */
 .dark {
-  --color-background: #0f172a;
-  --color-foreground: #f8fafc;
+  --color-background: 221 39% 11%;
+  --color-foreground: 210 20% 98%;
   
-  --color-card: #1e293b;
-  --color-card-foreground: #f8fafc;
+  --color-card: 215 28% 17%;
+  --color-card-foreground: 210 20% 98%;
   
-  --color-popover: #1e293b;
-  --color-popover-foreground: #f8fafc;
+  --color-popover: 215 28% 17%;
+  --color-popover-foreground: 210 20% 98%;
   
-  --color-muted: #1e293b;
-  --color-muted-foreground: #94a3b8;
+  --color-muted: 215 28% 17%;
+  --color-muted-foreground: 215 8% 66%;
   
-  --color-accent: #1e293b;
-  --color-accent-foreground: #f8fafc;
+  --color-accent: 215 28% 17%;
+  --color-accent-foreground: 210 20% 98%;
   
-  --color-border: #334155;
-  --color-input: #334155;
+  --color-border: 217 19% 27%;
+  --color-input: 217 19% 27%;
   
-  --color-secondary: #1e293b;
-  --color-secondary-foreground: #f8fafc;
+  --color-secondary: 215 28% 17%;
+  --color-secondary-foreground: 210 20% 98%;
 }
 
 /* ========================================

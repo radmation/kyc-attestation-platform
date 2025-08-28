@@ -3,7 +3,9 @@ import {
   setCSSProperty, 
   generateColorShades, 
   getContrastTextColor, 
-  debounce 
+  debounce,
+  hexToHsl,
+  isLightColor
 } from '../lib/utils';
 
 /**
@@ -143,21 +145,29 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
    * Apply CSS custom properties to document root
    */
   const applyCSSProperties = useCallback((themeConfig: ThemeConfig) => {
-    // Apply primary colors and shades
+    // Apply primary colors and shades (convert to HSL format)
     const primaryShades = generateColorShades(themeConfig.primaryColor);
     Object.entries(primaryShades).forEach(([shade, value]) => {
       setCSSProperty(`--color-primary-${shade}`, value);
     });
-    setCSSProperty('--color-primary', themeConfig.primaryColor);
-    setCSSProperty('--color-primary-foreground', getContrastTextColor(themeConfig.primaryColor));
+    const primaryHsl = hexToHsl(themeConfig.primaryColor);
+    if (primaryHsl) {
+      setCSSProperty('--color-primary', `${primaryHsl.h} ${primaryHsl.s}% ${primaryHsl.l}%`);
+    }
+    const primaryForeground = isLightColor(themeConfig.primaryColor) ? '0 0% 0%' : '0 0% 100%';
+    setCSSProperty('--color-primary-foreground', primaryForeground);
 
-    // Apply secondary colors and shades
+    // Apply secondary colors and shades (convert to HSL format)
     const secondaryShades = generateColorShades(themeConfig.secondaryColor);
     Object.entries(secondaryShades).forEach(([shade, value]) => {
       setCSSProperty(`--color-secondary-${shade}`, value);
     });
-    setCSSProperty('--color-secondary', themeConfig.secondaryColor);
-    setCSSProperty('--color-secondary-foreground', getContrastTextColor(themeConfig.secondaryColor));
+    const secondaryHsl = hexToHsl(themeConfig.secondaryColor);
+    if (secondaryHsl) {
+      setCSSProperty('--color-secondary', `${secondaryHsl.h} ${secondaryHsl.s}% ${secondaryHsl.l}%`);
+    }
+    const secondaryForeground = isLightColor(themeConfig.secondaryColor) ? '0 0% 0%' : '0 0% 100%';
+    setCSSProperty('--color-secondary-foreground', secondaryForeground);
 
     // Apply typography
     setCSSProperty('--font-family-sans', themeConfig.fontFamily.sans);

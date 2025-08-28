@@ -58,27 +58,71 @@ export function rgbToHex(r: number, g: number, b: number): string {
 }
 
 /**
- * Generates color shades for a given base color
+ * Converts hex color to HSL
  */
-export function generateColorShades(baseColor: string): Record<string, string> {
-  const rgb = hexToRgb(baseColor);
-  if (!rgb) return {};
+export function hexToHsl(hex: string): { h: number; s: number; l: number } | null {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return null;
 
   const { r, g, b } = rgb;
+  const rNorm = r / 255;
+  const gNorm = g / 255;
+  const bNorm = b / 255;
+
+  const max = Math.max(rNorm, gNorm, bNorm);
+  const min = Math.min(rNorm, gNorm, bNorm);
+  const diff = max - min;
+
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (diff !== 0) {
+    s = l > 0.5 ? diff / (2 - max - min) : diff / (max + min);
+
+    switch (max) {
+      case rNorm:
+        h = (gNorm - bNorm) / diff + (gNorm < bNorm ? 6 : 0);
+        break;
+      case gNorm:
+        h = (bNorm - rNorm) / diff + 2;
+        break;
+      case bNorm:
+        h = (rNorm - gNorm) / diff + 4;
+        break;
+    }
+    h /= 6;
+  }
+
+  return {
+    h: Math.round(h * 360),
+    s: Math.round(s * 100),
+    l: Math.round(l * 100),
+  };
+}
+
+/**
+ * Generates HSL color shades for a given base color
+ */
+export function generateColorShades(baseColor: string): Record<string, string> {
+  const hsl = hexToHsl(baseColor);
+  if (!hsl) return {};
+
+  const { h, s, l } = hsl;
   
-  // Generate lighter and darker shades
+  // Generate lighter and darker shades in HSL format
   const shades = {
-    50: `${Math.min(255, r + 40)} ${Math.min(255, g + 40)} ${Math.min(255, b + 40)}`,
-    100: `${Math.min(255, r + 30)} ${Math.min(255, g + 30)} ${Math.min(255, b + 30)}`,
-    200: `${Math.min(255, r + 20)} ${Math.min(255, g + 20)} ${Math.min(255, b + 20)}`,
-    300: `${Math.min(255, r + 10)} ${Math.min(255, g + 10)} ${Math.min(255, b + 10)}`,
-    400: `${Math.min(255, r + 5)} ${Math.min(255, g + 5)} ${Math.min(255, b + 5)}`,
-    500: `${r} ${g} ${b}`,
-    600: `${Math.max(0, r - 10)} ${Math.max(0, g - 10)} ${Math.max(0, b - 10)}`,
-    700: `${Math.max(0, r - 20)} ${Math.max(0, g - 20)} ${Math.max(0, b - 20)}`,
-    800: `${Math.max(0, r - 30)} ${Math.max(0, g - 30)} ${Math.max(0, b - 30)}`,
-    900: `${Math.max(0, r - 40)} ${Math.max(0, g - 40)} ${Math.max(0, b - 40)}`,
-    950: `${Math.max(0, r - 50)} ${Math.max(0, g - 50)} ${Math.max(0, b - 50)}`,
+    50: `${h} ${s}% ${Math.min(98, l + 45)}%`,
+    100: `${h} ${s}% ${Math.min(96, l + 35)}%`,
+    200: `${h} ${s}% ${Math.min(92, l + 25)}%`,
+    300: `${h} ${s}% ${Math.min(85, l + 15)}%`,
+    400: `${h} ${s}% ${Math.min(75, l + 10)}%`,
+    500: `${h} ${s}% ${l}%`,
+    600: `${h} ${Math.min(100, s + 5)}% ${Math.max(5, l - 10)}%`,
+    700: `${h} ${Math.min(100, s + 10)}% ${Math.max(5, l - 20)}%`,
+    800: `${h} ${Math.min(100, s + 15)}% ${Math.max(5, l - 30)}%`,
+    900: `${h} ${Math.min(100, s + 20)}% ${Math.max(5, l - 40)}%`,
+    950: `${h} ${Math.min(100, s + 25)}% ${Math.max(5, l - 50)}%`,
   };
 
   return shades;
