@@ -102,27 +102,27 @@ export function hexToHsl(hex: string): { h: number; s: number; l: number } | nul
 }
 
 /**
- * Generates HSL color shades for a given base color
+ * Generates RGB color shades for a given base color
  */
 export function generateColorShades(baseColor: string): Record<string, string> {
-  const hsl = hexToHsl(baseColor);
-  if (!hsl) return {};
+  const rgb = hexToRgb(baseColor);
+  if (!rgb) return {};
 
-  const { h, s, l } = hsl;
+  const { r, g, b } = rgb;
   
-  // Generate lighter and darker shades in HSL format
+  // Generate lighter and darker shades in RGB format
   const shades = {
-    50: `${h} ${s}% ${Math.min(98, l + 45)}%`,
-    100: `${h} ${s}% ${Math.min(96, l + 35)}%`,
-    200: `${h} ${s}% ${Math.min(92, l + 25)}%`,
-    300: `${h} ${s}% ${Math.min(85, l + 15)}%`,
-    400: `${h} ${s}% ${Math.min(75, l + 10)}%`,
-    500: `${h} ${s}% ${l}%`,
-    600: `${h} ${Math.min(100, s + 5)}% ${Math.max(5, l - 10)}%`,
-    700: `${h} ${Math.min(100, s + 10)}% ${Math.max(5, l - 20)}%`,
-    800: `${h} ${Math.min(100, s + 15)}% ${Math.max(5, l - 30)}%`,
-    900: `${h} ${Math.min(100, s + 20)}% ${Math.max(5, l - 40)}%`,
-    950: `${h} ${Math.min(100, s + 25)}% ${Math.max(5, l - 50)}%`,
+    50: `${Math.min(255, r + 40)} ${Math.min(255, g + 40)} ${Math.min(255, b + 40)}`,
+    100: `${Math.min(255, r + 30)} ${Math.min(255, g + 30)} ${Math.min(255, b + 30)}`,
+    200: `${Math.min(255, r + 20)} ${Math.min(255, g + 20)} ${Math.min(255, b + 20)}`,
+    300: `${Math.min(255, r + 10)} ${Math.min(255, g + 10)} ${Math.min(255, b + 10)}`,
+    400: `${Math.min(255, r + 5)} ${Math.min(255, g + 5)} ${Math.min(255, b + 5)}`,
+    500: `${r} ${g} ${b}`,
+    600: `${Math.max(0, r - 10)} ${Math.max(0, g - 10)} ${Math.max(0, b - 10)}`,
+    700: `${Math.max(0, r - 20)} ${Math.max(0, g - 20)} ${Math.max(0, b - 20)}`,
+    800: `${Math.max(0, r - 30)} ${Math.max(0, g - 30)} ${Math.max(0, b - 30)}`,
+    900: `${Math.max(0, r - 40)} ${Math.max(0, g - 40)} ${Math.max(0, b - 40)}`,
+    950: `${Math.max(0, r - 50)} ${Math.max(0, g - 50)} ${Math.max(0, b - 50)}`,
   };
 
   return shades;

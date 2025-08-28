@@ -4,7 +4,7 @@ import {
   generateColorShades, 
   getContrastTextColor, 
   debounce,
-  hexToHsl,
+  hexToRgb,
   isLightColor
 } from '../lib/utils';
 
@@ -145,28 +145,28 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
    * Apply CSS custom properties to document root
    */
   const applyCSSProperties = useCallback((themeConfig: ThemeConfig) => {
-    // Apply primary colors and shades (convert to HSL format)
+    // Apply primary colors and shades (convert to RGB format)
     const primaryShades = generateColorShades(themeConfig.primaryColor);
     Object.entries(primaryShades).forEach(([shade, value]) => {
       setCSSProperty(`--color-primary-${shade}`, value);
     });
-    const primaryHsl = hexToHsl(themeConfig.primaryColor);
-    if (primaryHsl) {
-      setCSSProperty('--color-primary', `${primaryHsl.h} ${primaryHsl.s}% ${primaryHsl.l}%`);
+    const primaryRgb = hexToRgb(themeConfig.primaryColor);
+    if (primaryRgb) {
+      setCSSProperty('--color-primary', `${primaryRgb.r} ${primaryRgb.g} ${primaryRgb.b}`);
     }
-    const primaryForeground = isLightColor(themeConfig.primaryColor) ? '0 0% 0%' : '0 0% 100%';
+    const primaryForeground = isLightColor(themeConfig.primaryColor) ? '0 0 0' : '255 255 255';
     setCSSProperty('--color-primary-foreground', primaryForeground);
 
-    // Apply secondary colors and shades (convert to HSL format)
+    // Apply secondary colors and shades (convert to RGB format)
     const secondaryShades = generateColorShades(themeConfig.secondaryColor);
     Object.entries(secondaryShades).forEach(([shade, value]) => {
       setCSSProperty(`--color-secondary-${shade}`, value);
     });
-    const secondaryHsl = hexToHsl(themeConfig.secondaryColor);
-    if (secondaryHsl) {
-      setCSSProperty('--color-secondary', `${secondaryHsl.h} ${secondaryHsl.s}% ${secondaryHsl.l}%`);
+    const secondaryRgb = hexToRgb(themeConfig.secondaryColor);
+    if (secondaryRgb) {
+      setCSSProperty('--color-secondary', `${secondaryRgb.r} ${secondaryRgb.g} ${secondaryRgb.b}`);
     }
-    const secondaryForeground = isLightColor(themeConfig.secondaryColor) ? '0 0% 0%' : '0 0% 100%';
+    const secondaryForeground = isLightColor(themeConfig.secondaryColor) ? '0 0 0' : '255 255 255';
     setCSSProperty('--color-secondary-foreground', secondaryForeground);
 
     // Apply typography
