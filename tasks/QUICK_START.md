@@ -126,7 +126,7 @@ grep -r "KYC" tasks/*/todo/
    - Critical for: All blockchain functionality
 
 ### Week 3: KYC Integration
-4. **P0-ATT-001**: Idenfy KYC Integration
+4. **P0-ATT-001**: iDenfy KYC Integration
    - Location: `tasks/01-identity-attestation/phase-1-verification/todo/`
    - Depends on: P0-INF-001, P0-INF-002
    - Core business logic

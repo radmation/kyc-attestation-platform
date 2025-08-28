@@ -1,262 +1,105 @@
-# KYC Attestation Platform - Documentation Overview
+# 📚 **KYC Attestation Platform - Documentation**
 
-## 📚 Complete Documentation Suite
+## 🎯 **Quick Start Navigation**
 
-This directory contains comprehensive documentation for the KYC Attestation Platform, covering everything from business requirements to technical implementation details.
+### **🤖 For AI Agents**
+**Start Here**: [`agent-guides/README.md`](agent-guides/README.md) - Complete documentation hub for AI agents
+**Primary Reference**: [`../tasks/AUTOMATION_OVERVIEW.md`](../tasks/AUTOMATION_OVERVIEW.md) - Complete workflow automation guide
 
-### 📋 Quick Reference
-
-| Document | Purpose | Audience | Status |
-|----------|---------|----------|---------|
-| [PRD.md](PRD.md) | Product Requirements & Strategy | Product, Business | ✅ Complete |
-| [TASK_ORGANIZATION.md](TASK_ORGANIZATION.md) | Development Tasks & Sprints | Engineering, PM | ✅ Complete |
-| [BLOCKCHAIN_INFRASTRUCTURE_DECISION.md](BLOCKCHAIN_INFRASTRUCTURE_DECISION.md) | Blockchain Platform Analysis | Engineering, Architecture | ✅ Complete |
-| [TECHNICAL_SPECIFICATIONS.md](TECHNICAL_SPECIFICATIONS.md) | Detailed Technical Specs | Engineering | ✅ Complete |
-| [DEVELOPMENT_ENVIRONMENT_SETUP.md](DEVELOPMENT_ENVIRONMENT_SETUP.md) | Dev Environment Guide | Engineering | ✅ Complete |
-| [TASK_IMPORT_TEMPLATES.md](TASK_IMPORT_TEMPLATES.md) | Project Management Templates | PM, Engineering | ✅ Complete |
-| [MISSING_INFRASTRUCTURE_DECISIONS.md](MISSING_INFRASTRUCTURE_DECISIONS.md) | Infrastructure Decision Status | Engineering, DevOps | ✅ Complete |
+### **👥 For Human Developers**
+**Setup Guide**: [`human-setup/`](human-setup/) - Environment setup and development checklist
+**Quick Start**: [`human-setup/DEVELOPMENT_SETUP.md`](human-setup/DEVELOPMENT_SETUP.md) - Docker-based development environment
 
 ---
 
-## 🎯 Executive Summary
+## 📂 **Documentation Structure**
 
-### Project Overview
-The KYC Attestation Platform is a blockchain-based compliance solution that enables token issuers to meet GENIUS Act requirements through automated identity verification and on-chain attestations.
+### **🛠️ Architecture & Technical**
+**Directory**: [`architecture/`](architecture/)
+- **[Technical Specifications](architecture/TECHNICAL_SPECIFICATIONS.md)** - Detailed system architecture and integration patterns
+- **[Project Overview](architecture/PROJECT_OVERVIEW.md)** - High-level project overview and technology stack
+- **[Development Environment Setup](architecture/DEVELOPMENT_ENVIRONMENT_SETUP.md)** - Comprehensive environment configuration
+- **[Blockchain Infrastructure Decision](architecture/BLOCKCHAIN_INFRASTRUCTURE_DECISION.md)** - Hyperledger Fabric architecture decisions
+- **[Missing Infrastructure Decisions](architecture/MISSING_INFRASTRUCTURE_DECISIONS.md)** - Outstanding architectural decisions
 
-### Core Value Proposition
-- **Compliance Automation**: Transform manual KYC processes into automated blockchain attestations
-- **Multi-Tenant SaaS**: White-label solution for multiple token issuer clients
-- **Regulatory Alignment**: Built specifically for US regulatory requirements
-- **Enterprise Security**: Privacy-first design with fine-grained access controls
+### **🔗 Integration Guides**
+**Directory**: [`integration-guides/`](integration-guides/)
+- **[iDenfy Integration Guide](integration-guides/IDENFY_INTEGRATION_GUIDE.md)** - Complete iDenfy API and webhook documentation
+- **[iDenfy Webhook Payloads](integration-guides/IDENFY_WEBHOOK_PAYLOADS.md)** - Detailed webhook payload examples and handling
 
-### Key Metrics & Goals
-- **MVP Launch**: 12 weeks (Module 1 complete)
-- **Production Ready**: 24 weeks (Modules 1-2 complete)
-- **Enterprise Scale**: 52 weeks (All 4 modules complete)
+### **📋 Project Management**
+**Directory**: [`project-management/`](project-management/)
+- **[Product Requirements (PRD)](project-management/PRD.md)** - Complete product specifications and user stories
+- **[Task Organization](project-management/TASK_ORGANIZATION.md)** - Task structure and management guidelines
 
----
+### **🤖 AI Agent Resources**
+**Directory**: [`agent-guides/`](agent-guides/)
+- **[Agent Documentation Hub](agent-guides/README.md)** - Central index for all agent documentation
+- **Primary Reference**: [`../tasks/AUTOMATION_OVERVIEW.md`](../tasks/AUTOMATION_OVERVIEW.md) - Complete automation workflow guide
 
-## 🏗️ Approved Technology Stack
+### **👥 Human Developer Setup**
+**Directory**: [`human-setup/`](human-setup/)
+- **[Developer Checklist](human-setup/developer_checklist.md)** - Manual setup tasks and external service configuration
+- **[Development Setup](human-setup/DEVELOPMENT_SETUP.md)** - Docker environment and local development guide
 
-### ✅ **FINALIZED DECISIONS**
-
-#### Blockchain Infrastructure
-- **Platform**: Hyperledger Fabric (private, permissioned)
-- **Consensus**: Raft algorithm for crash fault tolerance
-- **Development Environment**: Fabric test-network + Docker
-- **Smart Contracts**: Go chaincode (primary language)
-- **Identity Management**: Self-managed Fabric CA
-
-#### Storage & Integration
-- **Database**: PostgreSQL with Prisma ORM
-- **IPFS**: Filebase (primary) + Pinata (backup)
-- **Event Streaming**: AWS EventBridge
-- **API Gateway**: NestJS middleware approach
-- **KYC Provider**: Idenfy integration
-
-#### Monitoring & Observability
-- **Blockchain Monitoring**: Hyperledger Explorer
-- **Metrics**: Prometheus + Grafana
-- **Application Monitoring**: Custom NestJS metrics
-- **Alerting**: Prometheus alerting rules
-
-#### Development Framework
-- **Backend**: NestJS with TypeScript
-- **Frontend**: Angular with TypeScript
-- **Testing**: Jest + Fabric test network
-- **CI/CD**: AWS CodePipeline + CodeBuild
+### **📁 Archive**
+**Directory**: [`archive/`](archive/)
+- **[Task Folder Structure Proposal](archive/TASK_FOLDER_STRUCTURE_PROPOSAL.md)** - Historical task organization proposal
+- **[Git Workflow](archive/GIT_WORKFLOW.md)** - Legacy git workflow documentation (superseded by automation guide)
 
 ---
 
-## 🎯 Implementation Roadmap
+## 🚀 **Getting Started**
 
-### **Phase 1: Foundation (Months 1-3)**
-**Goal**: MVP with core KYC and attestation functionality
+### **I'm an AI Agent**
+1. **Read**: [`agent-guides/README.md`](agent-guides/README.md) - Your documentation hub
+2. **Follow**: [`../tasks/AUTOMATION_OVERVIEW.md`](../tasks/AUTOMATION_OVERVIEW.md) - Complete workflow automation
+3. **Start**: Run `./task-utils.sh status` and `./task-utils.sh next`
 
-#### Sprint 1-2: Infrastructure Setup
-- ✅ Fabric test-network deployment
-- ✅ Go chaincode development
-- ✅ Basic authentication & user management
-- ✅ Idenfy KYC integration
+### **I'm a Human Developer**
+1. **Setup**: Follow [`human-setup/DEVELOPMENT_SETUP.md`](human-setup/DEVELOPMENT_SETUP.md)
+2. **Configure**: Complete [`human-setup/developer_checklist.md`](human-setup/developer_checklist.md)
+3. **Understand**: Read [`architecture/PROJECT_OVERVIEW.md`](architecture/PROJECT_OVERVIEW.md)
 
-#### Sprint 3-4: Core Features
-- ✅ KYC verification workflow
-- ✅ Attestation creation and management
-- ✅ IPFS metadata storage
-- ✅ Basic monitoring setup
-
-**Deliverable**: Working MVP with single-tenant capability
-
-### **Phase 2: Multi-Tenant Production (Months 4-6)**
-**Goal**: Production-ready multi-tenant platform
-
-#### Sprint 5-6: Multi-Tenancy
-- Channel-based client isolation
-- Advanced permission controls
-- Private data collections
-- Enhanced security features
-
-#### Sprint 7-8: Smart Contract Integration
-- Compliance smart contract templates
-- Emergency freeze/revoke capabilities
-- Integration SDK for token projects
-- Advanced blockchain features
-
-**Deliverable**: Production platform with compliance automation
-
-### **Phase 3: Business Value Features (Months 7-9)**
-**Goal**: Revenue-driving features and market expansion
-
-#### Sprint 9-10: Airdrop Platform
-- Sybil-resistant airdrop campaigns
-- Demographic targeting capabilities
-- Campaign analytics and reporting
-- Integration with existing airdrop platforms
-
-#### Sprint 11-12: Analytics & Optimization
-- Advanced business intelligence
-- Performance optimization
-- A/B testing framework
-- Customer success features
-
-**Deliverable**: Feature-complete platform with business value features
-
-### **Phase 4: Enterprise Scale (Months 10-12)**
-**Goal**: Enterprise-grade platform with full compliance suite
-
-#### Sprint 13-16: Monitoring & Reporting
-- Continuous transaction monitoring
-- Automated regulatory reporting
-- Risk scoring and analysis
-- Audit trail management
-
-**Deliverable**: Enterprise-ready platform with full compliance automation
+### **I Need Technical Details**
+1. **Architecture**: [`architecture/TECHNICAL_SPECIFICATIONS.md`](architecture/TECHNICAL_SPECIFICATIONS.md)
+2. **Integrations**: [`integration-guides/`](integration-guides/) directory
+3. **Requirements**: [`project-management/PRD.md`](project-management/PRD.md)
 
 ---
 
-## 🚀 Getting Started
+## 📖 **Documentation Standards**
 
-### For **Product Managers**
-1. **Read**: [PRD.md](PRD.md) for business context and requirements
-2. **Review**: [TASK_ORGANIZATION.md](TASK_ORGANIZATION.md) for sprint planning
-3. **Import**: Use [TASK_IMPORT_TEMPLATES.md](TASK_IMPORT_TEMPLATES.md) for your PM tool
+### **Quality Principles**
+- ✅ **Action-Oriented**: Clear commands and workflows
+- ✅ **Complete**: No missing steps or assumptions  
+- ✅ **Validated**: All commands tested and working
+- ✅ **Consistent**: Standardized formatting and terminology
+- ✅ **Audience-Specific**: Tailored for intended users
 
-### For **Engineering Teams**
-1. **Setup**: Follow [DEVELOPMENT_ENVIRONMENT_SETUP.md](DEVELOPMENT_ENVIRONMENT_SETUP.md)
-2. **Architecture**: Review [TECHNICAL_SPECIFICATIONS.md](TECHNICAL_SPECIFICATIONS.md)
-3. **Infrastructure**: Understand [BLOCKCHAIN_INFRASTRUCTURE_DECISION.md](BLOCKCHAIN_INFRASTRUCTURE_DECISION.md)
-
-### For **Executives & Stakeholders**
-1. **Business Case**: Review Executive Summary in [PRD.md](PRD.md)
-2. **Technology Decision**: See rationale in [BLOCKCHAIN_INFRASTRUCTURE_DECISION.md](BLOCKCHAIN_INFRASTRUCTURE_DECISION.md)
-3. **Timeline**: Check roadmap in [TASK_ORGANIZATION.md](TASK_ORGANIZATION.md)
+### **Organization Principles**
+- 🎯 **By Purpose**: Grouped by function and audience
+- 📁 **Logical Structure**: Intuitive navigation paths
+- 🔍 **Easy Discovery**: Clear naming and indexing
+- 📝 **Single Source**: No duplicate or conflicting information
 
 ---
 
-## ⚡ Quick Start Commands
+## 🔄 **Documentation Maintenance**
 
-### Environment Setup
-```bash
-# 1. Setup development environment
-./setup-dev-environment.sh
+### **Updates and Changes**
+- **AI Agent Documentation**: Update [`../tasks/AUTOMATION_OVERVIEW.md`](../tasks/AUTOMATION_OVERVIEW.md)
+- **Architecture Changes**: Update files in [`architecture/`](architecture/)
+- **New Integrations**: Add to [`integration-guides/`](integration-guides/)
+- **Process Changes**: Update [`project-management/`](project-management/) and agent guides
 
-# 2. Test the setup
-./test-setup.sh
-
-# 3. Start development
-npm run start:dev
-```
-
-### Key URLs (Development)
-- **Backend API**: http://localhost:3000
-- **Hyperledger Explorer**: http://localhost:8080
-- **Prometheus**: http://localhost:9090
-- **Grafana**: http://localhost:3001 (admin/admin)
+### **File Movement Log**
+- ✅ **Moved**: Human setup files to `human-setup/`
+- ✅ **Organized**: Technical docs into `architecture/`
+- ✅ **Separated**: Integration guides into dedicated directory
+- ✅ **Centralized**: Project management documentation
+- ✅ **Archived**: Outdated and redundant content
 
 ---
 
-## 📊 Success Metrics
-
-### Technical Metrics
-- **Platform Uptime**: 99.9% target
-- **API Response Time**: <200ms (95th percentile)
-- **Blockchain TPS**: 1,000 transactions/second
-- **KYC Processing**: <30 seconds end-to-end
-
-### Business Metrics
-- **Customer Acquisition**: 50 token issuer clients (Year 1)
-- **Verification Volume**: 100K verifications/month
-- **Revenue**: $2M ARR (Year 1 target)
-- **Compliance Rate**: 100% regulatory adherence
-
-### Platform Metrics
-- **Multi-Tenancy**: Support 100+ client organizations
-- **Scalability**: 10K concurrent users
-- **Security**: Zero data breaches
-- **Reliability**: 99.9% uptime SLA
-
----
-
-## 🔐 Security & Compliance
-
-### Regulatory Alignment
-- **GENIUS Act**: Full compliance with US token issuer requirements
-- **GDPR**: Privacy controls for EU operations
-- **SOC 2**: Enterprise security standards
-- **ISO 27001**: Information security management
-
-### Security Measures
-- **Encryption**: AES-256 at rest, TLS 1.3 in transit
-- **Authentication**: JWT with refresh token rotation
-- **Authorization**: RBAC with fine-grained permissions
-- **Audit Trails**: Immutable compliance logging
-
-### Privacy Controls
-- **Data Minimization**: Only necessary data stored
-- **PII Protection**: No personal data on blockchain
-- **Right to Erasure**: GDPR-compliant data deletion
-- **Access Controls**: Multi-level permission system
-
----
-
-## 📞 Support & Contact
-
-### Development Team
-- **Lead Engineer**: Setup questions and technical issues
-- **Product Manager**: Requirements and feature requests
-- **DevOps**: Infrastructure and deployment
-
-### Documentation Updates
-- **Location**: `/docs` directory in project repository
-- **Format**: Markdown with clear structure
-- **Review**: All changes require team review
-- **Versioning**: Track changes with git commits
-
-### Issues & Feedback
-- **Bug Reports**: Use GitHub issues
-- **Feature Requests**: Product team review
-- **Documentation**: Direct PRs to `/docs`
-- **Security**: Private disclosure process
-
----
-
-## 🔄 Document Maintenance
-
-### Update Schedule
-- **Weekly**: Task progress and sprint updates
-- **Monthly**: Technical specifications and architecture
-- **Quarterly**: Strategic roadmap and business metrics
-- **As Needed**: Infrastructure decisions and critical changes
-
-### Version Control
-All documentation is version-controlled alongside code to ensure consistency between implementation and specifications.
-
-### Review Process
-1. **Technical Reviews**: Engineering team approval required
-2. **Business Reviews**: Product team sign-off needed  
-3. **Security Reviews**: Security team validation for compliance docs
-4. **Final Approval**: Lead architect approval for architecture changes
-
----
-
-This documentation provides a complete foundation for building the KYC Attestation Platform. Each document serves a specific purpose and audience, ensuring all stakeholders have the information they need to contribute effectively to the project. 
+**🎯 Remember**: This documentation structure serves both AI agents and human developers with clear separation of concerns and easy navigation! 

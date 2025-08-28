@@ -10,20 +10,22 @@
 
 ## Dependencies
 - [ ] P0-INF-003: Hyperledger Fabric Network Setup (requires Fabric network running)
+- [ ] P0-MBC-001: Blockchain Provider Abstraction Layer (for multi-blockchain monitoring)
 
 ## Context for AI
 **Project Structure**: This is a KYC attestation platform built with:
 - **Backend**: NestJS with TypeScript at `/apps/backend/src/`
-- **Blockchain**: Hyperledger Fabric network at `/fabric-network/`
+- **Blockchain**: Multi-blockchain support (Fabric, Ethereum, Polygon) via provider abstraction
 - **Monitoring**: Docker compose setup at `/monitoring/`
 
 **Related Files**: 
 - Reference: `/docs/TECHNICAL_SPECIFICATIONS.md` section 4 (Monitoring Stack)
+- Architecture: `/docs/architecture/BLOCKCHAIN_AGNOSTIC_DB_DESIGN.md` (multi-blockchain design)
 - Pattern: Create `/monitoring/` directory for all monitoring components
-- Integration: Health endpoints in backend and Fabric metrics
+- Integration: Health endpoints in backend and multi-blockchain provider metrics
 
 ## Objective
-Set up comprehensive monitoring for the KYC platform including Prometheus for metrics collection, Grafana for visualization, and Hyperledger Explorer for blockchain monitoring.
+Set up comprehensive monitoring for the KYC platform including Prometheus for metrics collection, Grafana for visualization, and multi-blockchain network monitoring (Hyperledger Explorer for Fabric, web3 monitoring for EVM chains).
 
 ## Detailed Implementation Instructions
 

@@ -7,7 +7,7 @@ This document provides detailed technical specifications for all infrastructure 
 ```mermaid
 graph TB
     subgraph "Frontend Layer"
-        A[Angular SPA] --> B[NestJS API Gateway]
+        A[React.js SPA] --> B[NestJS API Gateway]
     end
     
     subgraph "Application Layer"
@@ -31,7 +31,7 @@ graph TB
     end
     
     subgraph "Integration Layer"
-        D --> M[Idenfy KYC API]
+        D --> M[iDenfy KYC API]
         B --> N[AWS EventBridge]
     end
     

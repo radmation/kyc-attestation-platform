@@ -129,7 +129,7 @@ export class FabricService {
 }
 ```
 
-### Idenfy API Integration Pattern
+### iDenfy API Integration Pattern
 ```typescript
 // Error handling for external APIs
 async makeIdenfyRequest<T>(operation: () => Promise<T>): Promise<T> {
@@ -141,10 +141,10 @@ async makeIdenfyRequest<T>(operation: () => Promise<T>): Promise<T> {
       throw new TooManyRequestsException('Rate limit exceeded');
     } else if (error.response?.status >= 500) {
       // Server errors - retry logic
-      throw new ServiceUnavailableException('Idenfy service unavailable');
+      throw new ServiceUnavailableException('iDenfy service unavailable');
     } else {
       // Client errors
-      throw new BadRequestException('Invalid request to Idenfy');
+      throw new BadRequestException('Invalid request to iDenfy');
     }
   }
 }

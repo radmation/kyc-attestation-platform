@@ -182,11 +182,11 @@ case "$TASK_ID" in
     *"ATT-001"*)
         echo "👤 KYC Integration Validation:"
         
-        # Check Idenfy service
+        # Check iDenfy service
         if [[ -f "apps/backend/src/modules/kyc/infrastructure/services/idenfy.service.ts" ]]; then
-            echo "✅ Idenfy service created"
+            echo "✅ iDenfy service created"
         else
-            echo "❌ Idenfy service missing"
+            echo "❌ iDenfy service missing"
             exit 1
         fi
         

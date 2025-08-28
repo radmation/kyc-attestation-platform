@@ -16,12 +16,12 @@ This document provides a comprehensive breakdown of development tasks organized 
 **Total Estimate**: 4-5 weeks
 **Dependencies**: None (foundational)
 
-#### Task 1.1.1: Idenfy Integration Setup
+#### Task 1.1.1: iDenfy Integration Setup
 - **Estimate**: M (1-2 weeks)
 - **Priority**: Critical
-- **Description**: Integrate with Idenfy API for KYC verification
+- **Description**: Integrate with iDenfy API for KYC verification
 - **Acceptance Criteria**:
-  - [ ] Idenfy SDK integrated into backend
+  - [ ] iDenfy SDK integrated into backend
   - [ ] Webhook endpoint configured for status updates
   - [ ] Polling fallback mechanism implemented
   - [ ] Error handling for API failures
@@ -29,8 +29,8 @@ This document provides a comprehensive breakdown of development tasks organized 
 - **Deliverables**:
   - `IdenfyService` class with full API integration
   - Webhook controller for status updates
-  - Configuration for Idenfy credentials
-  - Unit tests with mocked Idenfy responses
+  - Configuration for iDenfy credentials
+  - Unit tests with mocked iDenfy responses
 
 #### Task 1.1.2: KYC Verification Workflow
 - **Estimate**: M (1-2 weeks)
@@ -481,10 +481,10 @@ This document provides a comprehensive breakdown of development tasks organized 
 ### Sprint 1 (2 weeks): Foundation
 - Task INF-1: Authentication & Authorization
 - Task INF-2: API Foundation & Documentation
-- Task 1.1.1: Persona Integration Setup (start)
+- Task 1.1.1: iDenfy Integration Setup (start)
 
 ### Sprint 2 (2 weeks): Core KYC
-- Task 1.1.1: Persona Integration Setup (complete)
+- Task 1.1.1: iDenfy Integration Setup (complete)
 - Task 1.1.2: KYC Verification Workflow
 - Task 1.1.3: Profile Management System
 

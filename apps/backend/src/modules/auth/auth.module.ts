@@ -16,7 +16,7 @@ import { CreateUserUseCase } from './application/use-cases/create-user.use-case'
 // Infrastructure
 import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.repository';
 import { PrismaRateLimitRepository } from './infrastructure/repositories/prisma-rate-limit.repository';
-import { MockEmailService } from './infrastructure/services/mock-email.service';
+import { SendGridEmailService } from './infrastructure/services/sendgrid-email.service';
 import { BcryptPasswordService } from './infrastructure/services/bcrypt-password.service';
 import { JwtService } from './infrastructure/services/jwt.service';
 import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
@@ -54,7 +54,7 @@ import { UserController } from './presentation/controllers/user.controller';
     // Infrastructure services
     {
       provide: 'EmailService',
-      useClass: MockEmailService,
+      useClass: SendGridEmailService,
     },
     {
       provide: 'PasswordService',
@@ -79,7 +79,7 @@ import { UserController } from './presentation/controllers/user.controller';
     CreateUserUseCase,
     {
       provide: 'EmailService',
-      useClass: MockEmailService,
+      useClass: SendGridEmailService,
     },
     {
       provide: 'PasswordService',

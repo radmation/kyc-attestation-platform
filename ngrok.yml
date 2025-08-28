@@ -1,0 +1,22 @@
+# ngrok.yml - Development Configuration for ngrok v3
+# This file configures ngrok for local development webhook exposure
+
+version: "2"
+authtoken: 1PA4i5tCqFjO8lfaegwzZscASaD_UxqPRgi948Dj3PrsVST2
+region: us
+
+# Tunnel configuration for the backend API
+tunnels:
+  backend-api:
+    addr: 3000
+    proto: http
+    inspect: true
+    basic_auth:
+      - "dev:password123"
+
+# Logging configuration
+log_level: info
+log_format: json
+
+# Web interface configuration
+web_addr: 0.0.0.0:4040 

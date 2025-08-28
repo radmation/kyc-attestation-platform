@@ -231,7 +231,7 @@ Contains critical patterns for:
 - NestJS service and controller patterns
 - Database integration with Prisma
 - Hyperledger Fabric blockchain integration
-- Idenfy API error handling
+- iDenfy API error handling
 - IPFS storage with dual providers
 - Common issues and solutions
 
@@ -307,7 +307,7 @@ Every commit automatically validated for:
 #### **Week 3: Core Business Logic**
 ```bash
 # After infrastructure is complete
-./task-utils.sh start P0-ATT-001  # Idenfy KYC Integration
+./task-utils.sh start P0-ATT-001  # iDenfy KYC Integration
 ```
 
 #### **Week 4+: Advanced Features**

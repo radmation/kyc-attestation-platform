@@ -211,7 +211,7 @@ jobs:
         run: |
           echo "🔍 Running KYC integration tests..."
           # These would be real integration tests in production
-          echo "✅ Idenfy webhook validation tests passed"
+          echo "✅ iDenfy webhook validation tests passed"
           echo "✅ Database transaction tests passed"
           echo "✅ Event streaming tests passed"
 

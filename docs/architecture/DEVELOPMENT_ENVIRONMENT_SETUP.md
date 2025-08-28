@@ -881,9 +881,8 @@ AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 AWS_EVENTBRIDGE_BUS_NAME=kyc-attestation-events
 
-# Idenfy KYC
+# iDenfy KYC
 IDENFY_API_KEY=your_idenfy_api_key
-IDENFY_API_SECRET=your_idenfy_api_secret
 IDENFY_WEBHOOK_SECRET=your_idenfy_webhook_secret
 IDENFY_ENVIRONMENT=sandbox
 

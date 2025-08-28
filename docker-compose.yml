@@ -13,12 +13,22 @@ services:
     environment:
       # DATABASE_URL for the backend to connect to the 'db' service
       DATABASE_URL: "postgresql://user:password@db:5432/mydatabase?schema=public"
+      # Platform configuration
+      PLATFORM_DOMAIN: "https://identhor.com"
+      API_VERSION: "v1"
+      NODE_ENV: "development"
+      # Email service configuration (SendGrid)
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SENDGRID_DOMAIN: ${SENDGRID_DOMAIN}
+      SENDGRID_REGION: ${SENDGRID_REGION}
       # Add any other environment variables your backend needs
     depends_on:
       - db # Ensure the database service starts before the backend
     volumes:
       - .:/usr/src/app # Mount the current directory into the container for development
       - /usr/src/app/node_modules # Exclude node_modules from the bind mount to prevent host/container conflicts
+    networks:
+      - app-network
 
   # PostgreSQL Database Service
   db:
@@ -32,6 +42,58 @@ services:
       - "5432:5432" # Map host port 5432 to container port 5432
     volumes:
       - db_data:/var/lib/postgresql/data # Persistent volume for database data
+    networks:
+      - app-network
+
+  # Ngrok Service for Development Webhook Exposure
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    environment:
+      # Set your ngrok auth token here for development
+      NGROK_AUTHTOKEN: ${NGROK_AUTH_TOKEN:-}
+      NGROK_REGION: ${NGROK_REGION:-us}
+    ports:
+      - "4040:4040" # Ngrok web interface
+      - "4041:4041" # Ngrok API
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml:ro # Ngrok configuration file
+    command: http host.docker.internal:3000 --config=/etc/ngrok.yml
+    # depends_on:
+    #   - backend  # Commented out since backend might run locally
+    networks:
+      - app-network
+    profiles:
+      - development # Only start ngrok in development profile
+
+  # Redis Service for Caching and Rate Limiting
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    command: redis-server --appendonly yes
+
+  # Mailhog Service for Email Testing (Development Only)
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP port
+      - "8025:8025" # Web interface
+    networks:
+      - app-network
+    profiles:
+      - development # Only start mailhog in development profile
 
 volumes:
   db_data: # Define the named volume for PostgreSQL data persistence
+  redis_data: # Define the named volume for Redis data persistence
+
+networks:
+  app-network:
+    driver: bridge
