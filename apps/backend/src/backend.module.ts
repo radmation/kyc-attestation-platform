@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
+import { KycModule } from './modules/kyc/kyc.module';
 import { BlockchainModule } from './blockchain/blockchain.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { RolesGuard } from './shared/guards/roles.guard';
@@ -24,6 +25,7 @@ import { createRateLimitConfig } from './shared/config/rate-limit.config';
     }),
     DatabaseModule,
     AuthModule,
+    KycModule,
     BlockchainModule,
   ],
   providers: [

@@ -5,8 +5,9 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Gateway, Wallets, Network, Contract } from 'fabric-network';
-import * as FabricCAServices from 'fabric-ca-client';
+// TODO: Install fabric-network and fabric-ca-client dependencies
+// import { Gateway, Wallets, Network, Contract } from 'fabric-network';
+// import * as FabricCAServices from 'fabric-ca-client';
 import * as fs from 'fs';
 import * as path from 'path';
 
