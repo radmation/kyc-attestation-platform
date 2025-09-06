@@ -10,6 +10,9 @@ import { PrismaInvitationRepository } from './infrastructure/repositories/prisma
 // Interface layer
 import { InvitationController } from './interfaces/invitation.controller';
 
+// Database module
+import { DatabaseModule } from '../../database/database.module';
+
 // Import shared services (these will be available when other modules are integrated)
 // Note: These imports will work when the respective modules are properly set up
 // import { UserService } from '../users/application/services/user.service';
@@ -89,26 +92,10 @@ class MockClientService {
   }
 }
 
-class MockPrismaService {
-  userInvitation = {
-    create: jest.fn(),
-    findUnique: jest.fn(),
-    findMany: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
-    count: jest.fn(),
-  };
-
-  user = {
-    create: jest.fn(),
-    findUnique: jest.fn(),
-    findMany: jest.fn(),
-    update: jest.fn(),
-  };
-}
+// MockPrismaService removed - now using real PrismaService via DatabaseModule
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, DatabaseModule],
   controllers: [InvitationController],
   providers: [
     // Application services
@@ -133,12 +120,9 @@ class MockPrismaService {
       provide: 'ClientService',
       useClass: MockClientService,
     },
-    {
-      provide: 'PrismaService',
-      useClass: MockPrismaService,
-    },
+    // Note: PrismaService is now available through DatabaseModule import
 
-    // TODO: Replace mock services with real implementations when available:
+    // TODO: Replace remaining mock services with real implementations when available:
     // {
     //   provide: 'UserService',
     //   useExisting: UserService,
@@ -151,10 +135,7 @@ class MockPrismaService {
     //   provide: 'ClientService',
     //   useExisting: ClientService,
     // },
-    // {
-    //   provide: 'PrismaService',
-    //   useExisting: PrismaService,
-    // },
+    // ✅ PrismaService: Now available through DatabaseModule import
   ],
   exports: [InvitationService, 'InvitationRepository'],
 })

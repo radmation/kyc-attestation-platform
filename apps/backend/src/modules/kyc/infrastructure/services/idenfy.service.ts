@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaService } from '../../../../database/prisma.service';
+import { PrismaService } from '../../../../prisma/prisma.service';
 import { KycStatus } from '@prisma/client';
 import axios, { AxiosInstance } from 'axios';
 import * as crypto from 'crypto';
@@ -56,13 +56,13 @@ export class IdenfyService {
     private configService: ConfigService,
     private prismaService: PrismaService,
   ) {
-    this.apiKey = this.configService.get<string>('IDENFY_API_KEY') || '';
-    this.apiSecret = this.configService.get<string>('IDENFY_API_SECRET') || '';
+    this.apiKey = this.configService.get<string>('IDENFY_API_ACCESS_KEY') || '';
+    this.apiSecret = this.configService.get<string>('IDENFY_API_SECRET_KEY') || '';
     const environment =
       this.configService.get<string>('IDENFY_ENVIRONMENT') || 'sandbox';
 
     if (!this.apiKey || !this.apiSecret) {
-      throw new Error('IDENFY_API_KEY and IDENFY_API_SECRET are required');
+      throw new Error('IDENFY_API_ACCESS_KEY and IDENFY_API_SECRET_KEY are required');
     }
 
     // Set base URL based on environment

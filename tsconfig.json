@@ -18,11 +18,16 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   },
+  "include": [
+    "apps/backend/src/**/*"
+  ],
   "exclude": [
     "node_modules",
     "dist",
     "fabric-samples",
     "fabric-network",
-    "apps/frontend"
+    "apps/frontend/**/*",
+    "apps/backend/dist/**/*",
+    "apps/backend/node_modules/**/*"
   ]
 }

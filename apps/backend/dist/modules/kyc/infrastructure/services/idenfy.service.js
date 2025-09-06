@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IdenfyService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const prisma_service_1 = require("../../../../database/prisma.service");
+const prisma_service_1 = require("../../../../prisma/prisma.service");
 const client_1 = require("@prisma/client");
 const axios_1 = require("axios");
 const crypto = require("crypto");
@@ -22,11 +22,11 @@ let IdenfyService = IdenfyService_1 = class IdenfyService {
         this.configService = configService;
         this.prismaService = prismaService;
         this.logger = new common_1.Logger(IdenfyService_1.name);
-        this.apiKey = this.configService.get('IDENFY_API_KEY') || '';
-        this.apiSecret = this.configService.get('IDENFY_API_SECRET') || '';
+        this.apiKey = this.configService.get('IDENFY_API_ACCESS_KEY') || '';
+        this.apiSecret = this.configService.get('IDENFY_API_SECRET_KEY') || '';
         const environment = this.configService.get('IDENFY_ENVIRONMENT') || 'sandbox';
         if (!this.apiKey || !this.apiSecret) {
-            throw new Error('IDENFY_API_KEY and IDENFY_API_SECRET are required');
+            throw new Error('IDENFY_API_ACCESS_KEY and IDENFY_API_SECRET_KEY are required');
         }
         this.baseUrl =
             environment === 'production'

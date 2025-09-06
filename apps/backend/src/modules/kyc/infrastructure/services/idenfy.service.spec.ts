@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { IdenfyService } from './idenfy.service';
-import { PrismaService } from '../../../../database/prisma.service';
+import { PrismaService } from '../../../../prisma/prisma.service';
 import { KycStatus } from '@prisma/client';
 import axios from 'axios';
 

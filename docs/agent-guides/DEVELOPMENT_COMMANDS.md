@@ -17,19 +17,25 @@ kyc-attestation-platform/
 
 ## 🔧 Backend Development Commands
 
-### Starting the Backend Server
+### Starting the Development Servers
 
-**✅ CORRECT WAYS:**
+**✅ RECOMMENDED WAY (Both Frontend & Backend):**
 
 ```bash
-# From project root (RECOMMENDED)
-npm run start:dev
+# From project root - starts both servers with hot reload
+npm run dev                # Backend (port 3000) + Frontend (port 5173)
+```
 
-# Alternative: Build and start
-npm run build
-npm run start
+**✅ INDIVIDUAL SERVICES:**
 
-# Production mode
+```bash
+# Backend only (from project root)
+npm run start:dev          # NestJS backend with hot reload
+
+# Frontend only (from project root) 
+npm run start:frontend     # Vite React dev server
+
+# Production backend
 npm run start:prod
 ```
 
@@ -38,8 +44,8 @@ npm run start:prod
 # DON'T: Run from apps/backend directory
 cd apps/backend && npm start    # Will fail - no package.json there
 
-# DON'T: Try to start both backend and frontend together
-npm run start:dev && cd apps/frontend && npm run dev    # Will conflict
+# DON'T: Manual concurrent commands (use npm run dev instead)
+npm run start:dev && npm run start:frontend    # Will conflict - use npm run dev
 ```
 
 ### Backend Development Workflow
@@ -102,8 +108,11 @@ npm run build:frontend
 # DON'T: Try to start frontend from root without proper script
 npm run start    # This starts backend, not frontend
 
-# DON'T: Mix backend and frontend commands
-npm run start:dev && cd apps/frontend && npm run dev    # Will cause conflicts
+# DON'T: Mix backend and frontend commands manually
+npm run start:dev && cd apps/frontend && npm run dev    # Use npm run dev instead
+
+# DON'T: Navigate to frontend directory (use root scripts)
+cd apps/frontend && npm run dev    # Use npm run start:frontend from root instead
 ```
 
 ### Frontend Development Workflow
@@ -162,10 +171,10 @@ cd ../..
 ### "Cannot use JSX unless the '--jsx' flag is provided"
 
 **Problem:** Running `npm run start:dev` tries to compile frontend React files
-**Solution:** 
-- Ensure you're running from project root
-- Check `tsconfig.json` excludes `apps/frontend`
-- Kill all node processes: `pkill -f node` then restart
+**Solution:** ✅ **RESOLVED** - Updated TypeScript configurations and scripts
+- Root `tsconfig.json` now properly excludes frontend
+- Backend-specific TypeScript config used for compilation
+- Use `npm run dev` for full development or `npm run start:dev` for backend only
 
 ### "Cannot GET /api/v1/..." (404 errors)
 

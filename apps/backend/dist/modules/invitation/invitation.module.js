@@ -12,6 +12,7 @@ const config_1 = require("@nestjs/config");
 const invitation_service_1 = require("./application/services/invitation.service");
 const prisma_invitation_repository_1 = require("./infrastructure/repositories/prisma-invitation.repository");
 const invitation_controller_1 = require("./interfaces/invitation.controller");
+const database_module_1 = require("../../database/database.module");
 class MockUserService {
     async findByEmail(email) {
         return null;
@@ -63,30 +64,12 @@ class MockClientService {
         return true;
     }
 }
-class MockPrismaService {
-    constructor() {
-        this.userInvitation = {
-            create: jest.fn(),
-            findUnique: jest.fn(),
-            findMany: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-            count: jest.fn(),
-        };
-        this.user = {
-            create: jest.fn(),
-            findUnique: jest.fn(),
-            findMany: jest.fn(),
-            update: jest.fn(),
-        };
-    }
-}
 let InvitationModule = class InvitationModule {
 };
 exports.InvitationModule = InvitationModule;
 exports.InvitationModule = InvitationModule = __decorate([
     (0, common_1.Module)({
-        imports: [config_1.ConfigModule],
+        imports: [config_1.ConfigModule, database_module_1.DatabaseModule],
         controllers: [invitation_controller_1.InvitationController],
         providers: [
             invitation_service_1.InvitationService,
@@ -105,10 +88,6 @@ exports.InvitationModule = InvitationModule = __decorate([
             {
                 provide: 'ClientService',
                 useClass: MockClientService,
-            },
-            {
-                provide: 'PrismaService',
-                useClass: MockPrismaService,
             },
         ],
         exports: [invitation_service_1.InvitationService, 'InvitationRepository'],

@@ -55,11 +55,12 @@ A blockchain-based Know Your Customer (KYC) attestation platform that creates on
 
 **⚡ Quick Commands:**
 ```bash
-# Backend Development (from project root)
-npm run start:dev          # Start backend server (port 3000)
+# Full Development (Both Frontend & Backend - RECOMMENDED)
+npm run dev                # Start both servers simultaneously
 
-# Frontend Development (separate terminal)
-cd apps/frontend && npm run dev  # Start frontend (port 5173)
+# Individual Services
+npm run start:dev          # Backend only (port 3000)
+npm run start:frontend     # Frontend only (port 5173)
 
 # Database Operations (from apps/backend)
 cd apps/backend
