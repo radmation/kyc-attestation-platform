@@ -29,6 +29,27 @@ export class BrandingController {
   ) {}
 
   /**
+   * Health check endpoint
+   */
+  @Public()
+  @Get('health')
+  getHealth(): { status: string; timestamp: string } {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Test endpoint
+   */
+  @Public()
+  @Get('test')
+  getTest(): { message: string } {
+    return { message: 'Branding API is working!' };
+  }
+
+  /**
    * Get branding by client ID
    */
   @Public()

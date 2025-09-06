@@ -8,9 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BrandingModule = void 0;
 const common_1 = require("@nestjs/common");
+const prisma_module_1 = require("../../prisma/prisma.module");
 const get_client_branding_use_case_1 = require("./application/use-cases/get-client-branding.use-case");
 const update_branding_use_case_1 = require("./application/use-cases/update-branding.use-case");
-const mock_branding_repository_1 = require("./infrastructure/repositories/mock-branding.repository");
+const prisma_branding_repository_1 = require("./infrastructure/repositories/prisma-branding.repository");
 const memory_cache_service_1 = require("./infrastructure/services/memory-cache.service");
 const branding_controller_1 = require("./presentation/controllers/branding.controller");
 let BrandingModule = class BrandingModule {
@@ -18,7 +19,9 @@ let BrandingModule = class BrandingModule {
 exports.BrandingModule = BrandingModule;
 exports.BrandingModule = BrandingModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
+        imports: [
+            prisma_module_1.PrismaModule,
+        ],
         controllers: [
             branding_controller_1.BrandingController,
         ],
@@ -31,7 +34,7 @@ exports.BrandingModule = BrandingModule = __decorate([
             },
             {
                 provide: 'BrandingRepository',
-                useClass: mock_branding_repository_1.MockBrandingRepository,
+                useClass: prisma_branding_repository_1.PrismaBrandingRepository,
             },
         ],
         exports: [
@@ -39,7 +42,7 @@ exports.BrandingModule = BrandingModule = __decorate([
             update_branding_use_case_1.UpdateBrandingUseCase,
             {
                 provide: 'BrandingRepository',
-                useClass: mock_branding_repository_1.MockBrandingRepository,
+                useClass: prisma_branding_repository_1.PrismaBrandingRepository,
             },
             {
                 provide: 'CacheService',

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-// import { PrismaModule } from '../../prisma/prisma.module'; // Commented out for now
+import { PrismaModule } from '../../prisma/prisma.module';
 
 // Domain
 // (No domain services to register)
@@ -18,7 +18,7 @@ import { BrandingController } from './presentation/controllers/branding.controll
 
 @Module({
   imports: [
-    // PrismaModule, // Commented out for now
+    PrismaModule,
   ],
   controllers: [
     BrandingController,
@@ -37,7 +37,7 @@ import { BrandingController } from './presentation/controllers/branding.controll
     // Repositories
     {
       provide: 'BrandingRepository',
-      useClass: MockBrandingRepository, // Use mock for now until database migration is ready
+      useClass: PrismaBrandingRepository,
     },
   ],
   exports: [
@@ -46,7 +46,7 @@ import { BrandingController } from './presentation/controllers/branding.controll
     UpdateBrandingUseCase,
     {
       provide: 'BrandingRepository',
-      useClass: MockBrandingRepository, // Use mock for now until database migration is ready
+      useClass: PrismaBrandingRepository,
     },
     {
       provide: 'CacheService',

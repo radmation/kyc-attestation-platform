@@ -25,6 +25,15 @@ let BrandingController = BrandingController_1 = class BrandingController {
         this.updateBrandingUseCase = updateBrandingUseCase;
         this.logger = new common_1.Logger(BrandingController_1.name);
     }
+    getHealth() {
+        return {
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+        };
+    }
+    getTest() {
+        return { message: 'Branding API is working!' };
+    }
     async getClientBranding(clientId) {
         try {
             this.logger.debug(`Getting branding for client: ${clientId}`);
@@ -98,6 +107,20 @@ let BrandingController = BrandingController_1 = class BrandingController {
     }
 };
 exports.BrandingController = BrandingController;
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('health'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], BrandingController.prototype, "getHealth", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('test'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], BrandingController.prototype, "getTest", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('client/:clientId'),
