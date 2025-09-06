@@ -26,9 +26,10 @@ This directory contains all documentation specifically designed for AI agents wo
 ## 📚 **Core Documentation by Category**
 
 ### **🛠️ Development & Architecture**
-- **Technical Specifications**: `../TECHNICAL_SPECIFICATIONS.md`
-- **Project Overview**: `../PROJECT_OVERVIEW.md`
-- **Development Environment Setup**: `../DEVELOPMENT_ENVIRONMENT_SETUP.md`
+- **🚨 Development Commands**: `DEVELOPMENT_COMMANDS.md` - **CRITICAL: How to run backend/frontend**
+- **Technical Specifications**: `../architecture/TECHNICAL_SPECIFICATIONS.md`
+- **Project Overview**: `../architecture/PROJECT_OVERVIEW.md`
+- **Development Environment Setup**: `../architecture/DEVELOPMENT_ENVIRONMENT_SETUP.md`
 - **Knowledge Base**: `../../tasks/automation/knowledge-base.md`
 
 ### **📋 Project Management**

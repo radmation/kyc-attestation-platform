@@ -49,20 +49,34 @@ A blockchain-based Know Your Customer (KYC) attestation platform that creates on
 
 ## 🛠️ **Development**
 
+### **🚨 CRITICAL: Monorepo Commands**
+
+**📖 Complete Guide**: [`docs/agent-guides/DEVELOPMENT_COMMANDS.md`](docs/agent-guides/DEVELOPMENT_COMMANDS.md)
+
+**⚡ Quick Commands:**
+```bash
+# Backend Development (from project root)
+npm run start:dev          # Start backend server (port 3000)
+
+# Frontend Development (separate terminal)
+cd apps/frontend && npm run dev  # Start frontend (port 5173)
+
+# Database Operations (from apps/backend)
+cd apps/backend
+npx prisma migrate dev --name migration-name
+npx prisma generate
+```
+
 ### **Prerequisites**
 - Docker & Docker Compose
 - Node.js 18+ & npm 8+
+- PostgreSQL database
 - Git
 
-### **Quick Setup**
-```bash
-# Clone repository
-git clone [repository-url]
-cd kyc-attestation-platform
-
-# Follow setup guide
-open docs/human-setup/DEVELOPMENT_SETUP.md
-```
+### **⚠️ Common Issues**
+- **JSX Errors**: Run backend from project root, not `apps/backend`
+- **404 Routes**: Check module imports and restart server cleanly
+- **Port Conflicts**: Use separate terminals for backend/frontend
 
 ### **AI Agent Development**
 ```bash
