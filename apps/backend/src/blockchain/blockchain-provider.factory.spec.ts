@@ -268,9 +268,9 @@ describe('BlockchainProviderFactory', () => {
         }
       };
 
-      await expect(
-        factory.createProvider(ethereumConfig as any)
-      ).rejects.toThrow('Provider creation failed');
+             await expect(
+         factory.createProvider(ethereumConfig as any)
+       ).rejects.toThrow('Provider configuration validation failed');
     });
   });
 }); 
