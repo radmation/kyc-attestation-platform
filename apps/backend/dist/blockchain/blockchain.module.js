@@ -9,14 +9,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlockchainModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const blockchain_provider_factory_1 = require("./blockchain-provider.factory");
+const blockchain_provider_service_1 = require("./blockchain-provider.service");
 let BlockchainModule = class BlockchainModule {
 };
 exports.BlockchainModule = BlockchainModule;
 exports.BlockchainModule = BlockchainModule = __decorate([
     (0, common_1.Module)({
         imports: [config_1.ConfigModule],
-        providers: [],
-        exports: [],
+        providers: [
+            blockchain_provider_factory_1.BlockchainProviderFactory,
+            blockchain_provider_service_1.BlockchainProviderService,
+        ],
+        exports: [
+            blockchain_provider_service_1.BlockchainProviderService,
+            blockchain_provider_factory_1.BlockchainProviderFactory,
+        ],
     })
 ], BlockchainModule);
 //# sourceMappingURL=blockchain.module.js.map
