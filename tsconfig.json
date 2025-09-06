@@ -22,6 +22,7 @@
     "node_modules",
     "dist",
     "fabric-samples",
-    "fabric-network"
+    "fabric-network",
+    "apps/frontend"
   ]
 }

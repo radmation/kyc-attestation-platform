@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { IdenfyService } from './idenfy.service';
 import { PrismaService } from '../../../../database/prisma.service';
 import { KycStatus } from '@prisma/client';
@@ -97,20 +100,22 @@ describe('IdenfyService', () => {
     const mockUser = {
       id: 'user-123',
       clientId: 'client-123',
-      profiles: [{
-        id: 'profile-123',
-        clientId: 'client-123',
-        userId: 'user-123',
-      }],
+      profiles: [
+        {
+          id: 'profile-123',
+          clientId: 'client-123',
+          userId: 'user-123',
+        },
+      ],
     };
 
     it('should create a new verification when user has no active KYC', async () => {
       // Mock user lookup
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
-      
+
       // Mock no existing KYC verification
       mockPrismaService.kycVerification.findFirst.mockResolvedValue(null);
-      
+
       // Mock successful KYC verification creation
       const mockKycRecord = {
         id: 'kyc-123',
@@ -135,7 +140,9 @@ describe('IdenfyService', () => {
       };
       mockAxiosInstance.post.mockResolvedValue(mockIdenfyResponse);
 
-      const result = await service.createVerification(createVerificationRequest);
+      const result = await service.createVerification(
+        createVerificationRequest,
+      );
 
       expect(result).toEqual({
         verificationId: 'idenfy-123',
@@ -160,9 +167,9 @@ describe('IdenfyService', () => {
       // Mock user not found
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.createVerification(createVerificationRequest))
-        .rejects
-        .toThrow(InternalServerErrorException);
+      await expect(
+        service.createVerification(createVerificationRequest),
+      ).rejects.toThrow(InternalServerErrorException);
     });
 
     it('should create profile if user has no profiles', async () => {
@@ -172,7 +179,7 @@ describe('IdenfyService', () => {
         profiles: [],
       };
       mockPrismaService.user.findUnique.mockResolvedValue(userWithoutProfiles);
-      
+
       const mockProfile = {
         id: 'new-profile-123',
         clientId: 'client-123',
@@ -180,7 +187,7 @@ describe('IdenfyService', () => {
       };
       mockPrismaService.profile.create.mockResolvedValue(mockProfile);
       mockPrismaService.kycVerification.findFirst.mockResolvedValue(null);
-      
+
       const mockKycRecord = {
         id: 'kyc-123',
         providerId: 'kyc-123',
@@ -207,33 +214,33 @@ describe('IdenfyService', () => {
     it('should throw error when user has active KYC', async () => {
       // Mock user lookup
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
-      
+
       // Mock existing active KYC verification
       mockPrismaService.kycVerification.findFirst.mockResolvedValue({
         id: 'kyc-existing',
         status: KycStatus.PENDING,
       });
 
-      await expect(service.createVerification(createVerificationRequest))
-        .rejects
-        .toThrow(InternalServerErrorException);
-      
+      await expect(
+        service.createVerification(createVerificationRequest),
+      ).rejects.toThrow(InternalServerErrorException);
+
       expect(mockPrismaService.kycVerification.create).not.toHaveBeenCalled();
     });
 
     it('should handle Idenfy API errors', async () => {
       // Mock user lookup
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
-      
+
       // Mock no existing KYC verification
       mockPrismaService.kycVerification.findFirst.mockResolvedValue(null);
-      
+
       // Mock Idenfy API error
       mockAxiosInstance.post.mockRejectedValue(new Error('Idenfy API error'));
 
-      await expect(service.createVerification(createVerificationRequest))
-        .rejects
-        .toThrow(InternalServerErrorException);
+      await expect(
+        service.createVerification(createVerificationRequest),
+      ).rejects.toThrow(InternalServerErrorException);
     });
   });
 
@@ -274,17 +281,17 @@ describe('IdenfyService', () => {
       };
       mockAxiosInstance.get.mockRejectedValue(error);
 
-      await expect(service.getVerificationStatus('nonexistent'))
-        .rejects
-        .toThrow(BadRequestException);
+      await expect(
+        service.getVerificationStatus('nonexistent'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should handle other API errors', async () => {
       mockAxiosInstance.get.mockRejectedValue(new Error('API error'));
 
-      await expect(service.getVerificationStatus('idenfy-123'))
-        .rejects
-        .toThrow(InternalServerErrorException);
+      await expect(service.getVerificationStatus('idenfy-123')).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 
@@ -303,19 +310,23 @@ describe('IdenfyService', () => {
     };
 
     it('should process verification completed event', async () => {
-      mockPrismaService.kycVerification.updateMany.mockResolvedValue({ count: 1 });
+      mockPrismaService.kycVerification.updateMany.mockResolvedValue({
+        count: 1,
+      });
 
       await service.processWebhookEvent(mockWebhookEvent);
 
-      expect(mockPrismaService.kycVerification.updateMany).toHaveBeenCalledWith({
-        where: { externalId: 'idenfy-123' },
-        data: {
-          status: KycStatus.UNDER_REVIEW,
-          inquiryData: mockWebhookEvent.data,
-          completedAt: expect.any(Date),
-          updatedAt: expect.any(Date),
+      expect(mockPrismaService.kycVerification.updateMany).toHaveBeenCalledWith(
+        {
+          where: { externalId: 'idenfy-123' },
+          data: {
+            status: KycStatus.UNDER_REVIEW,
+            inquiryData: mockWebhookEvent.data,
+            completedAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+          },
         },
-      });
+      );
     });
 
     it('should process verification approved event', async () => {
@@ -323,20 +334,24 @@ describe('IdenfyService', () => {
         ...mockWebhookEvent,
         type: 'verification.approved',
       };
-      
-      mockPrismaService.kycVerification.updateMany.mockResolvedValue({ count: 1 });
+
+      mockPrismaService.kycVerification.updateMany.mockResolvedValue({
+        count: 1,
+      });
 
       await service.processWebhookEvent(approvedEvent);
 
-      expect(mockPrismaService.kycVerification.updateMany).toHaveBeenCalledWith({
-        where: { externalId: 'idenfy-123' },
-        data: {
-          status: KycStatus.APPROVED,
-          verifiedAt: expect.any(Date),
-          inquiryData: approvedEvent.data,
-          updatedAt: expect.any(Date),
+      expect(mockPrismaService.kycVerification.updateMany).toHaveBeenCalledWith(
+        {
+          where: { externalId: 'idenfy-123' },
+          data: {
+            status: KycStatus.APPROVED,
+            verifiedAt: expect.any(Date),
+            inquiryData: approvedEvent.data,
+            updatedAt: expect.any(Date),
+          },
         },
-      });
+      );
     });
 
     it('should process verification started event', async () => {
@@ -344,19 +359,23 @@ describe('IdenfyService', () => {
         ...mockWebhookEvent,
         type: 'verification.started',
       };
-      
-      mockPrismaService.kycVerification.updateMany.mockResolvedValue({ count: 1 });
+
+      mockPrismaService.kycVerification.updateMany.mockResolvedValue({
+        count: 1,
+      });
 
       await service.processWebhookEvent(startedEvent);
 
-      expect(mockPrismaService.kycVerification.updateMany).toHaveBeenCalledWith({
-        where: { externalId: 'idenfy-123' },
-        data: {
-          status: KycStatus.IN_PROGRESS,
-          inquiryData: startedEvent.data,
-          updatedAt: expect.any(Date),
+      expect(mockPrismaService.kycVerification.updateMany).toHaveBeenCalledWith(
+        {
+          where: { externalId: 'idenfy-123' },
+          data: {
+            status: KycStatus.IN_PROGRESS,
+            inquiryData: startedEvent.data,
+            updatedAt: expect.any(Date),
+          },
         },
-      });
+      );
     });
 
     it('should handle unrecognized event types', async () => {
@@ -366,13 +385,19 @@ describe('IdenfyService', () => {
       };
 
       // Should not throw, just log warning
-      await expect(service.processWebhookEvent(unknownEvent)).resolves.not.toThrow();
+      await expect(
+        service.processWebhookEvent(unknownEvent),
+      ).resolves.not.toThrow();
     });
 
     it('should throw error when database update fails', async () => {
-      mockPrismaService.kycVerification.updateMany.mockRejectedValue(new Error('Database error'));
+      mockPrismaService.kycVerification.updateMany.mockRejectedValue(
+        new Error('Database error'),
+      );
 
-      await expect(service.processWebhookEvent(mockWebhookEvent)).rejects.toThrow('Database error');
+      await expect(
+        service.processWebhookEvent(mockWebhookEvent),
+      ).rejects.toThrow('Database error');
     });
   });
 
@@ -389,7 +414,7 @@ describe('IdenfyService', () => {
       });
 
       const result = service.validateWebhookSignature('payload', 'signature');
-      
+
       expect(result).toBe(true);
     });
 
@@ -398,9 +423,9 @@ describe('IdenfyService', () => {
       const signature = 'some-signature';
 
       const result = service.validateWebhookSignature(payload, signature);
-      
+
       // The method returns boolean based on crypto comparison
       expect(typeof result).toBe('boolean');
     });
   });
-}); 
+});

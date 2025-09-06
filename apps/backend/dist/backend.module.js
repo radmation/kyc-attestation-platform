@@ -8,16 +8,57 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BackendModule = void 0;
 const common_1 = require("@nestjs/common");
-const backend_controller_1 = require("./backend.controller");
-const backend_service_1 = require("./backend.service");
+const config_1 = require("@nestjs/config");
+const throttler_1 = require("@nestjs/throttler");
+const core_1 = require("@nestjs/core");
+const auth_module_1 = require("./modules/auth/auth.module");
+const kyc_module_1 = require("./modules/kyc/kyc.module");
+const invitation_module_1 = require("./modules/invitation/invitation.module");
+const blockchain_module_1 = require("./blockchain/blockchain.module");
+const jwt_auth_guard_1 = require("./shared/guards/jwt-auth.guard");
+const roles_guard_1 = require("./shared/guards/roles.guard");
+const database_module_1 = require("./database/database.module");
+const security_middleware_1 = require("./shared/middleware/security.middleware");
+const logging_middleware_1 = require("./shared/middleware/logging.middleware");
+const rate_limit_config_1 = require("./shared/config/rate-limit.config");
 let BackendModule = class BackendModule {
+    configure(consumer) {
+        consumer.apply(security_middleware_1.SecurityMiddleware, logging_middleware_1.LoggingMiddleware).forRoutes('*');
+    }
 };
 exports.BackendModule = BackendModule;
 exports.BackendModule = BackendModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
-        controllers: [backend_controller_1.BackendController],
-        providers: [backend_service_1.BackendService],
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: ['.env.local', '.env'],
+            }),
+            throttler_1.ThrottlerModule.forRootAsync({
+                imports: [config_1.ConfigModule],
+                useFactory: rate_limit_config_1.createRateLimitConfig,
+                inject: [config_1.ConfigService],
+            }),
+            database_module_1.DatabaseModule,
+            auth_module_1.AuthModule,
+            kyc_module_1.KycModule,
+            invitation_module_1.InvitationModule,
+            blockchain_module_1.BlockchainModule,
+        ],
+        providers: [
+            {
+                provide: core_1.APP_GUARD,
+                useClass: jwt_auth_guard_1.JwtAuthGuard,
+            },
+            {
+                provide: core_1.APP_GUARD,
+                useClass: roles_guard_1.RolesGuard,
+            },
+            {
+                provide: core_1.APP_GUARD,
+                useClass: throttler_1.ThrottlerGuard,
+            },
+        ],
     })
 ], BackendModule);
 //# sourceMappingURL=backend.module.js.map

@@ -22,7 +22,9 @@ export function setCSSProperty(property: string, value: string) {
  */
 export function getCSSProperty(property: string): string {
   if (typeof document !== 'undefined') {
-    return getComputedStyle(document.documentElement).getPropertyValue(property).trim();
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue(property)
+      .trim();
   }
   return '';
 }
@@ -39,7 +41,9 @@ export function removeCSSProperty(property: string) {
 /**
  * Converts hex color to RGB values
  */
-export function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+export function hexToRgb(
+  hex: string,
+): { r: number; g: number; b: number } | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
@@ -60,7 +64,9 @@ export function rgbToHex(r: number, g: number, b: number): string {
 /**
  * Converts hex color to HSL
  */
-export function hexToHsl(hex: string): { h: number; s: number; l: number } | null {
+export function hexToHsl(
+  hex: string,
+): { h: number; s: number; l: number } | null {
   const rgb = hexToRgb(hex);
   if (!rgb) return null;
 
@@ -109,7 +115,7 @@ export function generateColorShades(baseColor: string): Record<string, string> {
   if (!rgb) return {};
 
   const { r, g, b } = rgb;
-  
+
   // Generate lighter and darker shades in RGB format
   const shades = {
     50: `${Math.min(255, r + 40)} ${Math.min(255, g + 40)} ${Math.min(255, b + 40)}`,
@@ -180,7 +186,7 @@ export function formatBytes(bytes: number, decimals = 2): string {
  * Sleep utility for async operations
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -225,4 +231,4 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     console.error('Failed to copy to clipboard:', error);
     return false;
   }
-} 
+}

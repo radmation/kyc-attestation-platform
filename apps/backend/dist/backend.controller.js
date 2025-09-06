@@ -13,7 +13,6 @@ exports.BackendController = void 0;
 const common_1 = require("@nestjs/common");
 const backend_service_1 = require("./backend.service");
 let BackendController = class BackendController {
-    backendService;
     constructor(backendService) {
         this.backendService = backendService;
     }
