@@ -9,13 +9,13 @@ var LoggingMiddleware_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggingMiddleware = void 0;
 const common_1 = require("@nestjs/common");
-const morgan_1 = require("morgan");
+const morgan = require('morgan');
 let LoggingMiddleware = LoggingMiddleware_1 = class LoggingMiddleware {
     constructor() {
         this.logger = new common_1.Logger(LoggingMiddleware_1.name);
     }
     use(req, res, next) {
-        const morganMiddleware = (0, morgan_1.default)(':remote-addr :method :url :status :res[content-length] - :response-time ms', {
+        const morganMiddleware = morgan(':remote-addr :method :url :status :res[content-length] - :response-time ms', {
             stream: {
                 write: (message) => {
                     this.logger.log(message.trim());

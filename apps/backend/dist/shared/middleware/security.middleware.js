@@ -10,7 +10,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SecurityMiddleware = void 0;
 const common_1 = require("@nestjs/common");
 const helmet_1 = require("helmet");
-const compression_1 = require("compression");
+const compression = require('compression');
 let SecurityMiddleware = SecurityMiddleware_1 = class SecurityMiddleware {
     constructor() {
         this.logger = new common_1.Logger(SecurityMiddleware_1.name);
@@ -31,12 +31,12 @@ let SecurityMiddleware = SecurityMiddleware_1 = class SecurityMiddleware {
                 preload: true,
             },
         })(req, res, () => {
-            (0, compression_1.default)({
+            compression({
                 filter: (req, res) => {
                     if (req.headers['x-no-compression']) {
                         return false;
                     }
-                    return compression_1.default.filter(req, res);
+                    return compression.filter(req, res);
                 },
                 level: 6,
             })(req, res, () => {

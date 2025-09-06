@@ -13,7 +13,7 @@ exports.JwtService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
-const prisma_service_1 = require("../../../../database/prisma.service");
+const prisma_service_1 = require("../../../../prisma/prisma.service");
 let JwtService = class JwtService {
     constructor(nestJwtService, configService, prismaService) {
         this.nestJwtService = nestJwtService;

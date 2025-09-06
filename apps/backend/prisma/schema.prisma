@@ -31,14 +31,23 @@ model Client {
 /// Branding model for white-labeling configuration
 /// Stores customizable branding assets for each client
 model Branding {
-  id             String   @id @unique
-  logoUrl        String?
-  primaryColor   String?
-  secondaryColor String?
-  clientId       String   @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  client         Client   @relation(fields: [clientId], references: [id])
+  id              String   @id @unique
+  logoUrl         String?
+  primaryColor    String?
+  secondaryColor  String?
+  accentColor     String?
+  backgroundColor String?
+  surfaceColor    String?
+  textColor       String?
+  borderColor     String?
+  fontFamily      String?
+  borderRadius    String?
+  shadow          String?
+  customCSS       String?
+  clientId        String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  client          Client   @relation(fields: [clientId], references: [id])
 
   @@map("branding")
 }

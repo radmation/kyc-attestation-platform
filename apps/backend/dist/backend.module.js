@@ -14,6 +14,7 @@ const core_1 = require("@nestjs/core");
 const auth_module_1 = require("./modules/auth/auth.module");
 const kyc_module_1 = require("./modules/kyc/kyc.module");
 const invitation_module_1 = require("./modules/invitation/invitation.module");
+const branding_module_1 = require("./modules/branding/branding.module");
 const blockchain_module_1 = require("./blockchain/blockchain.module");
 const jwt_auth_guard_1 = require("./shared/guards/jwt-auth.guard");
 const roles_guard_1 = require("./shared/guards/roles.guard");
@@ -43,6 +44,7 @@ exports.BackendModule = BackendModule = __decorate([
             auth_module_1.AuthModule,
             kyc_module_1.KycModule,
             invitation_module_1.InvitationModule,
+            branding_module_1.BrandingModule,
             blockchain_module_1.BlockchainModule,
         ],
         providers: [

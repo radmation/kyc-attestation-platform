@@ -5,6 +5,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
 import { KycModule } from './modules/kyc/kyc.module';
 import { InvitationModule } from './modules/invitation/invitation.module';
+import { BrandingModule } from './modules/branding/branding.module';
 import { BlockchainModule } from './blockchain/blockchain.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { RolesGuard } from './shared/guards/roles.guard';
@@ -28,6 +29,7 @@ import { createRateLimitConfig } from './shared/config/rate-limit.config';
     AuthModule,
     KycModule,
     InvitationModule,
+    BrandingModule,
     BlockchainModule,
   ],
   providers: [

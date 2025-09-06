@@ -3,7 +3,7 @@ import { JwtService as NestJwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from './jwt.service';
-import { PrismaService } from '../../../../database/prisma.service';
+import { PrismaService } from '../../../../prisma/prisma.service';
 
 describe('JwtService', () => {
   let service: JwtService;
