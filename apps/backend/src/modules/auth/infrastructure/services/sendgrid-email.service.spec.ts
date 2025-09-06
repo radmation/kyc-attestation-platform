@@ -4,14 +4,11 @@ import { SendGridEmailService } from './sendgrid-email.service';
 
 // Mock SendGrid
 jest.mock('@sendgrid/mail', () => ({
-  __esModule: true,
-  default: {
-    setApiKey: jest.fn(),
-    send: jest.fn(),
-  },
+  setApiKey: jest.fn(),
+  send: jest.fn(),
 }));
 
-import sgMail from '@sendgrid/mail';
+import * as sgMail from '@sendgrid/mail';
 const mockSgMail = sgMail as jest.Mocked<typeof sgMail>;
 
 describe('SendGridEmailService', () => {

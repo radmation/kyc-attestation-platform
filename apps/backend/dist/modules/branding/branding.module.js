@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const get_client_branding_use_case_1 = require("./application/use-cases/get-client-branding.use-case");
 const update_branding_use_case_1 = require("./application/use-cases/update-branding.use-case");
+const clear_branding_cache_use_case_1 = require("./application/use-cases/clear-branding-cache.use-case");
 const prisma_branding_repository_1 = require("./infrastructure/repositories/prisma-branding.repository");
 const memory_cache_service_1 = require("./infrastructure/services/memory-cache.service");
 const branding_controller_1 = require("./presentation/controllers/branding.controller");
@@ -24,6 +25,7 @@ exports.BrandingModule = BrandingModule = __decorate([
         providers: [
             get_client_branding_use_case_1.GetClientBrandingUseCase,
             update_branding_use_case_1.UpdateBrandingUseCase,
+            clear_branding_cache_use_case_1.ClearBrandingCacheUseCase,
             {
                 provide: 'CacheService',
                 useClass: memory_cache_service_1.MemoryCacheService,
@@ -36,6 +38,7 @@ exports.BrandingModule = BrandingModule = __decorate([
         exports: [
             get_client_branding_use_case_1.GetClientBrandingUseCase,
             update_branding_use_case_1.UpdateBrandingUseCase,
+            clear_branding_cache_use_case_1.ClearBrandingCacheUseCase,
             {
                 provide: 'BrandingRepository',
                 useClass: prisma_branding_repository_1.PrismaBrandingRepository,

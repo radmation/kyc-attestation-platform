@@ -18,11 +18,13 @@ const common_1 = require("@nestjs/common");
 const public_decorator_1 = require("../../../../shared/decorators/public.decorator");
 const get_client_branding_use_case_1 = require("../../application/use-cases/get-client-branding.use-case");
 const update_branding_use_case_1 = require("../../application/use-cases/update-branding.use-case");
+const clear_branding_cache_use_case_1 = require("../../application/use-cases/clear-branding-cache.use-case");
 const update_branding_dto_1 = require("../../application/dto/update-branding.dto");
 let BrandingController = BrandingController_1 = class BrandingController {
-    constructor(getClientBrandingUseCase, updateBrandingUseCase) {
+    constructor(getClientBrandingUseCase, updateBrandingUseCase, clearBrandingCacheUseCase) {
         this.getClientBrandingUseCase = getClientBrandingUseCase;
         this.updateBrandingUseCase = updateBrandingUseCase;
+        this.clearBrandingCacheUseCase = clearBrandingCacheUseCase;
         this.logger = new common_1.Logger(BrandingController_1.name);
     }
     getHealth() {
@@ -105,6 +107,54 @@ let BrandingController = BrandingController_1 = class BrandingController {
             throw new common_1.NotFoundException(`CSS variables not found for client ${clientId}`);
         }
     }
+    async clearClientCache(clientId) {
+        try {
+            await this.clearBrandingCacheUseCase.clearClientCache(clientId);
+            this.logger.log(`Cache cleared for client: ${clientId}`);
+        }
+        catch (error) {
+            this.logger.error(`Failed to clear cache for client ${clientId}:`, error);
+            throw new common_1.BadRequestException('Failed to clear client cache');
+        }
+    }
+    async clearDomainCache() {
+        try {
+            await this.clearBrandingCacheUseCase.clearDomainCache();
+            this.logger.log('All domain cache cleared');
+        }
+        catch (error) {
+            this.logger.error('Failed to clear domain cache:', error);
+            throw new common_1.BadRequestException('Failed to clear domain cache');
+        }
+    }
+    async clearAllCache() {
+        try {
+            await this.clearBrandingCacheUseCase.clearAllBrandingCache();
+            this.logger.log('All branding cache cleared');
+        }
+        catch (error) {
+            this.logger.error('Failed to clear all cache:', error);
+            throw new common_1.BadRequestException('Failed to clear all cache');
+        }
+    }
+    async getCacheStats() {
+        try {
+            return await this.clearBrandingCacheUseCase.getCacheStats();
+        }
+        catch (error) {
+            this.logger.error('Failed to get cache stats:', error);
+            throw new common_1.BadRequestException('Failed to get cache statistics');
+        }
+    }
+    async getCacheInfo(clientId) {
+        try {
+            return await this.clearBrandingCacheUseCase.getCacheInfo(clientId);
+        }
+        catch (error) {
+            this.logger.error(`Failed to get cache info for ${clientId}:`, error);
+            throw new common_1.BadRequestException('Failed to get cache information');
+        }
+    }
 };
 exports.BrandingController = BrandingController;
 __decorate([
@@ -179,9 +229,45 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], BrandingController.prototype, "getClientCSSVariables", null);
+__decorate([
+    (0, common_1.Delete)('cache/client/:clientId'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
+    __param(0, (0, common_1.Param)('clientId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], BrandingController.prototype, "clearClientCache", null);
+__decorate([
+    (0, common_1.Delete)('cache/domains'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BrandingController.prototype, "clearDomainCache", null);
+__decorate([
+    (0, common_1.Delete)('cache/all'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BrandingController.prototype, "clearAllCache", null);
+__decorate([
+    (0, common_1.Get)('cache/stats'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BrandingController.prototype, "getCacheStats", null);
+__decorate([
+    (0, common_1.Get)('cache/client/:clientId/info'),
+    __param(0, (0, common_1.Param)('clientId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], BrandingController.prototype, "getCacheInfo", null);
 exports.BrandingController = BrandingController = BrandingController_1 = __decorate([
     (0, common_1.Controller)('branding'),
     __metadata("design:paramtypes", [get_client_branding_use_case_1.GetClientBrandingUseCase,
-        update_branding_use_case_1.UpdateBrandingUseCase])
+        update_branding_use_case_1.UpdateBrandingUseCase,
+        clear_branding_cache_use_case_1.ClearBrandingCacheUseCase])
 ], BrandingController);
 //# sourceMappingURL=branding.controller.js.map

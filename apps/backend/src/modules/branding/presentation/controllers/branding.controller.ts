@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Delete,
   Param,
   Body,
   Request,
@@ -16,6 +17,7 @@ import {
 import { Public } from '../../../../shared/decorators/public.decorator';
 import { GetClientBrandingUseCase } from '../../application/use-cases/get-client-branding.use-case';
 import { UpdateBrandingUseCase } from '../../application/use-cases/update-branding.use-case';
+import { ClearBrandingCacheUseCase } from '../../application/use-cases/clear-branding-cache.use-case';
 import { UpdateBrandingDto } from '../../application/dto/update-branding.dto';
 import { ClientBrandingResponseDto } from '../../application/dto/client-branding-response.dto';
 
@@ -26,6 +28,7 @@ export class BrandingController {
   constructor(
     private readonly getClientBrandingUseCase: GetClientBrandingUseCase,
     private readonly updateBrandingUseCase: UpdateBrandingUseCase,
+    private readonly clearBrandingCacheUseCase: ClearBrandingCacheUseCase,
   ) {}
 
   /**
@@ -193,6 +196,90 @@ export class BrandingController {
       throw new NotFoundException(
         `CSS variables not found for client ${clientId}`,
       );
+    }
+  }
+
+  /**
+   * Clear cache for specific client (Admin only)
+   */
+  @Delete('cache/client/:clientId')
+  // @UseGuards(JwtAuthGuard, AdminGuard) // Uncomment when proper auth is set up
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async clearClientCache(@Param('clientId') clientId: string): Promise<void> {
+    try {
+      await this.clearBrandingCacheUseCase.clearClientCache(clientId);
+      this.logger.log(`Cache cleared for client: ${clientId}`);
+    } catch (error) {
+      this.logger.error(`Failed to clear cache for client ${clientId}:`, error);
+      throw new BadRequestException('Failed to clear client cache');
+    }
+  }
+
+  /**
+   * Clear all domain cache (Admin only)
+   */
+  @Delete('cache/domains')
+  // @UseGuards(JwtAuthGuard, AdminGuard) // Uncomment when proper auth is set up
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async clearDomainCache(): Promise<void> {
+    try {
+      await this.clearBrandingCacheUseCase.clearDomainCache();
+      this.logger.log('All domain cache cleared');
+    } catch (error) {
+      this.logger.error('Failed to clear domain cache:', error);
+      throw new BadRequestException('Failed to clear domain cache');
+    }
+  }
+
+  /**
+   * Clear all branding cache (Admin only)
+   */
+  @Delete('cache/all')
+  // @UseGuards(JwtAuthGuard, AdminGuard) // Uncomment when proper auth is set up
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async clearAllCache(): Promise<void> {
+    try {
+      await this.clearBrandingCacheUseCase.clearAllBrandingCache();
+      this.logger.log('All branding cache cleared');
+    } catch (error) {
+      this.logger.error('Failed to clear all cache:', error);
+      throw new BadRequestException('Failed to clear all cache');
+    }
+  }
+
+  /**
+   * Get cache statistics (Admin only)
+   */
+  @Get('cache/stats')
+  // @UseGuards(JwtAuthGuard, AdminGuard) // Uncomment when proper auth is set up
+  async getCacheStats(): Promise<{
+    totalKeys: number;
+    clientKeys: number;
+    domainKeys: number;
+  }> {
+    try {
+      return await this.clearBrandingCacheUseCase.getCacheStats();
+    } catch (error) {
+      this.logger.error('Failed to get cache stats:', error);
+      throw new BadRequestException('Failed to get cache statistics');
+    }
+  }
+
+  /**
+   * Get cache info for specific client (Admin only)
+   */
+  @Get('cache/client/:clientId/info')
+  // @UseGuards(JwtAuthGuard, AdminGuard) // Uncomment when proper auth is set up
+  async getCacheInfo(@Param('clientId') clientId: string): Promise<{
+    exists: boolean;
+    ttl: number;
+    key: string;
+  }> {
+    try {
+      return await this.clearBrandingCacheUseCase.getCacheInfo(clientId);
+    } catch (error) {
+      this.logger.error(`Failed to get cache info for ${clientId}:`, error);
+      throw new BadRequestException('Failed to get cache information');
     }
   }
 

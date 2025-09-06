@@ -7,6 +7,7 @@ import { PrismaModule } from '../../prisma/prisma.module';
 // Application
 import { GetClientBrandingUseCase } from './application/use-cases/get-client-branding.use-case';
 import { UpdateBrandingUseCase } from './application/use-cases/update-branding.use-case';
+import { ClearBrandingCacheUseCase } from './application/use-cases/clear-branding-cache.use-case';
 
 // Infrastructure
 import { PrismaBrandingRepository } from './infrastructure/repositories/prisma-branding.repository';
@@ -23,6 +24,7 @@ import { BrandingController } from './presentation/controllers/branding.controll
     // Use cases
     GetClientBrandingUseCase,
     UpdateBrandingUseCase,
+    ClearBrandingCacheUseCase,
 
     // Infrastructure services
     {
@@ -40,6 +42,7 @@ import { BrandingController } from './presentation/controllers/branding.controll
     // Export use cases for other modules
     GetClientBrandingUseCase,
     UpdateBrandingUseCase,
+    ClearBrandingCacheUseCase,
     {
       provide: 'BrandingRepository',
       useClass: PrismaBrandingRepository,
