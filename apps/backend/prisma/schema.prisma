@@ -8,6 +8,338 @@ datasource db {
   relationMode = "prisma"
 }
 
+/// Client/Organization model for multi-tenant architecture
+/// Each client represents a separate organization using the platform
+model Client {
+  id             String           @id @unique
+  name           String           @unique
+  domain         String           @unique
+  subdomain      String?          @unique
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  users          User[]
+  profiles       Profile[]
+  branding       Branding?
+  smartContracts SmartContract[]
+  roles          Role[]
+  invitations    UserInvitation[]
+
+  @@map("clients")
+}
+
+/// Branding model for white-labeling configuration
+/// Stores customizable branding assets for each client
+model Branding {
+  id             String   @id @unique
+  logoUrl        String?
+  primaryColor   String?
+  secondaryColor String?
+  clientId       String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  client         Client   @relation(fields: [clientId], references: [id])
+
+  @@map("branding")
+}
+
+/// User model for authentication and user management
+/// Represents employees of client organizations who log in to manage the platform
+model User {
+  id                        String             @id @unique @default(uuid())
+  email                     String             @unique
+  password                  String
+  firstName                 String?
+  lastName                  String?
+  clientId                  String
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  isActive                  Boolean            @default(true)
+  role                      UserRole           @default(CLIENT_USER)
+  accountStatus             AccountStatus      @default(PENDING)
+  emailVerificationExpires  DateTime?
+  emailVerificationToken    String?            @unique
+  emailVerified             Boolean            @default(false)
+  lastVerificationEmailSent DateTime?
+  verificationEmailCount    Int                @default(0)
+  client                    Client             @relation(fields: [clientId], references: [id])
+  profiles                  Profile[]
+  apiTokens                 ApiToken[]
+  roles                     Role[]
+  sessions                  UserSession[]
+  rateLimitAttempts         RateLimitAttempt[]
+  invitationsSent           UserInvitation[]   @relation("Inviter")
+
+  @@map("users")
+}
+
+/// Profile model for KYC (Know Your Customer) information
+/// Represents the subject of verification (the end-user being verified)
+model Profile {
+  id           String                  @id @unique
+  firstName    String?
+  lastName     String?
+  dateOfBirth  DateTime?
+  clientId     String
+  userId       String?                 @unique
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+  client       Client                  @relation(fields: [clientId], references: [id])
+  user         User?                   @relation(fields: [userId], references: [id])
+  addresses    Address[]
+  kycChecks    KycVerification[]
+  wallets      Wallet[]
+  attestations Attestation[]
+  monitoring   TransactionMonitoring[]
+
+  @@map("profiles")
+}
+
+/// Address model for multiple addresses per profile
+/// Supports different types of addresses (primary, mailing, previous)
+model Address {
+  id         String   @id @unique
+  street     String?
+  city       String?
+  state      String?
+  postalCode String?
+  country    String?
+  type       String?
+  isVerified Boolean  @default(false)
+  profileId  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  profile    Profile  @relation(fields: [profileId], references: [id])
+
+  @@map("addresses")
+}
+
+/// Wallet model for cryptocurrency addresses
+/// Stores user's cryptocurrency wallet addresses
+model Wallet {
+  id           String        @id @unique
+  address      String        @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  isBlocked    Boolean       @default(false)
+  isVerified   Boolean       @default(false)
+  label        String?
+  profileId    String
+  profile      Profile       @relation(fields: [profileId], references: [id])
+  attestations Attestation[]
+
+  @@map("wallets")
+}
+
+/// KycVerification model for Identity Proofing and Verification (IPV) checks
+/// Stores the results of KYC verification processes
+model KycVerification {
+  id              String    @id @unique
+  providerId      String    @unique
+  status          KycStatus @default(PENDING)
+  lastCheckedAt   DateTime  @default(now())
+  webhookReceived Boolean   @default(false)
+  profileId       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  completedAt     DateTime?
+  externalId      String?   @unique
+  inquiryData     Json?
+  provider        String    @default("idenfy")
+  rejectedAt      DateTime?
+  verifiedAt      DateTime?
+  profile         Profile?  @relation(fields: [profileId], references: [id])
+
+  @@map("kyc_verifications")
+}
+
+/// Attestation model for on-chain attestation data
+/// This is the core on-chain attestation data
+model Attestation {
+  id            String            @id @unique
+  status        AttestationStatus @default(PENDING)
+  issuedAt      DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  chain         String
+  metadataUri   String?
+  profileId     String
+  revokedAt     DateTime?
+  smartContract String
+  tokenId       BigInt?           @unique
+  walletId      String?
+  wallet        Wallet?           @relation(fields: [walletId], references: [id])
+  profile       Profile           @relation(fields: [profileId], references: [id])
+
+  @@map("attestations")
+}
+
+/// SmartContract model for integrated smart contracts
+/// Tracks smart contracts that have integrated with our platform
+model SmartContract {
+  id              String   @id @unique
+  contractAddress String   @unique
+  chain           String
+  name            String
+  isActive        Boolean  @default(true)
+  clientId        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  client          Client   @relation(fields: [clientId], references: [id])
+
+  @@map("smart_contracts")
+}
+
+/// TransactionMonitoring model for continuous on-chain monitoring
+/// Monitors wallet transactions for suspicious activity
+model TransactionMonitoring {
+  id              String           @id @unique
+  transactionHash String           @unique
+  fromAddress     String
+  toAddress       String
+  amount          String
+  status          MonitoringStatus @default(CLEAR)
+  riskScore       Int              @default(0)
+  flags           String[]
+  profileId       String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  profile         Profile          @relation(fields: [profileId], references: [id])
+
+  @@map("transaction_monitoring")
+}
+
+/// Role model for role-based access control (RBAC)
+/// We will have global roles (e.g., 'platform_admin') and client-scoped roles (e.g., 'client_admin')
+model Role {
+  id          String       @id @unique @default(uuid())
+  name        String       @unique
+  description String?
+  clientId    String?
+  createdAt   DateTime     @default(now())
+  isGlobal    Boolean      @default(false)
+  updatedAt   DateTime     @updatedAt
+  client      Client?      @relation(fields: [clientId], references: [id])
+  users       User[]
+  permissions Permission[]
+
+  @@map("roles")
+}
+
+/// Permission model for role-based access control
+/// Granular permissions for different operations
+model Permission {
+  id          String   @id @unique @default(uuid())
+  name        String   @unique
+  description String?
+  action      String
+  createdAt   DateTime @default(now())
+  resource    String
+  updatedAt   DateTime @updatedAt
+  roles       Role[]
+
+  @@map("permissions")
+}
+
+/// ApiToken model for external services
+/// This table manages API tokens for external services
+model ApiToken {
+  id          String    @id @unique @default(uuid())
+  name        String
+  token       String    @unique
+  permissions String[]
+  userId      String
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  lastUsedAt  DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@map("api_tokens")
+}
+
+/// UserSession model for managing user sessions and authentication
+model UserSession {
+  id           String   @id @unique @default(uuid())
+  userId       String
+  token        String   @unique
+  expiresAt    DateTime
+  lastActivity DateTime @default(now())
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@map("user_sessions")
+}
+
+/// RateLimitAttempt model for compliance logging of rate-limited actions
+model RateLimitAttempt {
+  id         String   @id @unique @default(uuid())
+  userId     String?
+  action     String
+  ipAddress  String?
+  userAgent  String?
+  wasBlocked Boolean  @default(false)
+  reason     String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@map("rate_limit_attempts")
+}
+
+/// UserInvitation model for managing user invitations to client organizations
+/// Handles the invitation workflow with secure token-based acceptance
+model UserInvitation {
+  id              String           @id @unique @default(uuid())
+  email           String
+  firstName       String?
+  lastName        String?
+  role            UserRole
+  clientId        String
+  token           String           @unique
+  status          InvitationStatus @default(PENDING)
+  expiresAt       DateTime
+  acceptedAt      DateTime?
+  revokedAt       DateTime?
+  invitedBy       String
+  emailSentAt     DateTime?
+  emailSentCount  Int              @default(0)
+  lastEmailSentAt DateTime?
+  message         String?
+  permissions     String[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  client          Client           @relation(fields: [clientId], references: [id])
+  inviter         User             @relation("Inviter", fields: [invitedBy], references: [id])
+
+  @@index([token])
+  @@index([email])
+  @@index([clientId])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("user_invitations")
+}
+
+model PermissionToRole {
+  A String
+  B String
+
+  @@id([A, B], map: "_PermissionToRole_AB_pkey")
+  @@index([B], map: "_PermissionToRole_B_index")
+  @@map("_PermissionToRole")
+}
+
+model RoleToUser {
+  A String
+  B String
+
+  @@id([A, B], map: "_RoleToUser_AB_pkey")
+  @@index([B], map: "_RoleToUser_B_index")
+  @@map("_RoleToUser")
+}
+
 /// User role enumeration for access control and permissions
 enum UserRole {
   SUPER_ADMIN
@@ -17,10 +349,10 @@ enum UserRole {
 
 /// Account status enumeration for user account lifecycle
 enum AccountStatus {
-  PENDING      // Email not verified yet
-  ACTIVE       // Email verified, account active
-  SUSPENDED    // Admin suspended account
-  DEACTIVATED  // User deactivated account
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
 }
 
 /// Attestation status enumeration
@@ -36,11 +368,11 @@ enum AttestationStatus {
 enum KycStatus {
   PENDING
   IN_PROGRESS
-  UNDER_REVIEW
-  MANUAL_REVIEW
   APPROVED
   REJECTED
   EXPIRED
+  UNDER_REVIEW
+  MANUAL_REVIEW
 }
 
 /// Transaction monitoring status
@@ -51,330 +383,10 @@ enum MonitoringStatus {
   UNDER_REVIEW
 }
 
-/// Client/Organization model for multi-tenant architecture
-/// Each client represents a separate organization using the platform
-model Client {
-  id        String    @id @unique
-  name      String    @unique
-  domain    String    @unique
-  subdomain String?   @unique
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  
-  // Relationships
-  users     User[]
-  profiles  Profile[]
-  branding  Branding?
-  smartContracts SmartContract[] // Smart contracts integrated by this client
-  roles     Role[] // Client-scoped roles
-
-  @@map("clients")
+/// User invitation status enumeration
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
 }
-
-/// Branding model for white-labeling configuration
-/// Stores customizable branding assets for each client
-model Branding {
-  id              String   @id @unique
-  logoUrl         String?
-  primaryColor    String?  // e.g., '#0000FF'
-  secondaryColor  String?
-  
-  // Relationships
-  clientId        String   @unique
-  client          Client   @relation(fields: [clientId], references: [id])
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  @@map("branding")
-}
-
-/// User model for authentication and user management
-/// Represents employees of client organizations who log in to manage the platform
-model User {
-  id        String   @id @unique @default(uuid())
-  email     String   @unique
-  password  String
-  firstName String?
-  lastName  String?
-  role      UserRole @default(CLIENT_USER)
-  accountStatus AccountStatus @default(PENDING)
-  isActive  Boolean  @default(true)
-  clientId  String
-  
-  // Email verification fields
-  emailVerified Boolean @default(false)
-  emailVerificationToken String? @unique
-  emailVerificationExpires DateTime?
-  lastVerificationEmailSent DateTime?
-  verificationEmailCount Int @default(0) // For rate limiting compliance
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Relationships
-  client    Client   @relation(fields: [clientId], references: [id])
-  profiles  Profile[] // Profiles managed by this user
-  apiTokens ApiToken[]
-  roles     Role[]   // RBAC roles assigned to this user
-  sessions  UserSession[] // User's active sessions
-  rateLimitAttempts RateLimitAttempt[] // Rate limiting compliance logs
-
-  @@map("users")
-}
-
-/// Profile model for KYC (Know Your Customer) information
-/// Represents the subject of verification (the end-user being verified)
-model Profile {
-  id          String   @id @unique
-  firstName   String?
-  lastName    String?
-  dateOfBirth DateTime?
-  
-  // Relationships
-  clientId    String
-  client      Client   @relation(fields: [clientId], references: [id])
-  
-  // A Profile can be tied to a User (e.g., if a KYC-ed user also has login access)
-  userId      String?  @unique
-  user        User?    @relation(fields: [userId], references: [id])
-
-  addresses     Address[]
-  kycChecks     KycVerification[]
-  wallets       Wallet[]
-  attestations  Attestation[] // On-chain attestations for this profile
-  monitoring    TransactionMonitoring[] // Ongoing monitoring of this profile
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("profiles")
-}
-
-/// Address model for multiple addresses per profile
-/// Supports different types of addresses (primary, mailing, previous)
-model Address {
-  id          String   @id @unique
-  street      String?
-  city        String?
-  state       String?
-  postalCode  String?
-  country     String?
-  type        String?  // e.g., 'primary', 'mailing', 'previous'
-  isVerified  Boolean  @default(false)
-
-  // Relationships
-  profileId   String
-  profile     Profile  @relation(fields: [profileId], references: [id])
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("addresses")
-}
-
-/// Wallet model for cryptocurrency addresses
-/// Stores user's cryptocurrency wallet addresses
-model Wallet {
-  id           String    @id @unique
-  address      String    @unique
-  label        String?
-  isVerified   Boolean   @default(false) // Whether this wallet has been KYC verified
-  isBlocked    Boolean   @default(false) // Whether this wallet is blocked from transactions
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  // Relationships
-  profileId    String
-  profile      Profile   @relation(fields: [profileId], references: [id])
-  attestations Attestation[]
-
-  @@map("wallets")
-}
-
-/// KycVerification model for Identity Proofing and Verification (IPV) checks
-/// Stores the results of KYC verification processes
-model KycVerification {
-  id              String   @id @unique
-  providerId      String   @unique // Internal provider reference
-  externalId      String?  @unique // External provider's verification ID (e.g., Idenfy scanRef)
-  provider        String   @default("idenfy") // KYC provider name
-  status          KycStatus @default(PENDING)
-  lastCheckedAt   DateTime @default(now())
-  webhookReceived Boolean  @default(false)
-  
-  // Timestamp fields for verification lifecycle
-  verifiedAt      DateTime? // When verification was approved
-  rejectedAt      DateTime? // When verification was rejected
-  completedAt     DateTime? // When verification was completed (before approval/rejection)
-  
-  // Store raw inquiry data from provider (JSON)
-  inquiryData     Json?    // Provider's verification data and results
-  
-  // Foreign key to the Profile who is being verified
-  profileId       String?
-  profile         Profile? @relation(fields: [profileId], references: [id])
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@map("kyc_verifications")
-}
-
-/// Attestation model for on-chain attestation data
-/// This is the core on-chain attestation data
-// An Attestation represents a record of a verification or certification event related to a user or client.
-// Think of it as a digital stamp or a verified statement about a specific piece of information.
-model Attestation {
-  id            String    @id @unique
-  tokenId       BigInt?   @unique // NFT token ID on blockchain
-  smartContract String    // Smart contract address that issued the attestation
-  chain         String    // Blockchain network (e.g., "ethereum", "polygon")
-  metadataUri   String?   // IPFS URI containing attestation metadata
-  status        AttestationStatus @default(PENDING)
-  
-  // Foreign key to the Wallet that holds the attestation
-  walletId      String?
-  wallet        Wallet?   @relation(fields: [walletId], references: [id])
-  
-  // Foreign key to the Profile this attestation belongs to
-  profileId     String
-  profile       Profile   @relation(fields: [profileId], references: [id])
-
-  issuedAt      DateTime?
-  revokedAt     DateTime?
-  expiresAt     DateTime?
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@map("attestations")
-}
-
-/// SmartContract model for integrated smart contracts
-/// Tracks smart contracts that have integrated with our platform
-model SmartContract {
-  id              String   @id @unique
-  contractAddress String   @unique // Smart contract address
-  chain           String   // Blockchain network
-  name            String   // Contract name/description
-  isActive        Boolean  @default(true)
-  
-  // Relationships
-  clientId        String
-  client          Client   @relation(fields: [clientId], references: [id])
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@map("smart_contracts")
-}
-
-/// TransactionMonitoring model for continuous on-chain monitoring
-/// Monitors wallet transactions for suspicious activity
-model TransactionMonitoring {
-  id              String   @id @unique
-  transactionHash String   @unique // Blockchain transaction hash
-  fromAddress     String   // Sender wallet address
-  toAddress       String   // Receiver wallet address
-  amount          String   // Transaction amount
-  status          MonitoringStatus @default(CLEAR)
-  riskScore       Int      @default(0) // Risk score (0-100)
-  flags           String[] // Array of risk flags
-  
-  // Relationships
-  profileId       String
-  profile         Profile  @relation(fields: [profileId], references: [id])
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@map("transaction_monitoring")
-}
-
-/// Role model for role-based access control (RBAC)
-/// We will have global roles (e.g., 'platform_admin') and client-scoped roles (e.g., 'client_admin')
-model Role {
-  id          String   @id @unique @default(uuid())
-  name        String   @unique
-  description String?
-  isGlobal   Boolean  @default(false) // Whether this role applies across all clients
-  clientId   String?  // If null, role is global; if set, role is client-scoped
-  client     Client?  @relation(fields: [clientId], references: [id])
-  users      User[]
-  permissions Permission[]
-  
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@map("roles")
-}
-
-/// Permission model for role-based access control
-/// Granular permissions for different operations
-model Permission {
-  id          String   @id @unique @default(uuid())
-  name        String   @unique
-  description String?
-  resource   String   // e.g., 'user', 'profile', 'attestation', 'client'
-  action     String   // e.g., 'create', 'read', 'update', 'delete', 'approve'
-  roles      Role[]
-  
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@map("permissions")
-}
-
-/// ApiToken model for external services
-/// This table manages API tokens for external services
-model ApiToken {
-  id          String   @id @unique @default(uuid())
-  name        String
-  token       String   @unique
-  permissions String[]
-  userId      String
-  createdAt   DateTime @default(now())
-  expiresAt   DateTime?
-  lastUsedAt  DateTime?
-  user        User     @relation(fields: [userId], references: [id])
-
-  @@map("api_tokens")
-}
-
-/// UserSession model for managing user sessions and authentication
-model UserSession {
-  id           String   @id @unique @default(uuid())
-  userId       String
-  user         User     @relation(fields: [userId], references: [id])
-  token        String   @unique
-  expiresAt    DateTime
-  lastActivity DateTime @default(now())
-  ipAddress    String?
-  userAgent    String?
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@map("user_sessions")
-}
-
-/// RateLimitAttempt model for compliance logging of rate-limited actions
-model RateLimitAttempt {
-  id          String   @id @unique @default(uuid())
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
-  action      String   // e.g., 'email_verification_resend', 'login_attempt'
-  ipAddress   String?
-  userAgent   String?
-  wasBlocked  Boolean  @default(false) // Whether this attempt was rate limited
-  reason      String?  // Why it was blocked (e.g., 'hourly_limit_exceeded')
-  
-  createdAt   DateTime @default(now())
-
-  @@map("rate_limit_attempts")
-}
-
-
-
