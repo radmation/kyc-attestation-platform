@@ -54,9 +54,8 @@ let ClearBrandingCacheUseCase = ClearBrandingCacheUseCase_1 = class ClearBrandin
     async getCacheStats() {
         try {
             const allKeys = await this.getAllBrandingCacheKeys();
-            const clientKeys = allKeys.filter(key => key.startsWith(`${this.CACHE_PREFIX}`) &&
-                !key.includes('domain:')).length;
-            const domainKeys = allKeys.filter(key => key.includes(`${this.CACHE_PREFIX}domain:`)).length;
+            const clientKeys = allKeys.filter((key) => key.startsWith(`${this.CACHE_PREFIX}`) && !key.includes('domain:')).length;
+            const domainKeys = allKeys.filter((key) => key.includes(`${this.CACHE_PREFIX}domain:`)).length;
             return {
                 totalKeys: allKeys.length,
                 clientKeys,
