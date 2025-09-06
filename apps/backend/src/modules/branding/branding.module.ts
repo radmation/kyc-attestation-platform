@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from '../../prisma/prisma.module';
+// import { PrismaModule } from '../../prisma/prisma.module'; // Commented out for now
 
 // Domain
 // (No domain services to register)
@@ -18,7 +18,7 @@ import { BrandingController } from './presentation/controllers/branding.controll
 
 @Module({
   imports: [
-    PrismaModule,
+    // PrismaModule, // Commented out for now
   ],
   controllers: [
     BrandingController,

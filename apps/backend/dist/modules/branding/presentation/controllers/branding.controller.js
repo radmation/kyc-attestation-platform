@@ -15,6 +15,7 @@ var BrandingController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BrandingController = void 0;
 const common_1 = require("@nestjs/common");
+const public_decorator_1 = require("../../../../shared/decorators/public.decorator");
 const get_client_branding_use_case_1 = require("../../application/use-cases/get-client-branding.use-case");
 const update_branding_use_case_1 = require("../../application/use-cases/update-branding.use-case");
 const update_branding_dto_1 = require("../../application/dto/update-branding.dto");
@@ -98,6 +99,7 @@ let BrandingController = BrandingController_1 = class BrandingController {
 };
 exports.BrandingController = BrandingController;
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('client/:clientId'),
     __param(0, (0, common_1.Param)('clientId')),
     __metadata("design:type", Function),
@@ -105,6 +107,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BrandingController.prototype, "getClientBranding", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('domain/:domain'),
     __param(0, (0, common_1.Param)('domain')),
     __metadata("design:type", Function),
@@ -138,6 +141,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BrandingController.prototype, "createOrUpdateBranding", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('client/:clientId/theme'),
     __param(0, (0, common_1.Param)('clientId')),
     __metadata("design:type", Function),
@@ -145,6 +149,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BrandingController.prototype, "getClientTheme", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('client/:clientId/css-variables'),
     __param(0, (0, common_1.Param)('clientId')),
     __metadata("design:type", Function),
@@ -152,7 +157,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BrandingController.prototype, "getClientCSSVariables", null);
 exports.BrandingController = BrandingController = BrandingController_1 = __decorate([
-    (0, common_1.Controller)('api/v1/branding'),
+    (0, common_1.Controller)('branding'),
     __metadata("design:paramtypes", [get_client_branding_use_case_1.GetClientBrandingUseCase,
         update_branding_use_case_1.UpdateBrandingUseCase])
 ], BrandingController);

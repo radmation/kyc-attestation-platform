@@ -13,12 +13,13 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { Public } from '../../../../shared/decorators/public.decorator';
 import { GetClientBrandingUseCase } from '../../application/use-cases/get-client-branding.use-case';
 import { UpdateBrandingUseCase } from '../../application/use-cases/update-branding.use-case';
 import { UpdateBrandingDto } from '../../application/dto/update-branding.dto';
 import { ClientBrandingResponseDto } from '../../application/dto/client-branding-response.dto';
 
-@Controller('api/v1/branding')
+@Controller('branding')
 export class BrandingController {
   private readonly logger = new Logger(BrandingController.name);
 
@@ -30,6 +31,7 @@ export class BrandingController {
   /**
    * Get branding by client ID
    */
+  @Public()
   @Get('client/:clientId')
   async getClientBranding(@Param('clientId') clientId: string): Promise<ClientBrandingResponseDto> {
     try {
@@ -44,6 +46,7 @@ export class BrandingController {
   /**
    * Get branding by domain
    */
+  @Public()
   @Get('domain/:domain')
   async getBrandingByDomain(@Param('domain') domain: string): Promise<ClientBrandingResponseDto> {
     try {
@@ -120,6 +123,7 @@ export class BrandingController {
   /**
    * Get theme configuration for a client
    */
+  @Public()
   @Get('client/:clientId/theme')
   async getClientTheme(@Param('clientId') clientId: string): Promise<any> {
     try {
@@ -135,6 +139,7 @@ export class BrandingController {
   /**
    * Get CSS variables for a client
    */
+  @Public()
   @Get('client/:clientId/css-variables')
   async getClientCSSVariables(@Param('clientId') clientId: string): Promise<{ css: string }> {
     try {
