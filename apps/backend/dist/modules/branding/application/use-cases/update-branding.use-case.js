@@ -50,7 +50,15 @@ let UpdateBrandingUseCase = UpdateBrandingUseCase_1 = class UpdateBrandingUseCas
             }
         }
         if (updateDto.fontFamily) {
-            const allowedFonts = ['Inter', 'Roboto', 'Open Sans', 'Lato', 'Poppins', 'system-ui', 'sans-serif'];
+            const allowedFonts = [
+                'Inter',
+                'Roboto',
+                'Open Sans',
+                'Lato',
+                'Poppins',
+                'system-ui',
+                'sans-serif',
+            ];
             if (!allowedFonts.includes(updateDto.fontFamily)) {
                 throw new common_1.BadRequestException(`Font family must be one of: ${allowedFonts.join(', ')}`);
             }
@@ -96,7 +104,7 @@ let UpdateBrandingUseCase = UpdateBrandingUseCase_1 = class UpdateBrandingUseCas
             /<script/i,
             /<\/script/i,
         ];
-        return unsafePatterns.some(pattern => pattern.test(css));
+        return unsafePatterns.some((pattern) => pattern.test(css));
     }
     async invalidateCache(clientId) {
         try {

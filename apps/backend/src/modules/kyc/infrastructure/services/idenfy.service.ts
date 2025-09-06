@@ -57,12 +57,15 @@ export class IdenfyService {
     private prismaService: PrismaService,
   ) {
     this.apiKey = this.configService.get<string>('IDENFY_API_ACCESS_KEY') || '';
-    this.apiSecret = this.configService.get<string>('IDENFY_API_SECRET_KEY') || '';
+    this.apiSecret =
+      this.configService.get<string>('IDENFY_API_SECRET_KEY') || '';
     const environment =
       this.configService.get<string>('IDENFY_ENVIRONMENT') || 'sandbox';
 
     if (!this.apiKey || !this.apiSecret) {
-      throw new Error('IDENFY_API_ACCESS_KEY and IDENFY_API_SECRET_KEY are required');
+      throw new Error(
+        'IDENFY_API_ACCESS_KEY and IDENFY_API_SECRET_KEY are required',
+      );
     }
 
     // Set base URL based on environment

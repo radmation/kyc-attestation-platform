@@ -1,10 +1,10 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
+import {
+  Controller,
+  Get,
+  Post,
   Put,
-  Param, 
-  Body, 
+  Param,
+  Body,
   Request,
   BadRequestException,
   NotFoundException,
@@ -54,12 +54,17 @@ export class BrandingController {
    */
   @Public()
   @Get('client/:clientId')
-  async getClientBranding(@Param('clientId') clientId: string): Promise<ClientBrandingResponseDto> {
+  async getClientBranding(
+    @Param('clientId') clientId: string,
+  ): Promise<ClientBrandingResponseDto> {
     try {
       this.logger.debug(`Getting branding for client: ${clientId}`);
       return await this.getClientBrandingUseCase.execute(clientId);
     } catch (error) {
-      this.logger.error(`Failed to get branding for client ${clientId}:`, error);
+      this.logger.error(
+        `Failed to get branding for client ${clientId}:`,
+        error,
+      );
       throw new NotFoundException(`Branding not found for client ${clientId}`);
     }
   }
@@ -69,7 +74,9 @@ export class BrandingController {
    */
   @Public()
   @Get('domain/:domain')
-  async getBrandingByDomain(@Param('domain') domain: string): Promise<ClientBrandingResponseDto> {
+  async getBrandingByDomain(
+    @Param('domain') domain: string,
+  ): Promise<ClientBrandingResponseDto> {
     try {
       this.logger.debug(`Getting branding for domain: ${domain}`);
       return await this.getClientBrandingUseCase.executeByDomain(domain);
@@ -84,11 +91,15 @@ export class BrandingController {
    */
   @Get('current')
   // @UseGuards(JwtAuthGuard) // Uncomment when auth is properly set up
-  async getCurrentUserBranding(@Request() req: any): Promise<ClientBrandingResponseDto> {
+  async getCurrentUserBranding(
+    @Request() req: any,
+  ): Promise<ClientBrandingResponseDto> {
     try {
       // For now, use a default client ID since auth isn't fully integrated
       const clientId = req.user?.clientId || 'default-client';
-      this.logger.debug(`Getting current user branding for client: ${clientId}`);
+      this.logger.debug(
+        `Getting current user branding for client: ${clientId}`,
+      );
       return await this.getClientBrandingUseCase.execute(clientId);
     } catch (error) {
       this.logger.error(`Failed to get current user branding:`, error);
@@ -106,22 +117,25 @@ export class BrandingController {
   async updateBranding(
     @Param('clientId') clientId: string,
     @Body() updateDto: UpdateBrandingDto,
-    @Request() req: any
+    @Request() req: any,
   ): Promise<ClientBrandingResponseDto> {
     try {
       this.logger.debug(`Updating branding for client: ${clientId}`);
-      
+
       // TODO: Validate user has permission to update this client's branding
       // await this.validateBrandingPermission(req.user, clientId);
-      
+
       return await this.updateBrandingUseCase.execute(clientId, updateDto);
     } catch (error) {
-      this.logger.error(`Failed to update branding for client ${clientId}:`, error);
-      
+      this.logger.error(
+        `Failed to update branding for client ${clientId}:`,
+        error,
+      );
+
       if (error instanceof BadRequestException) {
         throw error;
       }
-      
+
       throw new BadRequestException('Failed to update branding');
     }
   }
@@ -135,7 +149,7 @@ export class BrandingController {
   async createOrUpdateBranding(
     @Param('clientId') clientId: string,
     @Body() updateDto: UpdateBrandingDto,
-    @Request() req: any
+    @Request() req: any,
   ): Promise<ClientBrandingResponseDto> {
     // Delegate to the PUT endpoint logic
     return this.updateBranding(clientId, updateDto, req);
@@ -162,16 +176,23 @@ export class BrandingController {
    */
   @Public()
   @Get('client/:clientId/css-variables')
-  async getClientCSSVariables(@Param('clientId') clientId: string): Promise<{ css: string }> {
+  async getClientCSSVariables(
+    @Param('clientId') clientId: string,
+  ): Promise<{ css: string }> {
     try {
       this.logger.debug(`Getting CSS variables for client: ${clientId}`);
       const branding = await this.getClientBrandingUseCase.execute(clientId);
       return {
-        css: branding.theme.toCSSVariables()
+        css: branding.theme.toCSSVariables(),
       };
     } catch (error) {
-      this.logger.error(`Failed to get CSS variables for client ${clientId}:`, error);
-      throw new NotFoundException(`CSS variables not found for client ${clientId}`);
+      this.logger.error(
+        `Failed to get CSS variables for client ${clientId}:`,
+        error,
+      );
+      throw new NotFoundException(
+        `CSS variables not found for client ${clientId}`,
+      );
     }
   }
 
@@ -180,11 +201,11 @@ export class BrandingController {
   //   if (user.role === UserRole.SUPER_ADMIN) {
   //     return; // Super admin can update any client's branding
   //   }
-  //   
+  //
   //   if (user.role === UserRole.CLIENT_ADMIN && user.clientId === clientId) {
   //     return; // Client admin can update their own client's branding
   //   }
-  //   
+  //
   //   throw new ForbiddenException('Insufficient permissions to update branding');
   // }
-} 
+}

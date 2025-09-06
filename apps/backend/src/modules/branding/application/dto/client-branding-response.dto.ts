@@ -24,7 +24,11 @@ export class ClientBrandingResponseDto {
     Object.assign(this, data);
   }
 
-  static fromEntity(branding: any, clientName: string, theme: ThemeConfig): ClientBrandingResponseDto {
+  static fromEntity(
+    branding: any,
+    clientName: string,
+    theme: ThemeConfig,
+  ): ClientBrandingResponseDto {
     return new ClientBrandingResponseDto({
       id: branding.id,
       clientId: branding.clientId,
@@ -46,4 +50,4 @@ export class ClientBrandingResponseDto {
       updatedAt: branding.updatedAt,
     });
   }
-} 
+}

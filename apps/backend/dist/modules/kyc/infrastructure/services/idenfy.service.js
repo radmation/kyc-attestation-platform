@@ -23,7 +23,8 @@ let IdenfyService = IdenfyService_1 = class IdenfyService {
         this.prismaService = prismaService;
         this.logger = new common_1.Logger(IdenfyService_1.name);
         this.apiKey = this.configService.get('IDENFY_API_ACCESS_KEY') || '';
-        this.apiSecret = this.configService.get('IDENFY_API_SECRET_KEY') || '';
+        this.apiSecret =
+            this.configService.get('IDENFY_API_SECRET_KEY') || '';
         const environment = this.configService.get('IDENFY_ENVIRONMENT') || 'sandbox';
         if (!this.apiKey || !this.apiSecret) {
             throw new Error('IDENFY_API_ACCESS_KEY and IDENFY_API_SECRET_KEY are required');

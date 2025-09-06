@@ -23,57 +23,81 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, { message: 'Primary color must be a valid hex color' }),
+    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, {
+        message: 'Primary color must be a valid hex color',
+    }),
     __metadata("design:type", String)
 ], UpdateBrandingDto.prototype, "primaryColor", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, { message: 'Secondary color must be a valid hex color' }),
+    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, {
+        message: 'Secondary color must be a valid hex color',
+    }),
     __metadata("design:type", String)
 ], UpdateBrandingDto.prototype, "secondaryColor", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, { message: 'Accent color must be a valid hex color' }),
+    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, {
+        message: 'Accent color must be a valid hex color',
+    }),
     __metadata("design:type", String)
 ], UpdateBrandingDto.prototype, "accentColor", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, { message: 'Background color must be a valid hex color' }),
+    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, {
+        message: 'Background color must be a valid hex color',
+    }),
     __metadata("design:type", String)
 ], UpdateBrandingDto.prototype, "backgroundColor", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, { message: 'Surface color must be a valid hex color' }),
+    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, {
+        message: 'Surface color must be a valid hex color',
+    }),
     __metadata("design:type", String)
 ], UpdateBrandingDto.prototype, "surfaceColor", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, { message: 'Text color must be a valid hex color' }),
+    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, {
+        message: 'Text color must be a valid hex color',
+    }),
     __metadata("design:type", String)
 ], UpdateBrandingDto.prototype, "textColor", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, { message: 'Border color must be a valid hex color' }),
+    (0, class_validator_1.Matches)(/^#[0-9A-F]{6}$/i, {
+        message: 'Border color must be a valid hex color',
+    }),
     __metadata("design:type", String)
 ], UpdateBrandingDto.prototype, "borderColor", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsIn)(['Inter', 'Roboto', 'Open Sans', 'Lato', 'Poppins', 'system-ui', 'sans-serif'], {
-        message: 'Font family must be one of: Inter, Roboto, Open Sans, Lato, Poppins, system-ui, sans-serif'
+    (0, class_validator_1.IsIn)([
+        'Inter',
+        'Roboto',
+        'Open Sans',
+        'Lato',
+        'Poppins',
+        'system-ui',
+        'sans-serif',
+    ], {
+        message: 'Font family must be one of: Inter, Roboto, Open Sans, Lato, Poppins, system-ui, sans-serif',
     }),
     __metadata("design:type", String)
 ], UpdateBrandingDto.prototype, "fontFamily", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(/^[0-9]+(\.[0-9]+)?(px|rem|em)$/, { message: 'Border radius must be in px, rem, or em units' }),
+    (0, class_validator_1.Matches)(/^[0-9]+(\.[0-9]+)?(px|rem|em)$/, {
+        message: 'Border radius must be in px, rem, or em units',
+    }),
     __metadata("design:type", String)
 ], UpdateBrandingDto.prototype, "borderRadius", void 0);
 __decorate([

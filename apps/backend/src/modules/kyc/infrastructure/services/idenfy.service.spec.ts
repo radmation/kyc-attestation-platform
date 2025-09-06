@@ -73,7 +73,27 @@ describe('IdenfyService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         IdenfyService,
-        { provide: ConfigService, useValue: mockConfigService },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest
+              .fn()
+              .mockImplementation((key: string, defaultValue?: string) => {
+                switch (key) {
+                  case 'IDENFY_API_ACCESS_KEY':
+                    return 'test-api-key';
+                  case 'IDENFY_API_SECRET_KEY':
+                    return 'test-api-secret';
+                  case 'IDENFY_BASE_URL':
+                    return 'https://ivs.idenfy.com';
+                  case 'NODE_ENV':
+                    return 'test';
+                  default:
+                    return defaultValue;
+                }
+              }),
+          },
+        },
         { provide: PrismaService, useValue: mockPrismaService },
       ],
     }).compile();

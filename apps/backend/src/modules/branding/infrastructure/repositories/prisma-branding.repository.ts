@@ -40,7 +40,10 @@ export class PrismaBrandingRepository implements BrandingRepository {
         branding.updatedAt,
       );
     } catch (error) {
-      this.logger.error(`Failed to find branding by client ID ${clientId}:`, error);
+      this.logger.error(
+        `Failed to find branding by client ID ${clientId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -50,12 +53,9 @@ export class PrismaBrandingRepository implements BrandingRepository {
       const subdomain = domain.split('.')[0];
       const client = await this.prisma.client.findFirst({
         where: {
-          OR: [
-            { domain },
-            { subdomain: subdomain || null }
-          ]
+          OR: [{ domain }, { subdomain: subdomain || null }],
         },
-        include: { branding: true }
+        include: { branding: true },
       });
 
       if (!client || !client.branding) {
@@ -88,8 +88,10 @@ export class PrismaBrandingRepository implements BrandingRepository {
   }
 
   async upsert(
-    clientId: string, 
-    brandingData: Partial<Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>>
+    clientId: string,
+    brandingData: Partial<
+      Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>
+    >,
   ): Promise<Branding> {
     try {
       const branding = await this.prisma.branding.upsert({
@@ -145,14 +147,19 @@ export class PrismaBrandingRepository implements BrandingRepository {
         branding.updatedAt,
       );
     } catch (error) {
-      this.logger.error(`Failed to upsert branding for client ${clientId}:`, error);
+      this.logger.error(
+        `Failed to upsert branding for client ${clientId}:`,
+        error,
+      );
       throw error;
     }
   }
 
   async update(
-    clientId: string, 
-    brandingData: Partial<Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>>
+    clientId: string,
+    brandingData: Partial<
+      Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>
+    >,
   ): Promise<Branding> {
     try {
       const branding = await this.prisma.branding.update({
@@ -192,7 +199,10 @@ export class PrismaBrandingRepository implements BrandingRepository {
         branding.updatedAt,
       );
     } catch (error) {
-      this.logger.error(`Failed to update branding for client ${clientId}:`, error);
+      this.logger.error(
+        `Failed to update branding for client ${clientId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -203,7 +213,10 @@ export class PrismaBrandingRepository implements BrandingRepository {
         where: { clientId },
       });
     } catch (error) {
-      this.logger.error(`Failed to delete branding for client ${clientId}:`, error);
+      this.logger.error(
+        `Failed to delete branding for client ${clientId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -215,8 +228,11 @@ export class PrismaBrandingRepository implements BrandingRepository {
       });
       return count > 0;
     } catch (error) {
-      this.logger.error(`Failed to check branding existence for client ${clientId}:`, error);
+      this.logger.error(
+        `Failed to check branding existence for client ${clientId}:`,
+        error,
+      );
       throw error;
     }
   }
-} 
+}

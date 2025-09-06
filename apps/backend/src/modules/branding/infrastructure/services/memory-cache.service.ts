@@ -19,7 +19,7 @@ export class MemoryCacheService implements CacheService {
 
   async get<T>(key: string): Promise<T | null> {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       return null;
     }
@@ -34,8 +34,8 @@ export class MemoryCacheService implements CacheService {
 
   async set<T>(key: string, value: T, ttlSeconds?: number): Promise<void> {
     const ttl = ttlSeconds || this.DEFAULT_TTL;
-    const expiresAt = Date.now() + (ttl * 1000);
-    
+    const expiresAt = Date.now() + ttl * 1000;
+
     this.cache.set(key, {
       value,
       expiresAt,
@@ -48,7 +48,7 @@ export class MemoryCacheService implements CacheService {
 
   async delPattern(pattern: string): Promise<void> {
     const regex = new RegExp(pattern.replace(/\*/g, '.*'));
-    
+
     for (const key of this.cache.keys()) {
       if (regex.test(key)) {
         this.cache.delete(key);
@@ -58,7 +58,7 @@ export class MemoryCacheService implements CacheService {
 
   async exists(key: string): Promise<boolean> {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       return false;
     }
@@ -73,7 +73,7 @@ export class MemoryCacheService implements CacheService {
 
   async ttl(key: string): Promise<number> {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       return -2; // Key does not exist
     }
@@ -110,4 +110,4 @@ export class MemoryCacheService implements CacheService {
   clearAll(): void {
     this.cache.clear();
   }
-} 
+}

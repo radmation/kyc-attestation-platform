@@ -41,12 +41,9 @@ let PrismaBrandingRepository = PrismaBrandingRepository_1 = class PrismaBranding
             const subdomain = domain.split('.')[0];
             const client = await this.prisma.client.findFirst({
                 where: {
-                    OR: [
-                        { domain },
-                        { subdomain: subdomain || null }
-                    ]
+                    OR: [{ domain }, { subdomain: subdomain || null }],
                 },
-                include: { branding: true }
+                include: { branding: true },
             });
             if (!client || !client.branding) {
                 return null;

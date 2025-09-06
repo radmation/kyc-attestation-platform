@@ -21,7 +21,7 @@ echo "=================================================="
 
 # Extract task metadata
 TASK_ID=$(grep "Task ID" "$TASK_FILE" | sed 's/.*: //')
-ACCEPTANCE_CRITERIA=$(grep -A 20 "## Acceptance Criteria" "$TASK_FILE" | grep "- \[ \]" | sed 's/- \[ \] //')
+ACCEPTANCE_CRITERIA=$(grep -A 20 "## Acceptance Criteria" "$TASK_FILE" | grep "^- \[ \]" | sed 's/^- \[ \] //' || echo "")
 
 echo "📋 Task ID: $TASK_ID"
 echo ""

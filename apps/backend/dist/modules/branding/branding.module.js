@@ -19,12 +19,8 @@ let BrandingModule = class BrandingModule {
 exports.BrandingModule = BrandingModule;
 exports.BrandingModule = BrandingModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            prisma_module_1.PrismaModule,
-        ],
-        controllers: [
-            branding_controller_1.BrandingController,
-        ],
+        imports: [prisma_module_1.PrismaModule],
+        controllers: [branding_controller_1.BrandingController],
         providers: [
             get_client_branding_use_case_1.GetClientBrandingUseCase,
             update_branding_use_case_1.UpdateBrandingUseCase,

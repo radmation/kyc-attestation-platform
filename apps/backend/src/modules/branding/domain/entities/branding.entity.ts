@@ -15,13 +15,17 @@ export class Branding {
     public readonly shadow?: string,
     public readonly customCSS?: string,
     public readonly createdAt: Date = new Date(),
-    public readonly updatedAt: Date = new Date()
+    public readonly updatedAt: Date = new Date(),
   ) {}
 
   /**
    * Create a new branding instance with updated values
    */
-  update(updates: Partial<Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>>): Branding {
+  update(
+    updates: Partial<
+      Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>
+    >,
+  ): Branding {
     return new Branding(
       this.id,
       this.clientId,
@@ -38,14 +42,16 @@ export class Branding {
       updates.shadow ?? this.shadow,
       updates.customCSS ?? this.customCSS,
       this.createdAt,
-      new Date()
+      new Date(),
     );
   }
 
   /**
    * Get default branding values
    */
-  static getDefaults(): Partial<Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>> {
+  static getDefaults(): Partial<
+    Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>
+  > {
     return {
       primaryColor: '#000000',
       secondaryColor: '#666666',
@@ -81,7 +87,7 @@ export class Branding {
       this.shadow ?? defaults.shadow,
       this.customCSS,
       this.createdAt,
-      this.updatedAt
+      this.updatedAt,
     );
   }
 
@@ -108,4 +114,4 @@ export class Branding {
       updatedAt: this.updatedAt,
     };
   }
-} 
+}

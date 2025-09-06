@@ -1,6 +1,13 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { Branding } from '../../domain/entities/branding.entity';
-import { ThemeConfig, ThemeColors, ThemeTypography, ThemeSpacing, ThemeBorderRadius, ThemeShadows } from '../../domain/entities/theme-config.entity';
+import {
+  ThemeConfig,
+  ThemeColors,
+  ThemeTypography,
+  ThemeSpacing,
+  ThemeBorderRadius,
+  ThemeShadows,
+} from '../../domain/entities/theme-config.entity';
 import { BrandingRepository } from '../interfaces/branding.repository.interface';
 import { CacheService } from '../interfaces/cache.service.interface';
 import { ClientBrandingResponseDto } from '../dto/client-branding-response.dto';
@@ -23,7 +30,8 @@ export class GetClientBrandingUseCase {
 
     try {
       // Check cache first
-      const cached = await this.cacheService.get<ClientBrandingResponseDto>(cacheKey);
+      const cached =
+        await this.cacheService.get<ClientBrandingResponseDto>(cacheKey);
       if (cached) {
         this.logger.debug(`Cache hit for branding: ${clientId}`);
         return cached;
@@ -31,13 +39,15 @@ export class GetClientBrandingUseCase {
 
       // Fetch from repository
       const branding = await this.brandingRepository.findByClientId(clientId);
-      
+
       let brandingWithDefaults: Branding;
       let clientName = 'Unknown Client';
 
       if (!branding) {
         // Create default branding
-        this.logger.debug(`No branding found for client ${clientId}, using defaults`);
+        this.logger.debug(
+          `No branding found for client ${clientId}, using defaults`,
+        );
         brandingWithDefaults = this.createDefaultBranding(clientId);
       } else {
         brandingWithDefaults = branding.withDefaults();
@@ -52,7 +62,7 @@ export class GetClientBrandingUseCase {
       const response = ClientBrandingResponseDto.fromEntity(
         brandingWithDefaults,
         clientName,
-        theme
+        theme,
       );
 
       // Cache the result
@@ -60,16 +70,19 @@ export class GetClientBrandingUseCase {
 
       return response;
     } catch (error) {
-      this.logger.error(`Failed to get branding for client ${clientId}:`, error);
-      
+      this.logger.error(
+        `Failed to get branding for client ${clientId}:`,
+        error,
+      );
+
       // Return default branding on error
       const defaultBranding = this.createDefaultBranding(clientId);
       const theme = this.generateTheme(defaultBranding);
-      
+
       return ClientBrandingResponseDto.fromEntity(
         defaultBranding,
         'Default Client',
-        theme
+        theme,
       );
     }
   }
@@ -79,7 +92,8 @@ export class GetClientBrandingUseCase {
 
     try {
       // Check cache first
-      const cached = await this.cacheService.get<ClientBrandingResponseDto>(cacheKey);
+      const cached =
+        await this.cacheService.get<ClientBrandingResponseDto>(cacheKey);
       if (cached) {
         this.logger.debug(`Cache hit for domain branding: ${domain}`);
         return cached;
@@ -87,16 +101,18 @@ export class GetClientBrandingUseCase {
 
       // Fetch by domain
       const branding = await this.brandingRepository.findByDomain(domain);
-      
+
       if (!branding) {
-        this.logger.debug(`No branding found for domain ${domain}, using defaults`);
+        this.logger.debug(
+          `No branding found for domain ${domain}, using defaults`,
+        );
         const defaultBranding = this.createDefaultBranding('default');
         const theme = this.generateTheme(defaultBranding);
-        
+
         return ClientBrandingResponseDto.fromEntity(
           defaultBranding,
           'Default Client',
-          theme
+          theme,
         );
       }
 
@@ -105,7 +121,7 @@ export class GetClientBrandingUseCase {
       const response = ClientBrandingResponseDto.fromEntity(
         brandingWithDefaults,
         'Client Name', // Placeholder
-        theme
+        theme,
       );
 
       // Cache the result
@@ -114,15 +130,15 @@ export class GetClientBrandingUseCase {
       return response;
     } catch (error) {
       this.logger.error(`Failed to get branding for domain ${domain}:`, error);
-      
+
       // Return default branding on error
       const defaultBranding = this.createDefaultBranding('default');
       const theme = this.generateTheme(defaultBranding);
-      
+
       return ClientBrandingResponseDto.fromEntity(
         defaultBranding,
         'Default Client',
-        theme
+        theme,
       );
     }
   }
@@ -208,4 +224,4 @@ export class GetClientBrandingUseCase {
 
     return new ThemeConfig(colors, typography, spacing, borderRadius, shadows);
   }
-} 
+}

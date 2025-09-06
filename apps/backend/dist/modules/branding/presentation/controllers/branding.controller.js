@@ -97,7 +97,7 @@ let BrandingController = BrandingController_1 = class BrandingController {
             this.logger.debug(`Getting CSS variables for client: ${clientId}`);
             const branding = await this.getClientBrandingUseCase.execute(clientId);
             return {
-                css: branding.theme.toCSSVariables()
+                css: branding.theme.toCSSVariables(),
             };
         }
         catch (error) {

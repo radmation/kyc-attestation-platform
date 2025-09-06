@@ -17,12 +17,8 @@ import { MemoryCacheService } from './infrastructure/services/memory-cache.servi
 import { BrandingController } from './presentation/controllers/branding.controller';
 
 @Module({
-  imports: [
-    PrismaModule,
-  ],
-  controllers: [
-    BrandingController,
-  ],
+  imports: [PrismaModule],
+  controllers: [BrandingController],
   providers: [
     // Use cases
     GetClientBrandingUseCase,
@@ -54,4 +50,4 @@ import { BrandingController } from './presentation/controllers/branding.controll
     },
   ],
 })
-export class BrandingModule {} 
+export class BrandingModule {}

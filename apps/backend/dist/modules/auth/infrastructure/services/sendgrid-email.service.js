@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SendGridEmailService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const sgMail = require("@sendgrid/mail");
+const mail_1 = require("@sendgrid/mail");
 let SendGridEmailService = SendGridEmailService_1 = class SendGridEmailService {
     constructor(configService) {
         this.configService = configService;
@@ -27,7 +27,7 @@ let SendGridEmailService = SendGridEmailService_1 = class SendGridEmailService {
             throw new Error('SENDGRID_API_KEY is required but not configured');
         }
         this.fromEmail = `noreply@${this.config.domain}`;
-        sgMail.setApiKey(this.config.apiKey);
+        mail_1.default.setApiKey(this.config.apiKey);
         this.logger.log(`SendGrid email service initialized with domain: ${this.config.domain}`);
     }
     async sendVerificationEmail(email, token) {
@@ -43,7 +43,7 @@ let SendGridEmailService = SendGridEmailService_1 = class SendGridEmailService {
                 html: this.getVerificationEmailTemplate(verificationUrl),
                 text: `Please verify your email address by clicking the following link: ${verificationUrl}`,
             };
-            await sgMail.send(msg);
+            await mail_1.default.send(msg);
             this.logger.log(`Verification email sent successfully to ${email}`);
         }
         catch (error) {
@@ -64,7 +64,7 @@ let SendGridEmailService = SendGridEmailService_1 = class SendGridEmailService {
                 html: this.getPasswordResetEmailTemplate(resetUrl),
                 text: `Reset your password by clicking the following link: ${resetUrl}`,
             };
-            await sgMail.send(msg);
+            await mail_1.default.send(msg);
             this.logger.log(`Password reset email sent successfully to ${email}`);
         }
         catch (error) {
@@ -85,7 +85,7 @@ let SendGridEmailService = SendGridEmailService_1 = class SendGridEmailService {
                 html: this.getWelcomeEmailTemplate(firstName, dashboardUrl),
                 text: `Welcome to KYC Attestation Platform${firstName ? `, ${firstName}` : ''}! Visit your dashboard at: ${dashboardUrl}`,
             };
-            await sgMail.send(msg);
+            await mail_1.default.send(msg);
             this.logger.log(`Welcome email sent successfully to ${email}`);
         }
         catch (error) {
@@ -106,7 +106,7 @@ let SendGridEmailService = SendGridEmailService_1 = class SendGridEmailService {
                 html: this.getAccountSuspendedEmailTemplate(reason, supportUrl),
                 text: `Your account has been suspended. Reason: ${reason}. Please contact support at: ${supportUrl}`,
             };
-            await sgMail.send(msg);
+            await mail_1.default.send(msg);
             this.logger.log(`Account suspended email sent successfully to ${email}`);
         }
         catch (error) {

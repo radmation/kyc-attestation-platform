@@ -20,7 +20,7 @@ export class MockBrandingRepository implements BrandingRepository {
 
   async findByDomain(domain: string): Promise<Branding | null> {
     this.logger.debug(`Finding branding for domain: ${domain}`);
-    
+
     // Simple domain mapping for mock data
     const domainToClientMap: Record<string, string> = {
       'example.com': 'client-1',
@@ -37,13 +37,15 @@ export class MockBrandingRepository implements BrandingRepository {
   }
 
   async upsert(
-    clientId: string, 
-    brandingData: Partial<Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>>
+    clientId: string,
+    brandingData: Partial<
+      Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>
+    >,
   ): Promise<Branding> {
     this.logger.debug(`Upserting branding for client: ${clientId}`);
 
     const existing = this.brandingStore.get(clientId);
-    
+
     if (existing) {
       // Update existing
       const updated = existing.update(brandingData);
@@ -68,15 +70,17 @@ export class MockBrandingRepository implements BrandingRepository {
         brandingData.shadow || defaults.shadow,
         brandingData.customCSS,
       );
-      
+
       this.brandingStore.set(clientId, newBranding);
       return newBranding;
     }
   }
 
   async update(
-    clientId: string, 
-    brandingData: Partial<Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>>
+    clientId: string,
+    brandingData: Partial<
+      Omit<Branding, 'id' | 'clientId' | 'createdAt' | 'updatedAt'>
+    >,
   ): Promise<Branding> {
     this.logger.debug(`Updating branding for client: ${clientId}`);
 
@@ -167,4 +171,4 @@ export class MockBrandingRepository implements BrandingRepository {
     this.brandingStore.clear();
     this.initializeDefaults();
   }
-} 
+}

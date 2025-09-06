@@ -32,7 +32,7 @@ let MemoryCacheService = MemoryCacheService_1 = class MemoryCacheService {
     }
     async set(key, value, ttlSeconds) {
         const ttl = ttlSeconds || this.DEFAULT_TTL;
-        const expiresAt = Date.now() + (ttl * 1000);
+        const expiresAt = Date.now() + ttl * 1000;
         this.cache.set(key, {
             value,
             expiresAt,
