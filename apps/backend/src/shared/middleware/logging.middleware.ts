@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import morgan from 'morgan';
+const morgan = require('morgan');
 
 @Injectable()
 export class LoggingMiddleware implements NestMiddleware {
@@ -15,7 +15,7 @@ export class LoggingMiddleware implements NestMiddleware {
             this.logger.log(message.trim());
           },
         },
-        skip: (req, res) => {
+        skip: (req: any, res: any) => {
           // Skip health check and metrics endpoints
           return req.url === '/health' || req.url === '/metrics';
         },

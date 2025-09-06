@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
-import compression from 'compression';
+const compression = require('compression');
 
 @Injectable()
 export class SecurityMiddleware implements NestMiddleware {
