@@ -78,6 +78,16 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mydatabase?schema=public
 # iDenfy Configuration
 IDENFY_API_ACCESS_KEY="your_actual_key"
 IDENFY_API_SECRET_KEY="your_actual_secret"
+
+# Blockchain Provider Configuration
+PRIMARY_BLOCKCHAIN_PROVIDER="HYPERLEDGER_FABRIC"
+PRIMARY_BLOCKCHAIN_NETWORK="kycchannel"
+FABRIC_CONNECTION_PROFILE_PATH="./fabric-network/connection-profile.json"
+FABRIC_WALLET_PATH="./wallet"
+FABRIC_IDENTITY_NAME="appUser"
+FABRIC_CHANNEL_NAME="kycchannel"
+FABRIC_CHAINCODE_NAME="kycattestation"
+FABRIC_MSP_ID="Org1MSP"
 IDENFY_WEBHOOK_SECRET="your_webhook_secret"
 IDENFY_ENVIRONMENT="sandbox"
 IDENFY_BASE_URL="https://ivs.idenfy.com"

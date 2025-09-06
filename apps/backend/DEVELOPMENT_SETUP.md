@@ -44,9 +44,26 @@ SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
 
-# Blockchain Configuration (for future use)
+# Blockchain Provider Configuration
+PRIMARY_BLOCKCHAIN_PROVIDER="HYPERLEDGER_FABRIC"
+PRIMARY_BLOCKCHAIN_NETWORK="kycchannel"
+BLOCKCHAIN_CONNECTION_TIMEOUT=30000
+BLOCKCHAIN_REQUEST_TIMEOUT=10000
+BLOCKCHAIN_MAX_RETRIES=3
+
+# Hyperledger Fabric Configuration
+FABRIC_CONNECTION_PROFILE_PATH="./fabric-network/connection-profile.json"
+FABRIC_WALLET_PATH="./wallet"
+FABRIC_IDENTITY_NAME="appUser"
+FABRIC_CHANNEL_NAME="kycchannel"
+FABRIC_CHAINCODE_NAME="kycattestation"
+FABRIC_MSP_ID="Org1MSP"
+FABRIC_ENABLE_DISCOVERY="true"
+FABRIC_AS_LOCALHOST="true"
+
+# Ethereum Configuration (Future Implementation)
 ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/your-project-id
-PRIVATE_KEY=your-private-key
+ETHEREUM_PRIVATE_KEY=your-private-key
 ```
 
 ### 4. Database Setup

@@ -29,7 +29,7 @@ A blockchain-based Know Your Customer (KYC) attestation platform that creates on
 ## ⚡ **Technology Stack**
 
 - **Backend**: NestJS with TypeScript, PostgreSQL with Prisma ORM
-- **Blockchain**: Hyperledger Fabric private permissioned network
+- **Blockchain**: Multi-blockchain support with Hyperledger Fabric, Ethereum, and EVM-compatible networks
 - **Frontend**: React.js with TypeScript and shadcn/ui components
 - **KYC Integration**: iDenfy API with webhook processing
 - **Storage**: IPFS with Filebase for attestation metadata
@@ -40,7 +40,8 @@ A blockchain-based Know Your Customer (KYC) attestation platform that creates on
 ## 🎯 **Core Features**
 
 - ✅ **Identity Verification**: Integration with iDenfy for comprehensive KYC processing
-- ✅ **Blockchain Attestations**: On-chain identity attestations using Hyperledger Fabric
+- ✅ **Multi-Blockchain Support**: Abstraction layer supporting Fabric, Ethereum, Polygon, and more
+- ✅ **Blockchain Attestations**: On-chain identity attestations with provider flexibility
 - ✅ **Smart Contract Integration**: Automated compliance enforcement for DeFi protocols
 - ✅ **Multi-tenant Support**: White-labeled solution for token issuers and compliance providers
 - ✅ **Regulatory Compliance**: GENIUS Act compliance and comprehensive audit trails
