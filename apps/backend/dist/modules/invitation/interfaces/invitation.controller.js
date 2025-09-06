@@ -162,7 +162,10 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get invitations with pagination and filtering' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Invitations retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Invitations retrieved successfully',
+    }),
     (0, swagger_1.ApiResponse)({ status: 403, description: 'Insufficient permissions' }),
     __param(0, (0, common_1.Query)()),
     __param(1, (0, common_1.Request)()),
@@ -173,7 +176,10 @@ __decorate([
 __decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get invitation by ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Invitation retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Invitation retrieved successfully',
+    }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Invitation not found' }),
     (0, swagger_1.ApiResponse)({ status: 403, description: 'Insufficient permissions' }),
     __param(0, (0, common_1.Param)('id')),

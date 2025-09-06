@@ -45,25 +45,63 @@ class UserInvitation {
     static fromPersistence(props) {
         return new UserInvitation(props.id, props.email, props.role, props.clientId, props.invitedBy, props.token, props.expiresAt, props.status, props.firstName, props.lastName, props.message, props.permissions, props.acceptedAt, props.revokedAt, props.emailSentAt, props.emailSentCount, props.lastEmailSentAt, props.createdAt, props.updatedAt);
     }
-    get id() { return this._id; }
-    get email() { return this._email; }
-    get role() { return this._role; }
-    get clientId() { return this._clientId; }
-    get invitedBy() { return this._invitedBy; }
-    get token() { return this._token; }
-    get expiresAt() { return this._expiresAt; }
-    get status() { return this._status; }
-    get firstName() { return this._firstName; }
-    get lastName() { return this._lastName; }
-    get message() { return this._message; }
-    get permissions() { return [...this._permissions]; }
-    get acceptedAt() { return this._acceptedAt; }
-    get revokedAt() { return this._revokedAt; }
-    get emailSentAt() { return this._emailSentAt; }
-    get emailSentCount() { return this._emailSentCount; }
-    get lastEmailSentAt() { return this._lastEmailSentAt; }
-    get createdAt() { return this._createdAt; }
-    get updatedAt() { return this._updatedAt; }
+    get id() {
+        return this._id;
+    }
+    get email() {
+        return this._email;
+    }
+    get role() {
+        return this._role;
+    }
+    get clientId() {
+        return this._clientId;
+    }
+    get invitedBy() {
+        return this._invitedBy;
+    }
+    get token() {
+        return this._token;
+    }
+    get expiresAt() {
+        return this._expiresAt;
+    }
+    get status() {
+        return this._status;
+    }
+    get firstName() {
+        return this._firstName;
+    }
+    get lastName() {
+        return this._lastName;
+    }
+    get message() {
+        return this._message;
+    }
+    get permissions() {
+        return [...this._permissions];
+    }
+    get acceptedAt() {
+        return this._acceptedAt;
+    }
+    get revokedAt() {
+        return this._revokedAt;
+    }
+    get emailSentAt() {
+        return this._emailSentAt;
+    }
+    get emailSentCount() {
+        return this._emailSentCount;
+    }
+    get lastEmailSentAt() {
+        return this._lastEmailSentAt;
+    }
+    get createdAt() {
+        return this._createdAt;
+    }
+    get updatedAt() {
+        return this._updatedAt;
+    }
     accept() {
         if (this._status !== client_2.InvitationStatus.PENDING) {
             throw new Error('Can only accept pending invitations');

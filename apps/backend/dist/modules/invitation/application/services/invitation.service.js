@@ -25,7 +25,7 @@ let InvitationService = class InvitationService {
         this.configService = configService;
     }
     async createInvitation(createInvitationDto) {
-        const { email, role, clientId, invitedBy, firstName, lastName, message, permissions } = createInvitationDto;
+        const { email, role, clientId, invitedBy, firstName, lastName, message, permissions, } = createInvitationDto;
         await this.validateInvitationPermissions(invitedBy, clientId);
         const existingUser = await this.userService.findByEmail(email);
         if (existingUser) {
@@ -64,7 +64,9 @@ let InvitationService = class InvitationService {
             try {
                 const invitation = await this.createInvitation({
                     ...invitationDto,
-                    ...(invitationDto.message || commonMessage ? { message: invitationDto.message || commonMessage } : {}),
+                    ...(invitationDto.message || commonMessage
+                        ? { message: invitationDto.message || commonMessage }
+                        : {}),
                     invitedBy,
                 });
                 results.successCount++;
@@ -140,7 +142,7 @@ let InvitationService = class InvitationService {
             ...(query.sortOrder && { sortOrder: query.sortOrder }),
         });
         return {
-            invitations: result.invitations.map(inv => inv.toPersistence()),
+            invitations: result.invitations.map((inv) => inv.toPersistence()),
             total: result.total,
             page: result.page,
             limit: result.limit,

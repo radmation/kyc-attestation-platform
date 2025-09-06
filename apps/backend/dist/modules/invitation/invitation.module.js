@@ -86,12 +86,8 @@ let InvitationModule = class InvitationModule {
 exports.InvitationModule = InvitationModule;
 exports.InvitationModule = InvitationModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            config_1.ConfigModule,
-        ],
-        controllers: [
-            invitation_controller_1.InvitationController,
-        ],
+        imports: [config_1.ConfigModule],
+        controllers: [invitation_controller_1.InvitationController],
         providers: [
             invitation_service_1.InvitationService,
             {
@@ -115,10 +111,7 @@ exports.InvitationModule = InvitationModule = __decorate([
                 useClass: MockPrismaService,
             },
         ],
-        exports: [
-            invitation_service_1.InvitationService,
-            'InvitationRepository',
-        ],
+        exports: [invitation_service_1.InvitationService, 'InvitationRepository'],
     })
 ], InvitationModule);
 //# sourceMappingURL=invitation.module.js.map

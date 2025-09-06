@@ -160,7 +160,7 @@ let PrismaInvitationRepository = class PrismaInvitationRepository {
     }
     async saveMany(invitations) {
         const data = invitations.map(convertEntityToPrisma);
-        const savedInvitations = await this.prisma.$transaction(data.map(invitation => this.prisma.userInvitation.create({ data: invitation })));
+        const savedInvitations = await this.prisma.$transaction(data.map((invitation) => this.prisma.userInvitation.create({ data: invitation })));
         return savedInvitations.map(convertPrismaToEntity);
     }
     async countByClientId(clientId) {
