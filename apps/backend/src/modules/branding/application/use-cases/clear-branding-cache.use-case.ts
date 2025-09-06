@@ -62,14 +62,14 @@ export class ClearBrandingCacheUseCase {
       // Note: This is a simplified implementation
       // In a real Redis implementation, you'd use SCAN for better performance
       const allKeys = await this.getAllBrandingCacheKeys();
-      
-      const clientKeys = allKeys.filter(key => 
-        key.startsWith(`${this.CACHE_PREFIX}`) && 
-        !key.includes('domain:')
+
+      const clientKeys = allKeys.filter(
+        (key) =>
+          key.startsWith(`${this.CACHE_PREFIX}`) && !key.includes('domain:'),
       ).length;
-      
-      const domainKeys = allKeys.filter(key => 
-        key.includes(`${this.CACHE_PREFIX}domain:`)
+
+      const domainKeys = allKeys.filter((key) =>
+        key.includes(`${this.CACHE_PREFIX}domain:`),
       ).length;
 
       return {
@@ -113,4 +113,4 @@ export class ClearBrandingCacheUseCase {
     // For Redis, you'd use SCAN command
     return [];
   }
-} 
+}

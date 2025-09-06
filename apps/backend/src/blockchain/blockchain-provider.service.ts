@@ -1,19 +1,24 @@
 /**
  * Blockchain Provider Manager Service
- * 
+ *
  * Service for managing blockchain provider instances, including caching,
  * lifecycle management, health checking, and provider switching logic.
  */
 
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { 
-  BlockchainProvider, 
+import {
+  BlockchainProvider,
   BlockchainProviderType,
   AttestationRequest,
   AttestationData,
   BlockchainResult,
-  AttestationStatus
+  AttestationStatus,
 } from './interfaces/blockchain-provider.interface';
 import { BlockchainProviderFactory } from './blockchain-provider.factory';
 import { ProviderConfiguration } from './types/provider-config.types';
@@ -40,52 +45,66 @@ interface ProviderMetrics {
 }
 
 @Injectable()
-export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy {
+export class BlockchainProviderService
+  implements OnModuleInit, OnModuleDestroy
+{
   private readonly logger = new Logger(BlockchainProviderService.name);
   private readonly healthStatus = new Map<string, ProviderHealthStatus>();
   private readonly metrics = new Map<string, ProviderMetrics>();
-  private readonly primaryProvider: { type: BlockchainProviderType; network: string };
+  private readonly primaryProvider: {
+    type: BlockchainProviderType;
+    network: string;
+  };
   private healthCheckInterval: NodeJS.Timeout | null = null;
 
   constructor(
     private readonly providerFactory: BlockchainProviderFactory,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {
     // Configure primary provider from environment
     this.primaryProvider = {
-      type: this.configService.get<BlockchainProviderType>('PRIMARY_BLOCKCHAIN_PROVIDER', BlockchainProviderType.HYPERLEDGER_FABRIC),
-      network: this.configService.get<string>('PRIMARY_BLOCKCHAIN_NETWORK', 'kycchannel')
+      type: this.configService.get<BlockchainProviderType>(
+        'PRIMARY_BLOCKCHAIN_PROVIDER',
+        BlockchainProviderType.HYPERLEDGER_FABRIC,
+      ),
+      network: this.configService.get<string>(
+        'PRIMARY_BLOCKCHAIN_NETWORK',
+        'kycchannel',
+      ),
     };
   }
 
   async onModuleInit() {
     this.logger.log('Initializing Blockchain Provider Service');
-    
+
     // Start health checking
-    const healthCheckIntervalMs = this.configService.get<number>('BLOCKCHAIN_HEALTH_CHECK_INTERVAL', 60000);
+    const healthCheckIntervalMs = this.configService.get<number>(
+      'BLOCKCHAIN_HEALTH_CHECK_INTERVAL',
+      60000,
+    );
     this.healthCheckInterval = setInterval(
       () => this.performHealthChecks(),
-      healthCheckIntervalMs
+      healthCheckIntervalMs,
     );
-    
+
     // Perform initial health check
     await this.performHealthChecks();
-    
+
     this.logger.log('Blockchain Provider Service initialized');
   }
 
   async onModuleDestroy() {
     this.logger.log('Shutting down Blockchain Provider Service');
-    
+
     // Stop health checking
     if (this.healthCheckInterval) {
       clearInterval(this.healthCheckInterval);
       this.healthCheckInterval = null;
     }
-    
+
     // Clear all cached providers
     await this.providerFactory.clearCache();
-    
+
     this.logger.log('Blockchain Provider Service shutdown complete');
   }
 
@@ -96,9 +115,9 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
     try {
       const provider = await this.providerFactory.getProvider(
         this.primaryProvider.type,
-        this.primaryProvider.network
+        this.primaryProvider.network,
       );
-      
+
       await this.recordProviderMetric(provider, 'getPrimaryProvider', true, 0);
       return provider;
     } catch (error) {
@@ -110,9 +129,15 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
   /**
    * Get a specific provider by type and network
    */
-  async getProvider(providerType: BlockchainProviderType, networkName: string): Promise<BlockchainProvider> {
+  async getProvider(
+    providerType: BlockchainProviderType,
+    networkName: string,
+  ): Promise<BlockchainProvider> {
     try {
-      const provider = await this.providerFactory.getProvider(providerType, networkName);
+      const provider = await this.providerFactory.getProvider(
+        providerType,
+        networkName,
+      );
       await this.recordProviderMetric(provider, 'getProvider', true, 0);
       return provider;
     } catch (error) {
@@ -124,28 +149,46 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
   /**
    * Create an attestation using the primary provider
    */
-  async createAttestation(request: AttestationRequest): Promise<BlockchainResult> {
+  async createAttestation(
+    request: AttestationRequest,
+  ): Promise<BlockchainResult> {
     const startTime = Date.now();
-    
+
     try {
       const provider = await this.getPrimaryProvider();
       const result = await provider.createAttestation(request);
-      
+
       const responseTime = Date.now() - startTime;
-      await this.recordProviderMetric(provider, 'createAttestation', result.success, responseTime);
-      
-      this.logger.log(`Attestation creation ${result.success ? 'succeeded' : 'failed'} for ID: ${request.id}`);
+      await this.recordProviderMetric(
+        provider,
+        'createAttestation',
+        result.success,
+        responseTime,
+      );
+
+      this.logger.log(
+        `Attestation creation ${result.success ? 'succeeded' : 'failed'} for ID: ${request.id}`,
+      );
       return result;
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      await this.recordProviderMetric(null, 'createAttestation', false, responseTime);
-      
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to create attestation for ID ${request.id}:`, error);
-      
+      await this.recordProviderMetric(
+        null,
+        'createAttestation',
+        false,
+        responseTime,
+      );
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.logger.error(
+        `Failed to create attestation for ID ${request.id}:`,
+        error,
+      );
+
       return {
         success: false,
-        error: errorMessage
+        error: errorMessage,
       };
     }
   }
@@ -155,20 +198,32 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
    */
   async getAttestation(id: string): Promise<AttestationData | null> {
     const startTime = Date.now();
-    
+
     try {
       const provider = await this.getPrimaryProvider();
       const result = await provider.getAttestation(id);
-      
+
       const responseTime = Date.now() - startTime;
-      await this.recordProviderMetric(provider, 'getAttestation', true, responseTime);
-      
-      this.logger.log(`Attestation retrieval ${result ? 'succeeded' : 'failed'} for ID: ${id}`);
+      await this.recordProviderMetric(
+        provider,
+        'getAttestation',
+        true,
+        responseTime,
+      );
+
+      this.logger.log(
+        `Attestation retrieval ${result ? 'succeeded' : 'failed'} for ID: ${id}`,
+      );
       return result;
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      await this.recordProviderMetric(null, 'getAttestation', false, responseTime);
-      
+      await this.recordProviderMetric(
+        null,
+        'getAttestation',
+        false,
+        responseTime,
+      );
+
       this.logger.error(`Failed to get attestation for ID ${id}:`, error);
       throw error;
     }
@@ -179,26 +234,39 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
    */
   async revokeAttestation(id: string): Promise<BlockchainResult> {
     const startTime = Date.now();
-    
+
     try {
       const provider = await this.getPrimaryProvider();
       const result = await provider.revokeAttestation(id);
-      
+
       const responseTime = Date.now() - startTime;
-      await this.recordProviderMetric(provider, 'revokeAttestation', result.success, responseTime);
-      
-      this.logger.log(`Attestation revocation ${result.success ? 'succeeded' : 'failed'} for ID: ${id}`);
+      await this.recordProviderMetric(
+        provider,
+        'revokeAttestation',
+        result.success,
+        responseTime,
+      );
+
+      this.logger.log(
+        `Attestation revocation ${result.success ? 'succeeded' : 'failed'} for ID: ${id}`,
+      );
       return result;
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      await this.recordProviderMetric(null, 'revokeAttestation', false, responseTime);
-      
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      await this.recordProviderMetric(
+        null,
+        'revokeAttestation',
+        false,
+        responseTime,
+      );
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to revoke attestation for ID ${id}:`, error);
-      
+
       return {
         success: false,
-        error: errorMessage
+        error: errorMessage,
       };
     }
   }
@@ -206,28 +274,47 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
   /**
    * Update attestation status using the primary provider
    */
-  async updateAttestationStatus(id: string, status: AttestationStatus): Promise<BlockchainResult> {
+  async updateAttestationStatus(
+    id: string,
+    status: AttestationStatus,
+  ): Promise<BlockchainResult> {
     const startTime = Date.now();
-    
+
     try {
       const provider = await this.getPrimaryProvider();
       const result = await provider.updateAttestationStatus(id, status);
-      
+
       const responseTime = Date.now() - startTime;
-      await this.recordProviderMetric(provider, 'updateAttestationStatus', result.success, responseTime);
-      
-      this.logger.log(`Attestation status update ${result.success ? 'succeeded' : 'failed'} for ID: ${id} to status: ${status}`);
+      await this.recordProviderMetric(
+        provider,
+        'updateAttestationStatus',
+        result.success,
+        responseTime,
+      );
+
+      this.logger.log(
+        `Attestation status update ${result.success ? 'succeeded' : 'failed'} for ID: ${id} to status: ${status}`,
+      );
       return result;
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      await this.recordProviderMetric(null, 'updateAttestationStatus', false, responseTime);
-      
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to update attestation status for ID ${id}:`, error);
-      
+      await this.recordProviderMetric(
+        null,
+        'updateAttestationStatus',
+        false,
+        responseTime,
+      );
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.logger.error(
+        `Failed to update attestation status for ID ${id}:`,
+        error,
+      );
+
       return {
         success: false,
-        error: errorMessage
+        error: errorMessage,
       };
     }
   }
@@ -237,21 +324,36 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
    */
   async getAttestationsByWallet(walletId: string): Promise<AttestationData[]> {
     const startTime = Date.now();
-    
+
     try {
       const provider = await this.getPrimaryProvider();
       const result = await provider.getAttestationsByWallet(walletId);
-      
+
       const responseTime = Date.now() - startTime;
-      await this.recordProviderMetric(provider, 'getAttestationsByWallet', true, responseTime);
-      
-      this.logger.log(`Retrieved ${result.length} attestations for wallet: ${walletId}`);
+      await this.recordProviderMetric(
+        provider,
+        'getAttestationsByWallet',
+        true,
+        responseTime,
+      );
+
+      this.logger.log(
+        `Retrieved ${result.length} attestations for wallet: ${walletId}`,
+      );
       return result;
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      await this.recordProviderMetric(null, 'getAttestationsByWallet', false, responseTime);
-      
-      this.logger.error(`Failed to get attestations for wallet ${walletId}:`, error);
+      await this.recordProviderMetric(
+        null,
+        'getAttestationsByWallet',
+        false,
+        responseTime,
+      );
+
+      this.logger.error(
+        `Failed to get attestations for wallet ${walletId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -268,15 +370,15 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
    */
   getCachedProvidersWithHealth() {
     const cachedProviders = this.providerFactory.getCachedProviders();
-    
-    return cachedProviders.map(cached => {
+
+    return cachedProviders.map((cached) => {
       const health = this.healthStatus.get(cached.key);
       const metrics = this.metrics.get(cached.key);
-      
+
       return {
         ...cached,
         health,
-        metrics
+        metrics,
       };
     });
   }
@@ -284,12 +386,15 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
   /**
    * Get provider metrics
    */
-  getProviderMetrics(providerType?: BlockchainProviderType, networkName?: string) {
+  getProviderMetrics(
+    providerType?: BlockchainProviderType,
+    networkName?: string,
+  ) {
     if (providerType && networkName) {
       const key = `${providerType}-${networkName}`;
       return this.metrics.get(key);
     }
-    
+
     // Return all metrics
     return Object.fromEntries(this.metrics.entries());
   }
@@ -299,28 +404,33 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
    */
   private async performHealthChecks(): Promise<void> {
     try {
-      const healthResults = await this.providerFactory.healthCheckAllProviders();
+      const healthResults =
+        await this.providerFactory.healthCheckAllProviders();
       const currentTime = new Date();
-      
+
       for (const [providerKey, isHealthy] of Object.entries(healthResults)) {
         const currentStatus = this.healthStatus.get(providerKey);
-        const consecutiveFailures = isHealthy ? 0 : (currentStatus?.consecutiveFailures || 0) + 1;
-        
+        const consecutiveFailures = isHealthy
+          ? 0
+          : (currentStatus?.consecutiveFailures || 0) + 1;
+
         const healthStatus: ProviderHealthStatus = {
           isHealthy,
           lastChecked: currentTime,
-          consecutiveFailures
+          consecutiveFailures,
         };
-        
+
         if (!isHealthy) {
           healthStatus.errorMessage = 'Health check failed';
         }
-        
+
         this.healthStatus.set(providerKey, healthStatus);
-        
+
         // Log warnings for unhealthy providers
         if (!isHealthy && consecutiveFailures >= 3) {
-          this.logger.warn(`Provider ${providerKey} has failed ${consecutiveFailures} consecutive health checks`);
+          this.logger.warn(
+            `Provider ${providerKey} has failed ${consecutiveFailures} consecutive health checks`,
+          );
         }
       }
     } catch (error) {
@@ -335,28 +445,34 @@ export class BlockchainProviderService implements OnModuleInit, OnModuleDestroy 
     provider: BlockchainProvider | null,
     operation: string,
     success: boolean,
-    responseTime: number
+    responseTime: number,
   ): Promise<void> {
     if (!provider) return;
-    
+
     const providerKey = `${provider.providerType}-${provider.networkName}`;
     const currentMetrics = this.metrics.get(providerKey) || {
       requestCount: 0,
       successCount: 0,
       failureCount: 0,
-      averageResponseTime: 0
+      averageResponseTime: 0,
     };
-    
+
     const newRequestCount = currentMetrics.requestCount + 1;
-    const newAverageResponseTime = 
-      (currentMetrics.averageResponseTime * currentMetrics.requestCount + responseTime) / newRequestCount;
-    
+    const newAverageResponseTime =
+      (currentMetrics.averageResponseTime * currentMetrics.requestCount +
+        responseTime) /
+      newRequestCount;
+
     this.metrics.set(providerKey, {
       requestCount: newRequestCount,
-      successCount: success ? currentMetrics.successCount + 1 : currentMetrics.successCount,
-      failureCount: success ? currentMetrics.failureCount : currentMetrics.failureCount + 1,
+      successCount: success
+        ? currentMetrics.successCount + 1
+        : currentMetrics.successCount,
+      failureCount: success
+        ? currentMetrics.failureCount
+        : currentMetrics.failureCount + 1,
       averageResponseTime: newAverageResponseTime,
-      lastRequestTime: new Date()
+      lastRequestTime: new Date(),
     });
   }
-} 
+}

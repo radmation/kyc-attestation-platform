@@ -83,7 +83,7 @@ let BlockchainProviderFactory = BlockchainProviderFactory_1 = class BlockchainPr
         return Array.from(this.providers.entries()).map(([key, provider]) => ({
             key,
             providerType: provider.providerType,
-            networkName: provider.networkName
+            networkName: provider.networkName,
         }));
     }
     async removeProvider(providerType, networkName) {
@@ -97,7 +97,9 @@ let BlockchainProviderFactory = BlockchainProviderFactory_1 = class BlockchainPr
     }
     async clearCache() {
         this.logger.log('Clearing all cached providers');
-        const disconnectPromises = Array.from(this.providers.values()).map(provider => provider.disconnect().catch(error => this.logger.error('Error disconnecting provider:', error)));
+        const disconnectPromises = Array.from(this.providers.values()).map((provider) => provider
+            .disconnect()
+            .catch((error) => this.logger.error('Error disconnecting provider:', error)));
         await Promise.allSettled(disconnectPromises);
         this.providers.clear();
         this.logger.log('All cached providers cleared');
@@ -142,7 +144,7 @@ let BlockchainProviderFactory = BlockchainProviderFactory_1 = class BlockchainPr
             blockchain_provider_interface_1.BlockchainProviderType.ARBITRUM,
             blockchain_provider_interface_1.BlockchainProviderType.AVALANCHE,
             blockchain_provider_interface_1.BlockchainProviderType.BSC,
-            blockchain_provider_interface_1.BlockchainProviderType.PRIVATE_ETHEREUM
+            blockchain_provider_interface_1.BlockchainProviderType.PRIVATE_ETHEREUM,
         ].includes(config.providerType)) {
             this.validateEthereumConfiguration(config, errors);
         }
@@ -151,7 +153,7 @@ let BlockchainProviderFactory = BlockchainProviderFactory_1 = class BlockchainPr
         }
         return {
             isValid: errors.length === 0,
-            errors
+            errors,
         };
     }
     validateFabricConfiguration(config, errors) {
@@ -207,7 +209,7 @@ let BlockchainProviderFactory = BlockchainProviderFactory_1 = class BlockchainPr
             requestTimeout: this.configService.get('BLOCKCHAIN_REQUEST_TIMEOUT', 10000),
             maxRetries: this.configService.get('BLOCKCHAIN_MAX_RETRIES', 3),
             healthCheckInterval: this.configService.get('BLOCKCHAIN_HEALTH_CHECK_INTERVAL', 60000),
-            environment: this.configService.get('NODE_ENV', 'development')
+            environment: this.configService.get('NODE_ENV', 'development'),
         };
         if (providerType === blockchain_provider_interface_1.BlockchainProviderType.HYPERLEDGER_FABRIC) {
             return {
@@ -221,8 +223,9 @@ let BlockchainProviderFactory = BlockchainProviderFactory_1 = class BlockchainPr
                     chaincodeName: this.configService.get('FABRIC_CHAINCODE_NAME', 'kycattestation'),
                     mspId: this.configService.get('FABRIC_MSP_ID', 'Org1MSP'),
                     enableDiscovery: this.configService.get('FABRIC_ENABLE_DISCOVERY', 'true') === 'true',
-                    asLocalhost: this.configService.get('FABRIC_AS_LOCALHOST', 'true') === 'true'
-                }
+                    asLocalhost: this.configService.get('FABRIC_AS_LOCALHOST', 'true') ===
+                        'true',
+                },
             };
         }
         else {

@@ -1,6 +1,6 @@
 /**
  * Blockchain Provider Abstraction Layer Exports
- * 
+ *
  * This file provides convenient exports for all blockchain provider
  * components, making it easy to import and use the abstraction layer.
  */
@@ -18,4 +18,4 @@ export { FabricBlockchainProvider } from './providers/fabric-blockchain.provider
 // export { EthereumBlockchainProvider } from './providers/ethereum-blockchain.provider';
 
 // Module export
-export { BlockchainModule } from './blockchain.module'; 
+export { BlockchainModule } from './blockchain.module';

@@ -6,9 +6,9 @@ import { BlockchainProviderService } from './blockchain-provider.service';
 
 /**
  * Blockchain Module
- * 
+ *
  * This module provides blockchain functionality through the provider abstraction layer.
- * It supports multiple blockchain providers (Fabric, Ethereum, etc.) through a 
+ * It supports multiple blockchain providers (Fabric, Ethereum, etc.) through a
  * standardized interface while maintaining backward compatibility.
  */
 @Module({
@@ -17,7 +17,7 @@ import { BlockchainProviderService } from './blockchain-provider.service';
     BlockchainProviderFactory,
     BlockchainProviderService,
     // TODO: Add individual provider implementations when ready
-    // FabricBlockchainProvider, 
+    // FabricBlockchainProvider,
     // EthereumBlockchainProvider,
   ],
   exports: [

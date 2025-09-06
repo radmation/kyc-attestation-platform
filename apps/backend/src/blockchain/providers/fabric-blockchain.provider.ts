@@ -1,6 +1,6 @@
 /**
  * Hyperledger Fabric Blockchain Provider
- * 
+ *
  * Implementation of the BlockchainProvider interface for Hyperledger Fabric.
  * This provider migrates the existing Fabric service logic to the new
  * abstraction layer while maintaining backward compatibility.
@@ -15,7 +15,7 @@ import {
   BlockchainResult,
   NetworkInfo,
   TransactionStatus,
-  AttestationStatus
+  AttestationStatus,
 } from '../interfaces/blockchain-provider.interface';
 import { FabricProviderConfiguration } from '../types/provider-config.types';
 
@@ -48,7 +48,7 @@ interface FabricTransactionResult {
 export class FabricBlockchainProvider implements BlockchainProvider {
   readonly providerType = BlockchainProviderType.HYPERLEDGER_FABRIC;
   readonly networkName: string;
-  
+
   private readonly logger = new Logger(FabricBlockchainProvider.name);
   private gateway: any; // Gateway when fabric-network is available
   private network: any; // Network when fabric-network is available
@@ -67,14 +67,20 @@ export class FabricBlockchainProvider implements BlockchainProvider {
    */
   async initialize(): Promise<void> {
     try {
-      this.logger.log(`Initializing Fabric provider for network: ${this.networkName}`);
+      this.logger.log(
+        `Initializing Fabric provider for network: ${this.networkName}`,
+      );
       await this.initializeFabricConnection();
       await this.setupEventListeners();
       this.isConnected = true;
-      this.logger.log(`Fabric provider initialized successfully for network: ${this.networkName}`);
+      this.logger.log(
+        `Fabric provider initialized successfully for network: ${this.networkName}`,
+      );
     } catch (error) {
       this.logger.error('Failed to initialize Fabric provider:', error);
-      throw new Error(`Fabric provider initialization failed: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Fabric provider initialization failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
@@ -85,7 +91,9 @@ export class FabricBlockchainProvider implements BlockchainProvider {
     try {
       // Validate connection profile exists (skip in test environment)
       const ccpPath = this.config.fabricConfig.connectionProfilePath;
-      const isTestEnvironment = process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID !== undefined;
+      const isTestEnvironment =
+        process.env.NODE_ENV === 'test' ||
+        process.env.JEST_WORKER_ID !== undefined;
       if (!isTestEnvironment && !fs.existsSync(ccpPath)) {
         throw new Error(`Connection profile not found at: ${ccpPath}`);
       }
@@ -109,9 +117,9 @@ export class FabricBlockchainProvider implements BlockchainProvider {
       // await this.gateway.connect(ccp, {
       //   wallet,
       //   identity: identityName,
-      //   discovery: { 
-      //     enabled: this.config.fabricConfig.enableDiscovery || true, 
-      //     asLocalhost: this.config.fabricConfig.asLocalhost || true 
+      //   discovery: {
+      //     enabled: this.config.fabricConfig.enableDiscovery || true,
+      //     asLocalhost: this.config.fabricConfig.asLocalhost || true
       //   },
       // });
 
@@ -119,7 +127,9 @@ export class FabricBlockchainProvider implements BlockchainProvider {
       // this.network = await this.gateway.getNetwork(this.config.fabricConfig.channelName);
       // this.contract = this.network.getContract(this.config.fabricConfig.chaincodeName);
 
-      this.logger.log(`Connected to Fabric network: ${this.config.fabricConfig.channelName}`);
+      this.logger.log(
+        `Connected to Fabric network: ${this.config.fabricConfig.channelName}`,
+      );
     } catch (error) {
       this.logger.error('Failed to initialize Fabric connection:', error);
       throw error;
@@ -131,7 +141,9 @@ export class FabricBlockchainProvider implements BlockchainProvider {
    */
   private async setupEventListeners(): Promise<void> {
     if (!this.isConnected) {
-      this.logger.warn('Cannot setup event listeners: not connected to Fabric network');
+      this.logger.warn(
+        'Cannot setup event listeners: not connected to Fabric network',
+      );
       return;
     }
 
@@ -168,11 +180,13 @@ export class FabricBlockchainProvider implements BlockchainProvider {
   /**
    * Create an attestation on the Fabric network
    */
-  async createAttestation(request: AttestationRequest): Promise<BlockchainResult> {
+  async createAttestation(
+    request: AttestationRequest,
+  ): Promise<BlockchainResult> {
     if (!this.isConnected) {
       return {
         success: false,
-        error: 'Fabric connection not established'
+        error: 'Fabric connection not established',
       };
     }
 
@@ -191,11 +205,11 @@ export class FabricBlockchainProvider implements BlockchainProvider {
         transactionId: `fabric-tx-${Date.now()}`,
         blockNumber: Math.floor(Math.random() * 1000000),
         validationCode: 0,
-        endorsingPeers: ['peer0.org1.example.com', 'peer0.org2.example.com']
+        endorsingPeers: ['peer0.org1.example.com', 'peer0.org2.example.com'],
       };
 
       this.logger.log(`Attestation created successfully: ${request.id}`);
-      
+
       return {
         success: true,
         transactionId: mockResult.transactionId,
@@ -205,24 +219,25 @@ export class FabricBlockchainProvider implements BlockchainProvider {
             chaincodeId: this.config.fabricConfig.chaincodeName,
             channelName: this.config.fabricConfig.channelName,
             validationCode: mockResult.validationCode,
-            endorsingPeers: mockResult.endorsingPeers
-          }
-        }
+            endorsingPeers: mockResult.endorsingPeers,
+          },
+        },
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to create attestation ${request.id}:`, error);
-      
+
       return {
         success: false,
         error: errorMessage,
-        providerData: { 
-          fabric: { 
+        providerData: {
+          fabric: {
             error: errorMessage,
             chaincodeName: this.config.fabricConfig.chaincodeName,
-            channelName: this.config.fabricConfig.channelName
-          } 
-        }
+            channelName: this.config.fabricConfig.channelName,
+          },
+        },
       };
     }
   }
@@ -253,9 +268,9 @@ export class FabricBlockchainProvider implements BlockchainProvider {
         providerData: {
           fabric: {
             chaincodeName: this.config.fabricConfig.chaincodeName,
-            channelName: this.config.fabricConfig.channelName
-          }
-        }
+            channelName: this.config.fabricConfig.channelName,
+          },
+        },
       };
 
       this.logger.log(`Retrieved attestation: ${id}`);
@@ -273,7 +288,7 @@ export class FabricBlockchainProvider implements BlockchainProvider {
     if (!this.isConnected) {
       return {
         success: false,
-        error: 'Fabric connection not established'
+        error: 'Fabric connection not established',
       };
     }
 
@@ -282,7 +297,7 @@ export class FabricBlockchainProvider implements BlockchainProvider {
       // const result = await this.contract.submitTransaction('RevokeAttestation', id);
 
       this.logger.log(`Attestation revoked: ${id}`);
-      
+
       return {
         success: true,
         transactionId: `fabric-tx-revoke-${Date.now()}`,
@@ -291,23 +306,24 @@ export class FabricBlockchainProvider implements BlockchainProvider {
           fabric: {
             chaincodeName: this.config.fabricConfig.chaincodeName,
             channelName: this.config.fabricConfig.channelName,
-            operation: 'revoke'
-          }
-        }
+            operation: 'revoke',
+          },
+        },
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to revoke attestation ${id}:`, error);
-      
+
       return {
         success: false,
         error: errorMessage,
-        providerData: { 
-          fabric: { 
+        providerData: {
+          fabric: {
             error: errorMessage,
-            operation: 'revoke'
-          } 
-        }
+            operation: 'revoke',
+          },
+        },
       };
     }
   }
@@ -315,11 +331,14 @@ export class FabricBlockchainProvider implements BlockchainProvider {
   /**
    * Update attestation status on the Fabric network
    */
-  async updateAttestationStatus(id: string, status: AttestationStatus): Promise<BlockchainResult> {
+  async updateAttestationStatus(
+    id: string,
+    status: AttestationStatus,
+  ): Promise<BlockchainResult> {
     if (!this.isConnected) {
       return {
         success: false,
-        error: 'Fabric connection not established'
+        error: 'Fabric connection not established',
       };
     }
 
@@ -328,7 +347,7 @@ export class FabricBlockchainProvider implements BlockchainProvider {
       // const result = await this.contract.submitTransaction('UpdateAttestationStatus', id, status);
 
       this.logger.log(`Attestation status updated: ${id} -> ${status}`);
-      
+
       return {
         success: true,
         transactionId: `fabric-tx-update-${Date.now()}`,
@@ -338,23 +357,24 @@ export class FabricBlockchainProvider implements BlockchainProvider {
             chaincodeName: this.config.fabricConfig.chaincodeName,
             channelName: this.config.fabricConfig.channelName,
             operation: 'updateStatus',
-            newStatus: status
-          }
-        }
+            newStatus: status,
+          },
+        },
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to update attestation status ${id}:`, error);
-      
+
       return {
         success: false,
         error: errorMessage,
-        providerData: { 
-          fabric: { 
+        providerData: {
+          fabric: {
             error: errorMessage,
-            operation: 'updateStatus'
-          } 
-        }
+            operation: 'updateStatus',
+          },
+        },
       };
     }
   }
@@ -382,14 +402,19 @@ export class FabricBlockchainProvider implements BlockchainProvider {
           status: AttestationStatus.ACTIVE,
           issuedAt: new Date().toISOString(),
           transactionId: `fabric-tx-${Date.now()}-1`,
-          blockNumber: Math.floor(Math.random() * 1000000).toString()
-        }
+          blockNumber: Math.floor(Math.random() * 1000000).toString(),
+        },
       ];
 
-      this.logger.log(`Retrieved ${mockAttestations.length} attestations for wallet: ${walletId}`);
+      this.logger.log(
+        `Retrieved ${mockAttestations.length} attestations for wallet: ${walletId}`,
+      );
       return mockAttestations;
     } catch (error) {
-      this.logger.error(`Failed to get attestations by wallet ${walletId}:`, error);
+      this.logger.error(
+        `Failed to get attestations by wallet ${walletId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -413,8 +438,8 @@ export class FabricBlockchainProvider implements BlockchainProvider {
           txId: `fabric-tx-${Date.now()}-1`,
           timestamp: new Date().toISOString(),
           action: 'created',
-          blockNumber: Math.floor(Math.random() * 1000000)
-        }
+          blockNumber: Math.floor(Math.random() * 1000000),
+        },
       ];
 
       this.logger.log(`Retrieved history for attestation: ${id}`);
@@ -437,7 +462,7 @@ export class FabricBlockchainProvider implements BlockchainProvider {
       // TODO: Uncomment when fabric-network is available
       // Perform a simple query to test connection
       // await this.contract.evaluateTransaction('HealthCheck');
-      
+
       return true;
     } catch (error) {
       this.logger.error('Fabric health check failed:', error);
@@ -457,7 +482,7 @@ export class FabricBlockchainProvider implements BlockchainProvider {
         chainId: this.config.fabricConfig.channelName,
         blockHeight: Math.floor(Math.random() * 1000000).toString(),
         peersConnected: 2, // Mock value
-        lastBlockTime: new Date()
+        lastBlockTime: new Date(),
       };
     } catch (error) {
       this.logger.error('Failed to get network info:', error);
@@ -476,7 +501,7 @@ export class FabricBlockchainProvider implements BlockchainProvider {
         status: 'confirmed',
         blockNumber: Math.floor(Math.random() * 1000000).toString(),
         confirmations: 1,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       this.logger.error(`Failed to get transaction status for ${txId}:`, error);
@@ -487,10 +512,15 @@ export class FabricBlockchainProvider implements BlockchainProvider {
   /**
    * Wait for transaction confirmation in Fabric
    */
-  async waitForConfirmation(txId: string, confirmations: number = 1): Promise<void> {
+  async waitForConfirmation(
+    txId: string,
+    confirmations: number = 1,
+  ): Promise<void> {
     // In Fabric, transactions are immediately confirmed when they pass validation
     // This is a no-op for Fabric but required by the interface
-    this.logger.log(`Transaction ${txId} confirmation waited (${confirmations} confirmations)`);
+    this.logger.log(
+      `Transaction ${txId} confirmation waited (${confirmations} confirmations)`,
+    );
   }
 
   /**
@@ -514,35 +544,35 @@ export class FabricBlockchainProvider implements BlockchainProvider {
    */
   private validateConfiguration(): void {
     const { fabricConfig } = this.config;
-    
+
     if (!fabricConfig) {
       throw new Error('Fabric configuration is required');
     }
-    
+
     if (!fabricConfig.connectionProfilePath) {
       throw new Error('Connection profile path is required');
     }
-    
+
     if (!fabricConfig.walletPath) {
       throw new Error('Wallet path is required');
     }
-    
+
     if (!fabricConfig.identityName) {
       throw new Error('Identity name is required');
     }
-    
+
     if (!fabricConfig.channelName) {
       throw new Error('Channel name is required');
     }
-    
+
     if (!fabricConfig.chaincodeName) {
       throw new Error('Chaincode name is required');
     }
-    
+
     if (!fabricConfig.mspId) {
       throw new Error('MSP ID is required');
     }
 
     this.logger.log('Fabric configuration validation passed');
   }
-} 
+}

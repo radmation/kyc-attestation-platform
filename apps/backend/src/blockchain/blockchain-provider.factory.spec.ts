@@ -1,6 +1,6 @@
 /**
  * Unit Tests for BlockchainProviderFactory
- * 
+ *
  * These tests validate the provider factory functionality including
  * provider creation, caching, validation, and error handling.
  */
@@ -32,19 +32,19 @@ describe('BlockchainProviderFactory', () => {
       chaincodeName: 'testchaincode',
       mspId: 'TestMSP',
       enableDiscovery: true,
-      asLocalhost: true
-    }
+      asLocalhost: true,
+    },
   };
 
   beforeEach(async () => {
     const mockConfigService = {
-      get: jest.fn()
+      get: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BlockchainProviderFactory,
-        { provide: ConfigService, useValue: mockConfigService }
+        { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
@@ -76,20 +76,20 @@ describe('BlockchainProviderFactory', () => {
 
   describe('Provider Creation', () => {
     it('should fail to create provider for unsupported type', async () => {
-      await expect(
-        factory.createProvider(mockFabricConfig)
-      ).rejects.toThrow('Unsupported provider type');
+      await expect(factory.createProvider(mockFabricConfig)).rejects.toThrow(
+        'Unsupported provider type',
+      );
     });
 
     it('should validate configuration before creating provider', async () => {
       const invalidConfig = {
         ...mockFabricConfig,
-        enabled: false
+        enabled: false,
       };
 
-      await expect(
-        factory.createProvider(invalidConfig)
-      ).rejects.toThrow('Provider configuration validation failed');
+      await expect(factory.createProvider(invalidConfig)).rejects.toThrow(
+        'Provider configuration validation failed',
+      );
     });
 
     it('should validate required Fabric configuration fields', async () => {
@@ -97,13 +97,13 @@ describe('BlockchainProviderFactory', () => {
         ...mockFabricConfig,
         fabricConfig: {
           ...mockFabricConfig.fabricConfig,
-          connectionProfilePath: '' // Required field missing
-        }
+          connectionProfilePath: '', // Required field missing
+        },
       };
 
-      await expect(
-        factory.createProvider(invalidFabricConfig)
-      ).rejects.toThrow('Connection profile path is required for Fabric');
+      await expect(factory.createProvider(invalidFabricConfig)).rejects.toThrow(
+        'Connection profile path is required for Fabric',
+      );
     });
   });
 
@@ -111,34 +111,34 @@ describe('BlockchainProviderFactory', () => {
     it('should validate basic provider configuration', async () => {
       const incompleteConfig = {
         ...mockFabricConfig,
-        providerType: undefined as any
+        providerType: undefined as any,
       };
 
-      await expect(
-        factory.createProvider(incompleteConfig)
-      ).rejects.toThrow('Provider type is required');
+      await expect(factory.createProvider(incompleteConfig)).rejects.toThrow(
+        'Provider type is required',
+      );
     });
 
     it('should validate network name is provided', async () => {
       const invalidConfig = {
         ...mockFabricConfig,
-        networkName: ''
+        networkName: '',
       };
 
-      await expect(
-        factory.createProvider(invalidConfig)
-      ).rejects.toThrow('Network name is required');
+      await expect(factory.createProvider(invalidConfig)).rejects.toThrow(
+        'Network name is required',
+      );
     });
 
     it('should validate enabled flag is set', async () => {
       const invalidConfig = {
         ...mockFabricConfig,
-        enabled: undefined as any
+        enabled: undefined as any,
       };
 
-      await expect(
-        factory.createProvider(invalidConfig)
-      ).rejects.toThrow('Enabled flag is required');
+      await expect(factory.createProvider(invalidConfig)).rejects.toThrow(
+        'Enabled flag is required',
+      );
     });
   });
 
@@ -149,14 +149,16 @@ describe('BlockchainProviderFactory', () => {
         providerClass: jest.fn() as any,
         supportedNetworks: ['mainnet', 'goerli'],
         isEnabled: true,
-        description: 'Test Ethereum provider'
+        description: 'Test Ethereum provider',
       };
 
       factory.registerProvider(mockProviderEntry);
-      
+
       const availableProviders = factory.getAvailableProviders();
       expect(availableProviders).toHaveLength(1);
-             expect(availableProviders[0]?.providerType).toBe(BlockchainProviderType.ETHEREUM);
+      expect(availableProviders[0]?.providerType).toBe(
+        BlockchainProviderType.ETHEREUM,
+      );
     });
 
     it('should return available providers list', () => {
@@ -180,10 +182,10 @@ describe('BlockchainProviderFactory', () => {
 
     it('should remove specific provider from cache', async () => {
       await factory.removeProvider(
-        BlockchainProviderType.HYPERLEDGER_FABRIC, 
-        'testchannel'
+        BlockchainProviderType.HYPERLEDGER_FABRIC,
+        'testchannel',
       );
-      
+
       const cachedProviders = factory.getCachedProviders();
       expect(cachedProviders).toHaveLength(0);
     });
@@ -219,12 +221,14 @@ describe('BlockchainProviderFactory', () => {
       try {
         const provider = await factory.getProvider(
           BlockchainProviderType.HYPERLEDGER_FABRIC,
-          'testchannel'
+          'testchannel',
         );
-                 // This will fail because no provider is registered, but it validates config creation
-       } catch (error) {
-         expect(error instanceof Error ? error.message : String(error)).toContain('Unsupported provider type');
-       }
+        // This will fail because no provider is registered, but it validates config creation
+      } catch (error) {
+        expect(
+          error instanceof Error ? error.message : String(error),
+        ).toContain('Unsupported provider type');
+      }
     });
 
     it('should throw error for unsupported provider type in default config', () => {
@@ -232,7 +236,7 @@ describe('BlockchainProviderFactory', () => {
         // Access private method through any cast for testing
         (factory as any).createDefaultConfiguration(
           'UNSUPPORTED_TYPE' as BlockchainProviderType,
-          'testnet'
+          'testnet',
         );
       }).toThrow('Default configuration not implemented for provider type');
     });
@@ -250,7 +254,7 @@ describe('BlockchainProviderFactory', () => {
         providerClass: failingProviderClass,
         supportedNetworks: ['mainnet'],
         isEnabled: true,
-        description: 'Failing test provider'
+        description: 'Failing test provider',
       };
 
       factory.registerProvider(mockProviderEntry);
@@ -263,14 +267,14 @@ describe('BlockchainProviderFactory', () => {
           rpcUrl: 'https://mainnet.infura.io/v3/test',
           chainId: 1,
           contracts: {
-            attestationContract: '0x1234567890123456789012345678901234567890'
-          }
-        }
+            attestationContract: '0x1234567890123456789012345678901234567890',
+          },
+        },
       };
 
-             await expect(
-         factory.createProvider(ethereumConfig as any)
-       ).rejects.toThrow('Provider configuration validation failed');
+      await expect(
+        factory.createProvider(ethereumConfig as any),
+      ).rejects.toThrow('Provider configuration validation failed');
     });
   });
-}); 
+});

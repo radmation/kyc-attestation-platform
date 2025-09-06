@@ -29,7 +29,8 @@ class FabricBlockchainProvider {
     async initializeFabricConnection() {
         try {
             const ccpPath = this.config.fabricConfig.connectionProfilePath;
-            const isTestEnvironment = process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID !== undefined;
+            const isTestEnvironment = process.env.NODE_ENV === 'test' ||
+                process.env.JEST_WORKER_ID !== undefined;
             if (!isTestEnvironment && !fs.existsSync(ccpPath)) {
                 throw new Error(`Connection profile not found at: ${ccpPath}`);
             }
@@ -64,7 +65,7 @@ class FabricBlockchainProvider {
         if (!this.isConnected) {
             return {
                 success: false,
-                error: 'Fabric connection not established'
+                error: 'Fabric connection not established',
             };
         }
         try {
@@ -72,7 +73,7 @@ class FabricBlockchainProvider {
                 transactionId: `fabric-tx-${Date.now()}`,
                 blockNumber: Math.floor(Math.random() * 1000000),
                 validationCode: 0,
-                endorsingPeers: ['peer0.org1.example.com', 'peer0.org2.example.com']
+                endorsingPeers: ['peer0.org1.example.com', 'peer0.org2.example.com'],
             };
             this.logger.log(`Attestation created successfully: ${request.id}`);
             return {
@@ -84,9 +85,9 @@ class FabricBlockchainProvider {
                         chaincodeId: this.config.fabricConfig.chaincodeName,
                         channelName: this.config.fabricConfig.channelName,
                         validationCode: mockResult.validationCode,
-                        endorsingPeers: mockResult.endorsingPeers
-                    }
-                }
+                        endorsingPeers: mockResult.endorsingPeers,
+                    },
+                },
             };
         }
         catch (error) {
@@ -99,9 +100,9 @@ class FabricBlockchainProvider {
                     fabric: {
                         error: errorMessage,
                         chaincodeName: this.config.fabricConfig.chaincodeName,
-                        channelName: this.config.fabricConfig.channelName
-                    }
-                }
+                        channelName: this.config.fabricConfig.channelName,
+                    },
+                },
             };
         }
     }
@@ -122,9 +123,9 @@ class FabricBlockchainProvider {
                 providerData: {
                     fabric: {
                         chaincodeName: this.config.fabricConfig.chaincodeName,
-                        channelName: this.config.fabricConfig.channelName
-                    }
-                }
+                        channelName: this.config.fabricConfig.channelName,
+                    },
+                },
             };
             this.logger.log(`Retrieved attestation: ${id}`);
             return mockAttestation;
@@ -138,7 +139,7 @@ class FabricBlockchainProvider {
         if (!this.isConnected) {
             return {
                 success: false,
-                error: 'Fabric connection not established'
+                error: 'Fabric connection not established',
             };
         }
         try {
@@ -151,9 +152,9 @@ class FabricBlockchainProvider {
                     fabric: {
                         chaincodeName: this.config.fabricConfig.chaincodeName,
                         channelName: this.config.fabricConfig.channelName,
-                        operation: 'revoke'
-                    }
-                }
+                        operation: 'revoke',
+                    },
+                },
             };
         }
         catch (error) {
@@ -165,9 +166,9 @@ class FabricBlockchainProvider {
                 providerData: {
                     fabric: {
                         error: errorMessage,
-                        operation: 'revoke'
-                    }
-                }
+                        operation: 'revoke',
+                    },
+                },
             };
         }
     }
@@ -175,7 +176,7 @@ class FabricBlockchainProvider {
         if (!this.isConnected) {
             return {
                 success: false,
-                error: 'Fabric connection not established'
+                error: 'Fabric connection not established',
             };
         }
         try {
@@ -189,9 +190,9 @@ class FabricBlockchainProvider {
                         chaincodeName: this.config.fabricConfig.chaincodeName,
                         channelName: this.config.fabricConfig.channelName,
                         operation: 'updateStatus',
-                        newStatus: status
-                    }
-                }
+                        newStatus: status,
+                    },
+                },
             };
         }
         catch (error) {
@@ -203,9 +204,9 @@ class FabricBlockchainProvider {
                 providerData: {
                     fabric: {
                         error: errorMessage,
-                        operation: 'updateStatus'
-                    }
-                }
+                        operation: 'updateStatus',
+                    },
+                },
             };
         }
     }
@@ -223,8 +224,8 @@ class FabricBlockchainProvider {
                     status: blockchain_provider_interface_1.AttestationStatus.ACTIVE,
                     issuedAt: new Date().toISOString(),
                     transactionId: `fabric-tx-${Date.now()}-1`,
-                    blockNumber: Math.floor(Math.random() * 1000000).toString()
-                }
+                    blockNumber: Math.floor(Math.random() * 1000000).toString(),
+                },
             ];
             this.logger.log(`Retrieved ${mockAttestations.length} attestations for wallet: ${walletId}`);
             return mockAttestations;
@@ -244,8 +245,8 @@ class FabricBlockchainProvider {
                     txId: `fabric-tx-${Date.now()}-1`,
                     timestamp: new Date().toISOString(),
                     action: 'created',
-                    blockNumber: Math.floor(Math.random() * 1000000)
-                }
+                    blockNumber: Math.floor(Math.random() * 1000000),
+                },
             ];
             this.logger.log(`Retrieved history for attestation: ${id}`);
             return mockHistory;
@@ -275,7 +276,7 @@ class FabricBlockchainProvider {
                 chainId: this.config.fabricConfig.channelName,
                 blockHeight: Math.floor(Math.random() * 1000000).toString(),
                 peersConnected: 2,
-                lastBlockTime: new Date()
+                lastBlockTime: new Date(),
             };
         }
         catch (error) {
@@ -290,7 +291,7 @@ class FabricBlockchainProvider {
                 status: 'confirmed',
                 blockNumber: Math.floor(Math.random() * 1000000).toString(),
                 confirmations: 1,
-                timestamp: new Date()
+                timestamp: new Date(),
             };
         }
         catch (error) {

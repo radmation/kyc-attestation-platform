@@ -25,7 +25,7 @@ let BlockchainProviderService = BlockchainProviderService_1 = class BlockchainPr
         this.healthCheckInterval = null;
         this.primaryProvider = {
             type: this.configService.get('PRIMARY_BLOCKCHAIN_PROVIDER', blockchain_provider_interface_1.BlockchainProviderType.HYPERLEDGER_FABRIC),
-            network: this.configService.get('PRIMARY_BLOCKCHAIN_NETWORK', 'kycchannel')
+            network: this.configService.get('PRIMARY_BLOCKCHAIN_NETWORK', 'kycchannel'),
         };
     }
     async onModuleInit() {
@@ -83,7 +83,7 @@ let BlockchainProviderService = BlockchainProviderService_1 = class BlockchainPr
             this.logger.error(`Failed to create attestation for ID ${request.id}:`, error);
             return {
                 success: false,
-                error: errorMessage
+                error: errorMessage,
             };
         }
     }
@@ -121,7 +121,7 @@ let BlockchainProviderService = BlockchainProviderService_1 = class BlockchainPr
             this.logger.error(`Failed to revoke attestation for ID ${id}:`, error);
             return {
                 success: false,
-                error: errorMessage
+                error: errorMessage,
             };
         }
     }
@@ -142,7 +142,7 @@ let BlockchainProviderService = BlockchainProviderService_1 = class BlockchainPr
             this.logger.error(`Failed to update attestation status for ID ${id}:`, error);
             return {
                 success: false,
-                error: errorMessage
+                error: errorMessage,
             };
         }
     }
@@ -168,13 +168,13 @@ let BlockchainProviderService = BlockchainProviderService_1 = class BlockchainPr
     }
     getCachedProvidersWithHealth() {
         const cachedProviders = this.providerFactory.getCachedProviders();
-        return cachedProviders.map(cached => {
+        return cachedProviders.map((cached) => {
             const health = this.healthStatus.get(cached.key);
             const metrics = this.metrics.get(cached.key);
             return {
                 ...cached,
                 health,
-                metrics
+                metrics,
             };
         });
     }
@@ -191,11 +191,13 @@ let BlockchainProviderService = BlockchainProviderService_1 = class BlockchainPr
             const currentTime = new Date();
             for (const [providerKey, isHealthy] of Object.entries(healthResults)) {
                 const currentStatus = this.healthStatus.get(providerKey);
-                const consecutiveFailures = isHealthy ? 0 : (currentStatus?.consecutiveFailures || 0) + 1;
+                const consecutiveFailures = isHealthy
+                    ? 0
+                    : (currentStatus?.consecutiveFailures || 0) + 1;
                 const healthStatus = {
                     isHealthy,
                     lastChecked: currentTime,
-                    consecutiveFailures
+                    consecutiveFailures,
                 };
                 if (!isHealthy) {
                     healthStatus.errorMessage = 'Health check failed';
@@ -218,16 +220,22 @@ let BlockchainProviderService = BlockchainProviderService_1 = class BlockchainPr
             requestCount: 0,
             successCount: 0,
             failureCount: 0,
-            averageResponseTime: 0
+            averageResponseTime: 0,
         };
         const newRequestCount = currentMetrics.requestCount + 1;
-        const newAverageResponseTime = (currentMetrics.averageResponseTime * currentMetrics.requestCount + responseTime) / newRequestCount;
+        const newAverageResponseTime = (currentMetrics.averageResponseTime * currentMetrics.requestCount +
+            responseTime) /
+            newRequestCount;
         this.metrics.set(providerKey, {
             requestCount: newRequestCount,
-            successCount: success ? currentMetrics.successCount + 1 : currentMetrics.successCount,
-            failureCount: success ? currentMetrics.failureCount : currentMetrics.failureCount + 1,
+            successCount: success
+                ? currentMetrics.successCount + 1
+                : currentMetrics.successCount,
+            failureCount: success
+                ? currentMetrics.failureCount
+                : currentMetrics.failureCount + 1,
             averageResponseTime: newAverageResponseTime,
-            lastRequestTime: new Date()
+            lastRequestTime: new Date(),
         });
     }
 };
