@@ -19,6 +19,7 @@ const blockchain_module_1 = require("./blockchain/blockchain.module");
 const jwt_auth_guard_1 = require("./shared/guards/jwt-auth.guard");
 const roles_guard_1 = require("./shared/guards/roles.guard");
 const database_module_1 = require("./database/database.module");
+const health_module_1 = require("./health/health.module");
 const security_middleware_1 = require("./shared/middleware/security.middleware");
 const logging_middleware_1 = require("./shared/middleware/logging.middleware");
 const rate_limit_config_1 = require("./shared/config/rate-limit.config");
@@ -46,6 +47,7 @@ exports.BackendModule = BackendModule = __decorate([
             invitation_module_1.InvitationModule,
             branding_module_1.BrandingModule,
             blockchain_module_1.BlockchainModule,
+            health_module_1.HealthModule,
         ],
         providers: [
             {
