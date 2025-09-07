@@ -41,7 +41,9 @@ export class StripeService {
   /**
    * Create a Stripe checkout session for a new subscription
    */
-  async createCheckoutSession(dto: CreateCheckoutSessionDto): Promise<Stripe.Checkout.Session> {
+  async createCheckoutSession(
+    dto: CreateCheckoutSessionDto,
+  ): Promise<Stripe.Checkout.Session> {
     try {
       // Get the client
       const client = await this.prismaService.client.findUnique({
@@ -89,10 +91,14 @@ export class StripeService {
         },
       });
 
-      this.logger.log(`Created checkout session ${session.id} for client ${dto.clientId}`);
+      this.logger.log(
+        `Created checkout session ${session.id} for client ${dto.clientId}`,
+      );
       return session;
     } catch (error) {
-      this.logger.error(`Failed to create checkout session: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Failed to create checkout session: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw error;
     }
   }
@@ -100,7 +106,9 @@ export class StripeService {
   /**
    * Handle checkout session completed webhook
    */
-  async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session): Promise<void> {
+  async handleCheckoutSessionCompleted(
+    session: Stripe.Checkout.Session,
+  ): Promise<void> {
     try {
       const clientId = session.metadata?.clientId;
       if (!clientId) {
@@ -124,9 +132,13 @@ export class StripeService {
         },
       });
 
-      this.logger.log(`Provisioned account for client ${clientId} with subscription ${subscription.id}`);
+      this.logger.log(
+        `Provisioned account for client ${clientId} with subscription ${subscription.id}`,
+      );
     } catch (error) {
-      this.logger.error(`Failed to handle checkout session completed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Failed to handle checkout session completed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw error;
     }
   }
@@ -137,7 +149,7 @@ export class StripeService {
   async handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
     try {
       const customerId = invoice.customer as string;
-      
+
       // Find client by Stripe customer ID
       const client = await this.prismaService.client.findUnique({
         where: { stripeCustomerId: customerId },
@@ -158,9 +170,13 @@ export class StripeService {
         },
       });
 
-      this.logger.log(`Payment succeeded for client ${client.id}, updated status to ACTIVE`);
+      this.logger.log(
+        `Payment succeeded for client ${client.id}, updated status to ACTIVE`,
+      );
     } catch (error) {
-      this.logger.error(`Failed to handle invoice payment succeeded: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Failed to handle invoice payment succeeded: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw error;
     }
   }
@@ -171,7 +187,7 @@ export class StripeService {
   async handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
     try {
       const customerId = invoice.customer as string;
-      
+
       // Find client by Stripe customer ID
       const client = await this.prismaService.client.findUnique({
         where: { stripeCustomerId: customerId },
@@ -196,12 +212,16 @@ export class StripeService {
         },
       });
 
-      this.logger.log(`Payment failed for client ${client.id}, set grace period until ${gracePeriodEndsAt}`);
+      this.logger.log(
+        `Payment failed for client ${client.id}, set grace period until ${gracePeriodEndsAt}`,
+      );
 
       // TODO: Send reminder email
       await this.sendPaymentFailedEmail(client.id, gracePeriodEndsAt);
     } catch (error) {
-      this.logger.error(`Failed to handle invoice payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Failed to handle invoice payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw error;
     }
   }
@@ -209,10 +229,12 @@ export class StripeService {
   /**
    * Handle customer subscription deleted webhook
    */
-  async handleSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
+  async handleSubscriptionDeleted(
+    subscription: Stripe.Subscription,
+  ): Promise<void> {
     try {
       const customerId = subscription.customer as string;
-      
+
       // Find client by Stripe customer ID
       const client = await this.prismaService.client.findUnique({
         where: { stripeCustomerId: customerId },
@@ -234,7 +256,9 @@ export class StripeService {
 
       this.logger.log(`Subscription canceled for client ${client.id}`);
     } catch (error) {
-      this.logger.error(`Failed to handle subscription deleted: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Failed to handle subscription deleted: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw error;
     }
   }
@@ -242,7 +266,10 @@ export class StripeService {
   /**
    * Create Stripe Customer Portal session
    */
-  async createCustomerPortalSession(clientId: string, returnUrl: string): Promise<Stripe.BillingPortal.Session> {
+  async createCustomerPortalSession(
+    clientId: string,
+    returnUrl: string,
+  ): Promise<Stripe.BillingPortal.Session> {
     try {
       const client = await this.prismaService.client.findUnique({
         where: { id: clientId },
@@ -259,7 +286,9 @@ export class StripeService {
 
       return session;
     } catch (error) {
-      this.logger.error(`Failed to create customer portal session: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Failed to create customer portal session: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw error;
     }
   }
@@ -268,15 +297,23 @@ export class StripeService {
    * Verify webhook signature
    */
   verifyWebhookSignature(payload: string, signature: string): Stripe.Event {
-    const webhookSecret = this.configService.get<string>('STRIPE_WEBHOOK_SECRET');
+    const webhookSecret = this.configService.get<string>(
+      'STRIPE_WEBHOOK_SECRET',
+    );
     if (!webhookSecret) {
       throw new Error('STRIPE_WEBHOOK_SECRET is required');
     }
 
     try {
-      return this.stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+      return this.stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        webhookSecret,
+      );
     } catch (error) {
-      this.logger.error(`Webhook signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Webhook signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw error;
     }
   }
@@ -284,8 +321,13 @@ export class StripeService {
   /**
    * Send payment failed email (placeholder implementation)
    */
-  private async sendPaymentFailedEmail(clientId: string, gracePeriodEndsAt: Date): Promise<void> {
+  private async sendPaymentFailedEmail(
+    clientId: string,
+    gracePeriodEndsAt: Date,
+  ): Promise<void> {
     // TODO: Implement email service integration
-    this.logger.log(`Would send payment failed email to client ${clientId}, grace period ends ${gracePeriodEndsAt}`);
+    this.logger.log(
+      `Would send payment failed email to client ${clientId}, grace period ends ${gracePeriodEndsAt}`,
+    );
   }
-} 
+}

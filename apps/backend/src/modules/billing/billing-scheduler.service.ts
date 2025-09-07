@@ -27,7 +27,7 @@ export class BillingSchedulerService {
 
     try {
       const now = new Date();
-      
+
       // Find all clients with PAST_DUE status where grace period has expired
       const expiredClients = await this.prismaService.client.findMany({
         where: {
@@ -38,7 +38,9 @@ export class BillingSchedulerService {
         },
       });
 
-      this.logger.log(`Found ${expiredClients.length} clients with expired grace periods`);
+      this.logger.log(
+        `Found ${expiredClients.length} clients with expired grace periods`,
+      );
 
       // Update their status to SUSPENDED
       for (const client of expiredClients) {
@@ -52,7 +54,9 @@ export class BillingSchedulerService {
         this.logger.log(`Suspended client ${client.id} - grace period expired`);
       }
     } catch (error) {
-      this.logger.error(`Error processing grace period expiration: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Error processing grace period expiration: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 
@@ -66,7 +70,7 @@ export class BillingSchedulerService {
 
     try {
       const now = new Date();
-      
+
       // Find clients with PAST_DUE status who need reminder emails
       const pastDueClients = await this.prismaService.client.findMany({
         where: {
@@ -83,31 +87,47 @@ export class BillingSchedulerService {
         }
 
         const daysSinceFailure = Math.floor(
-          (now.getTime() - client.lastPaymentFailedAt.getTime()) / (1000 * 60 * 60 * 24)
+          (now.getTime() - client.lastPaymentFailedAt.getTime()) /
+            (1000 * 60 * 60 * 24),
         );
 
         // Send reminders at 7, 14, and 20 days
-        if (daysSinceFailure === 7 || daysSinceFailure === 14 || daysSinceFailure === 20) {
-          await this.sendReminderEmail(client.id, daysSinceFailure, client.gracePeriodEndsAt);
+        if (
+          daysSinceFailure === 7 ||
+          daysSinceFailure === 14 ||
+          daysSinceFailure === 20
+        ) {
+          await this.sendReminderEmail(
+            client.id,
+            daysSinceFailure,
+            client.gracePeriodEndsAt,
+          );
         }
       }
     } catch (error) {
-      this.logger.error(`Error sending reminder emails: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Error sending reminder emails: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 
   /**
    * Send a reminder email to a client
    */
-  private async sendReminderEmail(clientId: string, daysSinceFailure: number, gracePeriodEndsAt: Date): Promise<void> {
+  private async sendReminderEmail(
+    clientId: string,
+    daysSinceFailure: number,
+    gracePeriodEndsAt: Date,
+  ): Promise<void> {
     // TODO: Implement email service integration
     const daysRemaining = Math.ceil(
-      (gracePeriodEndsAt.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      (gracePeriodEndsAt.getTime() - new Date().getTime()) /
+        (1000 * 60 * 60 * 24),
     );
-    
+
     this.logger.log(
       `Would send day ${daysSinceFailure} reminder email to client ${clientId}. ` +
-      `${daysRemaining} days remaining in grace period.`
+        `${daysRemaining} days remaining in grace period.`,
     );
   }
-} 
+}

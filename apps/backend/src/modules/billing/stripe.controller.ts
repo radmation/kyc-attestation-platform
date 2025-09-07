@@ -34,7 +34,7 @@ export class StripeController {
     }
 
     let event: Stripe.Event;
-    
+
     try {
       // Verify the webhook signature
       event = this.stripeService.verifyWebhookSignature(
@@ -42,7 +42,9 @@ export class StripeController {
         signature,
       );
     } catch (error) {
-      this.logger.error(`Webhook signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Webhook signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw new BadRequestException('Invalid signature');
     }
 
@@ -53,26 +55,24 @@ export class StripeController {
       switch (event.type) {
         case 'checkout.session.completed':
           await this.stripeService.handleCheckoutSessionCompleted(
-            event.data.object as Stripe.Checkout.Session,
+            event.data.object,
           );
           break;
 
         case 'invoice.payment_succeeded':
           await this.stripeService.handleInvoicePaymentSucceeded(
-            event.data.object as Stripe.Invoice,
+            event.data.object,
           );
           break;
 
         case 'invoice.payment_failed':
           await this.stripeService.handleInvoicePaymentFailed(
-            event.data.object as Stripe.Invoice,
+            event.data.object,
           );
           break;
 
         case 'customer.subscription.deleted':
-          await this.stripeService.handleSubscriptionDeleted(
-            event.data.object as Stripe.Subscription,
-          );
+          await this.stripeService.handleSubscriptionDeleted(event.data.object);
           break;
 
         default:
@@ -81,8 +81,10 @@ export class StripeController {
 
       return { received: true };
     } catch (error) {
-      this.logger.error(`Error processing webhook ${event.type}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `Error processing webhook ${event.type}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw error;
     }
   }
-} 
+}

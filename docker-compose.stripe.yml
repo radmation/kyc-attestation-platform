@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Stripe CLI service for webhook forwarding
+  stripe-cli:
+    image: stripe/stripe-cli:latest
+    container_name: kyc-stripe-cli
+    depends_on:
+      - backend
+    command: >
+      sh -c "
+        echo 'Waiting for backend to be ready...' &&
+        sleep 10 &&
+        echo 'Starting Stripe webhook forwarding...' &&
+        stripe listen --forward-to http://backend:3000/api/billing/stripe/webhook --skip-verify
+      "
+    environment:
+      - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+    volumes:
+      - stripe_config:/root/.config/stripe
+    networks:
+      - kyc-network
+    restart: unless-stopped
+    profiles:
+      - stripe-dev
+
+volumes:
+  stripe_config:
+
+networks:
+  kyc-network:
+    external: true

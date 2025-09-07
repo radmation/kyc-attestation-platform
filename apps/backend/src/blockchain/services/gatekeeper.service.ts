@@ -461,9 +461,7 @@ export class GatekeeperService {
       // In a real implementation, this would query the chaincode
       const isFrozen = false; // Default to not frozen in mock
 
-      this.logger.log(
-        `Address ${addressToCheck} frozen status: ${isFrozen}`,
-      );
+      this.logger.log(`Address ${addressToCheck} frozen status: ${isFrozen}`);
       return isFrozen;
 
       // Real implementation would look like this:
@@ -510,7 +508,7 @@ export class GatekeeperService {
       if (receiverFrozen) frozenAddresses.push(receiverAddress);
 
       const isBlocked = frozenAddresses.length > 0;
-      
+
       let reason: string | undefined;
       if (isBlocked) {
         if (senderFrozen && receiverFrozen) {
@@ -534,7 +532,10 @@ export class GatekeeperService {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('Failed to check transaction freeze status:', errorMessage);
+      this.logger.error(
+        'Failed to check transaction freeze status:',
+        errorMessage,
+      );
       throw new Error(`Transaction freeze check failed: ${errorMessage}`);
     }
   }

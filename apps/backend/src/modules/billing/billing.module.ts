@@ -11,4 +11,4 @@ import { PrismaModule } from '../../prisma/prisma.module';
   providers: [StripeService, BillingSchedulerService],
   exports: [StripeService],
 })
-export class BillingModule {} 
+export class BillingModule {}

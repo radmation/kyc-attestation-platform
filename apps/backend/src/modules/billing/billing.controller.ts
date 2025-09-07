@@ -44,7 +44,7 @@ export class BillingController {
     @Request() req: any,
   ) {
     const user = req.user;
-    
+
     const checkoutDto: CreateCheckoutSessionDto = {
       clientId: user.clientId,
       priceId: dto.priceId,
@@ -53,7 +53,7 @@ export class BillingController {
     };
 
     const session = await this.stripeService.createCheckoutSession(checkoutDto);
-    
+
     return {
       sessionId: session.id,
       url: session.url,
@@ -71,12 +71,12 @@ export class BillingController {
     @Request() req: any,
   ) {
     const user = req.user;
-    
+
     const session = await this.stripeService.createCustomerPortalSession(
       user.clientId,
       dto.returnUrl,
     );
-    
+
     return {
       url: session.url,
     };
@@ -89,7 +89,7 @@ export class BillingController {
   @HttpCode(HttpStatus.OK)
   async getBillingStatus(@Request() req: any) {
     const user = req.user;
-    
+
     const client = await this.prismaService.client.findUnique({
       where: { id: user.clientId },
       select: {
@@ -102,4 +102,4 @@ export class BillingController {
 
     return client;
   }
-} 
+}
