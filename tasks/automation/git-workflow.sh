@@ -28,7 +28,7 @@ fi
 get_task_id() {
     local task_file="$1"
     if [[ -f "$task_file" ]]; then
-        grep "Task ID" "$task_file" | sed 's/.*: //' | head -1
+        basename "$task_file" .md | sed 's/^\([^-]*-[^-]*-[^-]*\)-.*/\1/'
     else
         echo "unknown"
     fi
