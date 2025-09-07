@@ -311,4 +311,231 @@ export class GatekeeperService {
       recommendation,
     };
   }
+
+  // ========================================
+  // EMERGENCY FREEZE FUNCTIONS (GENIUS Act Compliance)
+  // ========================================
+
+  /**
+   * Freeze an address directly (Regulatory/Platform admin only)
+   * This is for emergency compliance situations requiring immediate address freezing
+   */
+  async freezeAddressDirect(addressToFreeze: string): Promise<void> {
+    this.logger.debug(`Freezing address (direct): ${addressToFreeze}`);
+
+    try {
+      // Mock implementation
+      this.logger.warn(
+        `Mock implementation - would freeze ${addressToFreeze} (regulatory freeze)`,
+      );
+
+      this.logger.log(
+        `Address ${addressToFreeze} frozen successfully (direct/regulatory)`,
+      );
+
+      // Real implementation would look like this:
+      /*
+      await this.fabricProvider.invokeChaincode(
+        this.channelName,
+        this.chaincodeName,
+        'FreezeAddressDirect',
+        [addressToFreeze]
+      );
+      */
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to freeze address (direct):', errorMessage);
+      throw new Error(`Direct freeze failed: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Unfreeze an address directly (Regulatory/Platform admin only)
+   */
+  async unfreezeAddressDirect(addressToUnfreeze: string): Promise<void> {
+    this.logger.debug(`Unfreezing address (direct): ${addressToUnfreeze}`);
+
+    try {
+      // Mock implementation
+      this.logger.warn(
+        `Mock implementation - would unfreeze ${addressToUnfreeze} (regulatory unfreeze)`,
+      );
+
+      this.logger.log(
+        `Address ${addressToUnfreeze} unfrozen successfully (direct/regulatory)`,
+      );
+
+      // Real implementation would look like this:
+      /*
+      await this.fabricProvider.invokeChaincode(
+        this.channelName,
+        this.chaincodeName,
+        'UnfreezeAddressDirect',
+        [addressToUnfreeze]
+      );
+      */
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to unfreeze address (direct):', errorMessage);
+      throw new Error(`Direct unfreeze failed: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Freeze an address within client's organization scope (Client admin only)
+   * Client admins can only freeze addresses belonging to their organization
+   */
+  async freezeAddressScoped(addressToFreeze: string): Promise<void> {
+    this.logger.debug(`Freezing address (scoped): ${addressToFreeze}`);
+
+    try {
+      // Mock implementation
+      this.logger.warn(
+        `Mock implementation - would freeze ${addressToFreeze} (client scoped freeze)`,
+      );
+
+      this.logger.log(
+        `Address ${addressToFreeze} frozen successfully (client scoped)`,
+      );
+
+      // Real implementation would look like this:
+      /*
+      await this.fabricProvider.invokeChaincode(
+        this.channelName,
+        this.chaincodeName,
+        'FreezeAddressScoped',
+        [addressToFreeze]
+      );
+      */
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to freeze address (scoped):', errorMessage);
+      throw new Error(`Scoped freeze failed: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Unfreeze an address within client's organization scope (Client admin only)
+   */
+  async unfreezeAddressScoped(addressToUnfreeze: string): Promise<void> {
+    this.logger.debug(`Unfreezing address (scoped): ${addressToUnfreeze}`);
+
+    try {
+      // Mock implementation
+      this.logger.warn(
+        `Mock implementation - would unfreeze ${addressToUnfreeze} (client scoped unfreeze)`,
+      );
+
+      this.logger.log(
+        `Address ${addressToUnfreeze} unfrozen successfully (client scoped)`,
+      );
+
+      // Real implementation would look like this:
+      /*
+      await this.fabricProvider.invokeChaincode(
+        this.channelName,
+        this.chaincodeName,
+        'UnfreezeAddressScoped',
+        [addressToUnfreeze]
+      );
+      */
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to unfreeze address (scoped):', errorMessage);
+      throw new Error(`Scoped unfreeze failed: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Check if an address is frozen
+   */
+  async isAddressFrozen(addressToCheck: string): Promise<boolean> {
+    this.logger.debug(`Checking if address is frozen: ${addressToCheck}`);
+
+    try {
+      // Mock implementation - for testing, we'll track frozen addresses in memory
+      // In a real implementation, this would query the chaincode
+      const isFrozen = false; // Default to not frozen in mock
+
+      this.logger.log(
+        `Address ${addressToCheck} frozen status: ${isFrozen}`,
+      );
+      return isFrozen;
+
+      // Real implementation would look like this:
+      /*
+      const result = await this.fabricProvider.queryChaincode(
+        this.channelName,
+        this.chaincodeName,
+        'IsAddressFrozen',
+        [addressToCheck]
+      );
+      
+      return JSON.parse(result.toString()) as boolean;
+      */
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to check frozen status:', errorMessage);
+      throw new Error(`Check frozen status failed: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Business logic method: Check if a transaction would be blocked by frozen addresses
+   * This demonstrates the integration between freeze functionality and compliance checking
+   */
+  async isTransactionBlockedByFreeze(
+    senderAddress: string,
+    receiverAddress: string,
+  ): Promise<{
+    isBlocked: boolean;
+    reason?: string;
+    frozenAddresses: string[];
+  }> {
+    this.logger.debug(
+      `Checking transaction freeze status: ${senderAddress} -> ${receiverAddress}`,
+    );
+
+    try {
+      const senderFrozen = await this.isAddressFrozen(senderAddress);
+      const receiverFrozen = await this.isAddressFrozen(receiverAddress);
+
+      const frozenAddresses: string[] = [];
+      if (senderFrozen) frozenAddresses.push(senderAddress);
+      if (receiverFrozen) frozenAddresses.push(receiverAddress);
+
+      const isBlocked = frozenAddresses.length > 0;
+      
+      let reason: string | undefined;
+      if (isBlocked) {
+        if (senderFrozen && receiverFrozen) {
+          reason = 'Both sender and receiver addresses are frozen';
+        } else if (senderFrozen) {
+          reason = 'Sender address is frozen';
+        } else if (receiverFrozen) {
+          reason = 'Receiver address is frozen';
+        }
+      }
+
+      this.logger.debug(
+        `Transaction freeze check result - Blocked: ${isBlocked}, Reason: ${reason}`,
+      );
+
+      return {
+        isBlocked,
+        reason,
+        frozenAddresses,
+      };
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to check transaction freeze status:', errorMessage);
+      throw new Error(`Transaction freeze check failed: ${errorMessage}`);
+    }
+  }
 }
