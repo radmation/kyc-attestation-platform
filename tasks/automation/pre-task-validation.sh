@@ -44,8 +44,13 @@ if [[ ! -f "$TASK_FILE" ]]; then
 fi
 
 # Extract task metadata
-TASK_ID=$(grep "Task ID" "$TASK_FILE" | sed 's/.*: //')
-DEPENDENCIES=$(grep -A 10 "## Dependencies" "$TASK_FILE" | grep "- \[ \]" | sed 's/- \[ \] //')
+TASK_ID=$(basename "$TASK_FILE" .md | sed 's/-.*$//')
+# Check for dependencies section (might not exist)
+if grep -q "## Dependencies" "$TASK_FILE"; then
+    DEPENDENCIES=$(grep -A 10 "## Dependencies" "$TASK_FILE" | grep "- \[ \]" | sed 's/- \[ \] //')
+else
+    DEPENDENCIES=""
+fi
 
 echo "📋 Task ID: $TASK_ID"
 echo "📋 Dependencies: $DEPENDENCIES"
