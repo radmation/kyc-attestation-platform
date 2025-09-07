@@ -14,6 +14,19 @@ A blockchain-based Know Your Customer (KYC) attestation platform that creates on
 **Setup Guide**: [`docs/human-setup/DEVELOPMENT_SETUP.md`](docs/human-setup/DEVELOPMENT_SETUP.md) - Environment setup  
 **Configuration**: [`docs/human-setup/developer_checklist.md`](docs/human-setup/developer_checklist.md) - Manual setup tasks
 
+### **💳 Quick Stripe Setup (Local Development)**
+**One-Command Setup**: Run automated Stripe CLI setup for local webhook testing:
+```bash
+# Installs Stripe CLI, authenticates, and creates development helpers
+./scripts/dev-stripe-setup.sh
+
+# Start webhook forwarding (after running setup)
+npm run stripe
+
+# Test webhooks
+npm run stripe:test
+```
+
 ---
 
 ## 📚 **Documentation Navigation**

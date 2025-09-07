@@ -11,7 +11,7 @@ import { BillingModule } from './modules/billing/billing.module';
 import { BlockchainModule } from './blockchain/blockchain.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { RolesGuard } from './shared/guards/roles.guard';
-import { DatabaseModule } from './database/database.module';
+import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
 import { SecurityMiddleware } from './shared/middleware/security.middleware';
 import { LoggingMiddleware } from './shared/middleware/logging.middleware';
@@ -29,7 +29,7 @@ import { createRateLimitConfig } from './shared/config/rate-limit.config';
       inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),
-    DatabaseModule,
+    PrismaModule,
     AuthModule,
     KycModule,
     InvitationModule,

@@ -14,7 +14,7 @@ exports.StripeService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const stripe_1 = require("stripe");
-const prisma_service_1 = require("../../database/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 var BillingStatus;
 (function (BillingStatus) {
     BillingStatus["TRIAL"] = "TRIAL";

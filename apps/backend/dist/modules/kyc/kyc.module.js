@@ -9,7 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KycModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const database_module_1 = require("../../database/database.module");
+const prisma_module_1 = require("../../prisma/prisma.module");
 const idenfy_service_1 = require("./infrastructure/services/idenfy.service");
 const kyc_controller_1 = require("./presentation/controllers/kyc.controller");
 let KycModule = class KycModule {
@@ -17,7 +17,7 @@ let KycModule = class KycModule {
 exports.KycModule = KycModule;
 exports.KycModule = KycModule = __decorate([
     (0, common_1.Module)({
-        imports: [config_1.ConfigModule, database_module_1.DatabaseModule],
+        imports: [config_1.ConfigModule, prisma_module_1.PrismaModule],
         controllers: [kyc_controller_1.KycController],
         providers: [idenfy_service_1.IdenfyService],
         exports: [idenfy_service_1.IdenfyService],

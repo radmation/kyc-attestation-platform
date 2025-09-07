@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BillingSchedulerService = void 0;
 const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
-const prisma_service_1 = require("../../database/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 var BillingStatus;
 (function (BillingStatus) {
     BillingStatus["TRIAL"] = "TRIAL";

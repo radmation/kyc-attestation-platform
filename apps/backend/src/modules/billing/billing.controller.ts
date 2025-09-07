@@ -13,7 +13,7 @@ import { StripeService, CreateCheckoutSessionDto } from './stripe.service';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { Roles } from '../../shared/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
-import { PrismaService } from '../../database/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 export interface CreateCheckoutSessionRequestDto {
   priceId: string;

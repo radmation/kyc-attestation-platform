@@ -53,7 +53,34 @@ graph TB
 
 ---
 
-## Environment Setup
+## Quick Setup (Automated)
+
+For **local development**, use our automated setup script:
+
+```bash
+# Run the automated Stripe development setup
+./scripts/dev-stripe-setup.sh
+```
+
+This script will:
+- ✅ **Install Stripe CLI** (macOS, Linux, WSL)
+- ✅ **Authenticate with your Stripe account**
+- ✅ **Create development helper scripts**
+- ✅ **Set up Docker integration**
+- ✅ **Create webhook testing tools**
+
+After setup, start webhook forwarding:
+```bash
+# Start webhook listener (in separate terminal)
+npm run stripe
+
+# Test webhooks (in another terminal)
+npm run stripe:test
+```
+
+---
+
+## Manual Environment Setup
 
 ### Backend Configuration (`apps/backend/.env`)
 
@@ -383,8 +410,16 @@ For development and testing, use Stripe test mode:
 
 ### Webhook Testing
 
-Use Stripe CLI to test webhooks locally:
+#### Option 1: Using Automated Scripts (Recommended)
+```bash
+# Start webhook listener (after running setup script)
+npm run stripe
 
+# Test webhooks with guided scenarios
+npm run stripe:test
+```
+
+#### Option 2: Manual Stripe CLI
 ```bash
 # Install Stripe CLI
 brew install stripe/stripe-cli/stripe
@@ -398,6 +433,14 @@ stripe listen --forward-to localhost:3000/api/billing/stripe/webhook
 # Trigger test events
 stripe trigger checkout.session.completed
 stripe trigger invoice.payment_failed
+```
+
+#### Option 3: Docker Integration
+```bash
+# Start backend with Stripe CLI container
+docker-compose -f docker-compose.yml -f docker-compose.stripe.yml --profile stripe-dev up
+
+# The Stripe CLI container will automatically forward webhooks to your backend
 ```
 
 ### Integration Testing

@@ -18,7 +18,7 @@ const stripe_service_1 = require("./stripe.service");
 const jwt_auth_guard_1 = require("../../shared/guards/jwt-auth.guard");
 const roles_decorator_1 = require("../../shared/decorators/roles.decorator");
 const client_1 = require("@prisma/client");
-const prisma_service_1 = require("../../database/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 let BillingController = class BillingController {
     constructor(stripeService, prismaService) {
         this.stripeService = stripeService;
