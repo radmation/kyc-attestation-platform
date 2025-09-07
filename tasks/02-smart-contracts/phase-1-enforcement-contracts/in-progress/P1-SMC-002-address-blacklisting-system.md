@@ -29,4 +29,5 @@
   - [ ] Unit tests are created to verify adding, removing, and checking blacklisted addresses.
   - [ ] An integration test from the NestJS backend demonstrates that a transaction from a blacklisted address is successfully blocked.
 - **Success Metrics**:
-  - The platform has a functional, real-time mechanism to prevent sanctioned or illicit addresses from interacting with compliant tokens. 
+  - The platform has a functional, real-time mechanism to prevent sanctioned or illicit addresses from interacting with compliant tokens. - **Started**: Sun Sep  7 10:07:28 PDT 2025
+- **Last Update**: Sun Sep  7 10:07:28 PDT 2025 - Started implementation
