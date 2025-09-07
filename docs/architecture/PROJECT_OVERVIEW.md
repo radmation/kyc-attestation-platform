@@ -53,6 +53,7 @@ The KYC Attestation Platform is a blockchain-based compliance solution that enab
 - **Event Streaming**: AWS EventBridge
 - **API Gateway**: NestJS middleware approach
 - **KYC Provider**: iDenfy integration
+- **Billing Provider**: Stripe integration
 
 #### Monitoring & Observability
 - **Blockchain Monitoring**: Hyperledger Explorer
@@ -69,68 +70,32 @@ The KYC Attestation Platform is a blockchain-based compliance solution that enab
 ---
 
 ## 🎯 Implementation Roadmap
+**Note**: This is a high-level strategic overview. For the detailed, official implementation plan and task priority, always refer to the [**Task Organization Master Plan**](../project-management/TASK_ORGANIZATION.md).
 
-### **Phase 1: Foundation (Months 1-3)**
-**Goal**: MVP with core KYC and attestation functionality
+### **Phase 1: MVP Foundation (Current Focus)**
+**Goal**: Launch a commercially viable product that solves the core compliance problems for token issuers.
 
-#### Sprint 1-2: Infrastructure Setup
-- ✅ Fabric test-network deployment
-- ✅ Go chaincode development
-- ✅ Basic authentication & user management
-- ✅ iDenfy KYC integration
+#### **Module 1: Identity & Attestation**
+- ✅ End-to-end iDenfy KYC integration and on-chain attestation flow.
+- ✅ All foundational infrastructure (Auth, DB, Fabric Network).
 
-#### Sprint 3-4: Core Features
-- ✅ KYC verification workflow
-- ✅ Attestation creation and management
-- ✅ IPFS metadata storage
-- ✅ Basic monitoring setup
+#### **Module 2: Smart Contract Enforcement**
+- ✅ On-chain "Gatekeeper" contracts for transaction validation.
+- ✅ Blacklisting and Emergency Freeze capabilities.
 
-**Deliverable**: Working MVP with single-tenant capability
+#### **Module 3: Client Platform Portal**
+- ✅ Self-service client onboarding and subscription billing (Stripe).
+- ✅ Client-facing dashboard for account management and using compliance tools.
 
-### **Phase 2: Multi-Tenant Production (Months 4-6)**
-**Goal**: Production-ready multi-tenant platform
+### **Phase 2: Post-MVP Expansion**
+**Goal**: Expand the platform's value proposition with features that enhance business value and prepare for enterprise clients.
 
-#### Sprint 5-6: Multi-Tenancy
-- Channel-based client isolation
-- Advanced permission controls
-- Private data collections
-- Enhanced security features
+#### **Module 4: Business Value Features**
+- Sybil-resistant airdrop campaign creation and management.
 
-#### Sprint 7-8: Smart Contract Integration
-- Compliance smart contract templates
-- Emergency freeze/revoke capabilities
-- Integration SDK for token projects
-- Advanced blockchain features
-
-**Deliverable**: Production platform with compliance automation
-
-### **Phase 3: Business Value Features (Months 7-9)**
-**Goal**: Revenue-driving features and market expansion
-
-#### Sprint 9-10: Airdrop Platform
-- Sybil-resistant airdrop campaigns
-- Demographic targeting capabilities
-- Campaign analytics and reporting
-- Integration with existing airdrop platforms
-
-#### Sprint 11-12: Analytics & Optimization
-- Advanced business intelligence
-- Performance optimization
-- A/B testing framework
-- Customer success features
-
-**Deliverable**: Feature-complete platform with business value features
-
-### **Phase 4: Enterprise Scale (Months 10-12)**
-**Goal**: Enterprise-grade platform with full compliance suite
-
-#### Sprint 13-16: Monitoring & Reporting
-- Continuous transaction monitoring
-- Automated regulatory reporting
-- Risk scoring and analysis
-- Audit trail management
-
-**Deliverable**: Enterprise-ready platform with full compliance automation
+#### **Module 5: Enterprise Suite**
+- Continuous on-chain monitoring and advanced regulatory reporting.
+- Treasury & Proof-of-Reserves attestation.
 
 ---
 

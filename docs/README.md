@@ -30,7 +30,7 @@
 ### **📋 Project Management**
 **Directory**: [`project-management/`](project-management/)
 - **[Product Requirements (PRD)](project-management/PRD.md)** - Complete product specifications and user stories
-- **[Task Organization](project-management/TASK_ORGANIZATION.md)** - Task structure and management guidelines
+- **[Task Organization](project-management/TASK_ORGANIZATION.md)** - **[SINGLE SOURCE OF TRUTH]** The master plan and official priority order for all development work. The MVP now includes the Client Platform Portal.
 
 ### **🤖 AI Agent Resources**
 **Directory**: [`agent-guides/`](agent-guides/)

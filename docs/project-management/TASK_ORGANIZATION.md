@@ -10,6 +10,15 @@ This document provides a comprehensive breakdown of development tasks organized 
 - **L**: 2-3 weeks (major feature, significant integration)
 - **XL**: 3-4 weeks (epic-level feature, multiple modules)
 
+## MVP Priority Order
+1.  **On-Chain Identity and Attestation Module** (`Epic 1.x`) - *The foundational service.*
+2.  **Smart Contract Integration and Enforcement** (`Epic 2.x`) - *Core on-chain compliance tools.*
+3.  **Client Platform Portal** (`Epic 3.x`) - *The client-facing application for onboarding, billing, and management.*
+4.  **Targeted Airdrop Campaign Creation** (`Epic 4.x`) - *Post-MVP business value feature.*
+5.  **Continuous Monitoring & Regulatory Reporting** (`Epic 5.x`) - *Post-MVP enterprise feature.*
+
+---
+
 ## Priority 1: On-Chain Identity and Attestation Module
 
 ### Epic 1.1: Identity Verification Infrastructure
@@ -245,13 +254,54 @@ This document provides a comprehensive breakdown of development tasks organized 
 
 ---
 
-## Priority 3: Targeted Airdrop Campaign Creation
+## Priority 3: Client Platform Portal
 
-### Epic 3.1: Campaign Management System
+### Epic 3.1: Onboarding, Billing, and Account Management
+**Total Estimate**: 3-5 weeks
+**Dependencies**: Foundational infrastructure (Auth, API Gateway)
+
+#### Task 3.1.1: Client Onboarding & Stripe Billing
+- **Estimate**: L (2-3 weeks)
+- **Priority**: Critical (for MVP)
+- **Description**: Implement the self-service signup and Stripe billing integration.
+- **Acceptance Criteria**:
+  - [ ] New companies can sign up for a subscription plan.
+  - [ ] Stripe integration handles payments, webhooks, and failures.
+  - [ ] 21-day grace period with email notifications is implemented.
+  - [ ] In-app warnings are displayed for users in the grace period.
+
+#### Task 3.1.2: Client Dashboard & Account Management UI
+- **Estimate**: M (1-2 weeks)
+- **Priority**: Critical (for MVP)
+- **Description**: Build the main dashboard UI for account, team, and settings management.
+- **Acceptance Criteria**:
+  - [ ] A secure, navigable client portal is created.
+  - [ ] Admins can invite and manage team members.
+  - [ ] Admins can configure their branding/white-labeling.
+  - [ ] Admins can manage their subscription via a Stripe Customer Portal.
+
+### Epic 3.2: Compliance Enforcement Dashboard UI
+**Total Estimate**: 1-2 weeks
+**Dependencies**: Epic 2.1 and Task 3.1.2
+
+#### Task 3.2.1: Compliance Dashboard UI
+- **Estimate**: M (1-2 weeks)
+- **Priority**: High
+- **Description**: Build the frontend UI for the blacklist and freeze/unfreeze tools.
+- **Acceptance Criteria**:
+  - [ ] Admins can view and manage the address blacklist.
+  - [ ] Admins can freeze and unfreeze wallet addresses.
+  - [ ] The UI provides clear feedback on the status of on-chain transactions.
+
+---
+
+## Priority 4: Targeted Airdrop Campaign Creation
+
+### Epic 4.1: Campaign Management System
 **Total Estimate**: 3-4 weeks
 **Dependencies**: Priority 1 completion
 
-#### Task 3.1.1: Campaign Creation Interface
+#### Task 4.1.1: Campaign Creation Interface
 - **Estimate**: M (1-2 weeks)
 - **Priority**: High
 - **Description**: User interface for creating airdrop campaigns
@@ -266,10 +316,10 @@ This document provides a comprehensive breakdown of development tasks organized 
   - Preview system
   - Documentation
 
-#### Task 3.1.2: Eligibility Engine
+#### Task 4.1.2: Eligibility Engine
 - **Estimate**: M (1-2 weeks)
 - **Priority**: Critical
-- **Dependencies**: Task 3.1.1
+- **Dependencies**: Task 4.1.1
 - **Description**: Determine campaign eligibility based on attestations
 - **Acceptance Criteria**:
   - [ ] Attestation-based filtering
@@ -282,10 +332,10 @@ This document provides a comprehensive breakdown of development tasks organized 
   - Duplicate detection
   - Real-time API
 
-#### Task 3.1.3: Distribution Mechanics
+#### Task 4.1.3: Distribution Mechanics
 - **Estimate**: S (3-5 days)
 - **Priority**: High
-- **Dependencies**: Task 3.1.2
+- **Dependencies**: Task 4.1.2
 - **Description**: Execute token distributions efficiently
 - **Acceptance Criteria**:
   - [ ] Merkle tree generation
@@ -298,11 +348,11 @@ This document provides a comprehensive breakdown of development tasks organized 
   - Claim interface
   - Analytics dashboard
 
-### Epic 3.2: Campaign Analytics and Optimization
+### Epic 4.2: Campaign Analytics and Optimization
 **Total Estimate**: 2 weeks
-**Dependencies**: Epic 3.1 completion
+**Dependencies**: Epic 4.1 completion
 
-#### Task 3.2.1: Analytics Dashboard
+#### Task 4.2.1: Analytics Dashboard
 - **Estimate**: S (3-5 days)
 - **Priority**: Medium
 - **Description**: Campaign performance tracking
@@ -317,10 +367,10 @@ This document provides a comprehensive breakdown of development tasks organized 
   - Report generation
   - Data export tools
 
-#### Task 3.2.2: A/B Testing Framework
+#### Task 4.2.2: A/B Testing Framework
 - **Estimate**: S (3-5 days)
 - **Priority**: Low
-- **Dependencies**: Task 3.2.1
+- **Dependencies**: Task 4.2.1
 - **Description**: Test different campaign strategies
 - **Acceptance Criteria**:
   - [ ] Campaign variants creation
@@ -335,13 +385,13 @@ This document provides a comprehensive breakdown of development tasks organized 
 
 ---
 
-## Priority 4: Continuous Monitoring & Regulatory Reporting
+## Priority 5: Continuous Monitoring & Regulatory Reporting
 
-### Epic 4.1: Transaction Monitoring System
+### Epic 5.1: Transaction Monitoring System
 **Total Estimate**: 4-5 weeks
 **Dependencies**: Priority 1 completion
 
-#### Task 4.1.1: Blockchain Monitoring Infrastructure
+#### Task 5.1.1: Blockchain Monitoring Infrastructure
 - **Estimate**: L (2-3 weeks)
 - **Priority**: High
 - **Description**: Real-time blockchain transaction monitoring
@@ -356,10 +406,10 @@ This document provides a comprehensive breakdown of development tasks organized 
   - Scaling infrastructure
   - Alert mechanisms
 
-#### Task 4.1.2: Risk Scoring Engine
+#### Task 5.1.2: Risk Scoring Engine
 - **Estimate**: M (1-2 weeks)
 - **Priority**: Medium
-- **Dependencies**: Task 4.1.1
+- **Dependencies**: Task 5.1.1
 - **Description**: Automated risk assessment of transactions
 - **Acceptance Criteria**:
   - [ ] Machine learning risk models
@@ -372,10 +422,10 @@ This document provides a comprehensive breakdown of development tasks organized 
   - Configuration interface
   - Historical reporting
 
-#### Task 4.1.3: Sanctions List Integration
+#### Task 5.1.3: Sanctions List Integration
 - **Estimate**: S (3-5 days)
 - **Priority**: High
-- **Dependencies**: Task 4.1.1
+- **Dependencies**: Task 5.1.1
 - **Description**: Integration with sanctions and watchlists
 - **Acceptance Criteria**:
   - [ ] Multiple sanctions list sources
@@ -388,11 +438,11 @@ This document provides a comprehensive breakdown of development tasks organized 
   - Screening service
   - Match reporting
 
-### Epic 4.2: Regulatory Reporting Automation
+### Epic 5.2: Regulatory Reporting Automation
 **Total Estimate**: 3 weeks
-**Dependencies**: Epic 4.1 completion
+**Dependencies**: Epic 5.1 completion
 
-#### Task 4.2.1: Report Generation Engine
+#### Task 5.2.1: Report Generation Engine
 - **Estimate**: M (1-2 weeks)
 - **Priority**: Medium
 - **Description**: Automated regulatory report generation
@@ -407,10 +457,10 @@ This document provides a comprehensive breakdown of development tasks organized 
   - Scheduling mechanism
   - Validation framework
 
-#### Task 4.2.2: Audit Trail Management
+#### Task 5.2.2: Audit Trail Management
 - **Estimate**: S (3-5 days)
 - **Priority**: High
-- **Dependencies**: Task 4.2.1
+- **Dependencies**: Task 5.2.1
 - **Description**: Immutable audit trail for compliance
 - **Acceptance Criteria**:
   - [ ] Immutable record storage
@@ -503,12 +553,14 @@ This document provides a comprehensive breakdown of development tasks organized 
 - Epic 2.2: Integration SDK and Tools
 
 ### Sprint 7-8 (4 weeks): Business Value Features
-- Epic 3.1: Campaign Management System
-- Epic 3.2: Campaign Analytics and Optimization
+- Epic 3.1: Onboarding, Billing, and Account Management
+- Epic 3.2: Compliance Enforcement Dashboard UI
 
 ### Sprint 9-12 (8 weeks): Enterprise Features
-- Epic 4.1: Transaction Monitoring System
-- Epic 4.2: Regulatory Reporting Automation
+- Epic 4.1: Campaign Management System
+- Epic 4.2: Campaign Analytics and Optimization
+- Epic 5.1: Transaction Monitoring System
+- Epic 5.2: Regulatory Reporting Automation
 
 ## Success Metrics per Epic
 

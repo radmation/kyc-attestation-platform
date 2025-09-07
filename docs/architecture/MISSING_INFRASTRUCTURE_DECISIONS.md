@@ -57,107 +57,39 @@ After reviewing all documentation, here are the **missing technical decisions** 
 - Easy integration with AWS infrastructure
 - Reliable webhook delivery guarantees
 
+### Billing Provider
+**Decision**: **Stripe** (for subscriptions and payment processing)
+- Secure payment processing for enterprise clients
+- Subscription management for recurring revenue
+- Scalable to handle high transaction volumes
+
 ---
 
 ## 🟢 REMAINING: Lower Priority Decisions
 
-### 1. Development Environment Setup
+### 1. Multi-Region Deployment Strategy
 **Status**: ⚠️ Missing
-**Decision Needed**: Local development blockchain configuration
-**Options**:
-- **Fabric test-network** (recommended for quick start)
-- **Docker-compose** with custom Fabric network
-- **Minifabric** for simplified local development
-- **IBM Blockchain Platform Extension** for VS Code
-
-**Action Required**: Define exact development setup procedures
-
-### 2. Certificate Authority Architecture
-**Status**: ⚠️ Missing  
-**Decision Needed**: PKI infrastructure design
-**Options**:
-- **Self-managed Fabric CA** (recommended for MVP)
-- **External PKI provider** (Venafi, DigiCert, etc.)
-- **AWS Certificate Manager** integration
-- **HSM-backed certificate authority**
-
-**Action Required**: Design CA hierarchy and certificate lifecycle management
-
-### 3. Smart Contract Language & Framework
-**Status**: ⚠️ Missing
-**Decision Needed**: Primary development language for chaincode
-**Options**:
-- **Go** (most performant, Fabric-native)
-- **Node.js** (faster development, team familiarity)  
-- **Java** (enterprise integration)
-
-**Action Required**: Choose primary language and set up development templates
-
----
-
-## 🟡 HIGH PRIORITY: Must Define Before Sprint 3
-
-### 4. IPFS Infrastructure Configuration
-**Status**: 🔄 Partially Defined (Filebase selected)
-**Missing Decisions**:
-- Backup and redundancy strategy
-- Content addressing scheme for attestation metadata
-- Regional pinning distribution
-- Fallback providers (Pinata, Infura IPFS, etc.)
-
-### 5. Monitoring & Observability Stack
-**Status**: ⚠️ Missing
-**Decision Needed**: How to monitor blockchain network health
-**Options**:
-- **Hyperledger Explorer** (blockchain dashboard)
-- **Prometheus + Grafana** (metrics and alerting)
-- **AWS CloudWatch** (if using AWS infrastructure)
-- **Custom monitoring** via Fabric SDK events
-
-### 6. Database Indexing Strategy
-**Status**: 🔄 Partially Defined (PostgreSQL selected)
-**Missing Decisions**:
-- Performance-critical query optimization
-- Blockchain event indexing strategy
-- Read replica configuration for analytics
-- Data archival and retention policies
-
----
-
-## 🟢 MEDIUM PRIORITY: Must Define Before Sprint 6
-
-### 7. API Gateway & Rate Limiting
-**Status**: ⚠️ Missing
-**Decision Needed**: API layer architecture
-**Options**:
-- **Kong** (API gateway with plugins)
-- **AWS API Gateway** (managed service)
-- **NGINX** (simple reverse proxy)
-- **Custom NestJS middleware** (application-level)
-
-### 8. Event Streaming Architecture
-**Status**: ⚠️ Missing
-**Decision Needed**: How to handle blockchain events and notifications
-**Options**:
-- **Apache Kafka** (self-managed)
-- **AWS EventBridge** (managed service)
-- **Redis Streams** (lightweight option)
-- **Direct webhooks** (simple but less reliable)
-
-### 9. Multi-Region Deployment Strategy
-**Status**: ⚠️ Missing
-**Decision Needed**: Disaster recovery and geographic distribution
+**Decision Needed**: Disaster recovery and geographic distribution for enterprise clients.
 **Considerations**:
 - Primary region selection
 - Backup region configuration
 - Data replication strategy
 - Cross-region blockchain synchronization
 
+### 2. Advanced Analytics & Reporting Infrastructure
+**Status**: ⚠️ Missing
+**Decision Needed**: Business intelligence tools for post-MVP enterprise features.
+**Options**:
+- **AWS QuickSight** (managed BI)
+- **Tableau** (enterprise BI)
+- **Custom PostgreSQL views** (simple reports)
+- **ELK Stack** (logs and analytics)
+
 ---
 
 ## 🔵 LOW PRIORITY: Can Define During Development
 
-### 10. Testing Infrastructure
+### 3. Testing Infrastructure
 **Status**: ⚠️ Missing
 **Decision Needed**: Testing strategy for blockchain components
 **Options**:
@@ -166,22 +98,12 @@ After reviewing all documentation, here are the **missing technical decisions** 
 - **Mock smart contracts** for unit testing
 - **Testcontainers** for isolated testing
 
-### 11. Security Infrastructure
+### 4. Security Infrastructure
 **Status**: 🔄 Partially Defined
 **Missing Decisions**:
-- HSM requirements and providers
-- Secrets management beyond AWS Secrets Manager
-- Security audit schedule and procedures
-- Penetration testing requirements
-
-### 12. Analytics & Reporting Infrastructure
-**Status**: ⚠️ Missing
-**Decision Needed**: Business intelligence and compliance reporting
-**Options**:
-- **AWS QuickSight** (managed BI)
-- **Tableau** (enterprise BI)
-- **Custom PostgreSQL views** (simple reports)
-- **ELK Stack** (logs and analytics)
+- HSM requirements and providers for enterprise clients.
+- Security audit schedule and procedures.
+- Penetration testing requirements.
 
 ---
 

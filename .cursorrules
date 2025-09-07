@@ -309,10 +309,12 @@ apps/frontend/src/app/
 - Prefer established, well-maintained packages
 
 ## Priority Order for Implementation
-1. **On-Chain Identity and Attestation** (Wallet-to-person mapping)
-2. **Smart Contract Integration and Enforcement** (Compliance automation)
-3. **Targeted Airdrop Campaign Creation** (Business value feature)
-4. **Continuous On-Chain Monitoring & Regulatory Reporting** (Enterprise features)
+**The official priority order is maintained in the project's master planning document.**
+
+**ALWAYS consult this document for the most current development priorities before starting new work:**
+[`docs/project-management/TASK_ORGANIZATION.md`](docs/project-management/TASK_ORGANIZATION.md)
+
+This document contains the detailed breakdown of all epics and tasks, and it represents the single source of truth for the project's strategic roadmap and implementation order.
 
 ## 🔧 Implementation Patterns & Examples
 
