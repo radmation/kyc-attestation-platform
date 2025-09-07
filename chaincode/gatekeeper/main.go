@@ -55,10 +55,39 @@ const (
     GlobalPauseKey  = "global_paused"
     ClientPauseKey  = "client_paused_"  // client_paused_<clientId>
     WalletPauseKey  = "wallet_paused_"  // wallet_paused_<address>
+    BlacklistKey    = "blacklisted_"    // blacklisted_<address>
 )
 
 // CheckCompliance verifies that both sender and receiver have valid KYC attestations
 func (s *GatekeeperContract) CheckCompliance(ctx contractapi.TransactionContextInterface, senderAddress string, receiverAddress string) (*ComplianceResult, error) {
+    // FIRST: Check if either address is blacklisted (critical security check)
+    senderBlacklisted, err := s.IsAddressBlacklisted(ctx, senderAddress)
+    if err != nil {
+        return nil, fmt.Errorf("failed to check sender blacklist status: %v", err)
+    }
+    
+    receiverBlacklisted, err := s.IsAddressBlacklisted(ctx, receiverAddress)
+    if err != nil {
+        return nil, fmt.Errorf("failed to check receiver blacklist status: %v", err)
+    }
+    
+    // If either address is blacklisted, immediately fail compliance
+    if senderBlacklisted || receiverBlacklisted {
+        result := &ComplianceResult{
+            Sender:        senderAddress,
+            Receiver:      receiverAddress,
+            IsCompliant:   false,
+            Reason:        s.buildBlacklistReason(senderBlacklisted, receiverBlacklisted),
+            CheckedAt:     time.Now().Format(time.RFC3339),
+            SenderValid:   false,
+            ReceiverValid: false,
+        }
+        
+        // Emit compliance check event for blacklisted addresses
+        s.emitComplianceCheckEvent(ctx, result)
+        return result, nil
+    }
+
     // Check hierarchical pause states
     if paused, reason := s.checkPauseState(ctx, senderAddress, receiverAddress); paused {
         result := &ComplianceResult{
@@ -109,7 +138,7 @@ func (s *GatekeeperContract) CheckCompliance(ctx contractapi.TransactionContextI
     }
 
     // Emit compliance check event
-    err := s.emitComplianceCheckEvent(ctx, result)
+    err = s.emitComplianceCheckEvent(ctx, result)
     if err != nil {
         return result, fmt.Errorf("failed to emit compliance check event: %v", err)
     }
@@ -409,6 +438,162 @@ func (s *GatekeeperContract) getClientID(ctx contractapi.TransactionContextInter
     return clientID
 }
 
+// AddToBlacklist adds an address to the blacklist
+func (s *GatekeeperContract) AddToBlacklist(ctx contractapi.TransactionContextInterface, addressToBlock string) error {
+    // Check permission - only authorized administrators can blacklist addresses
+    err := s.checkPermission(ctx, PermissionAddToBlacklist)
+    if err != nil {
+        s.logAuthorizationEvent(ctx, "AddToBlacklist", PermissionAddToBlacklist, false, err.Error())
+        return err
+    }
+    
+    if addressToBlock == "" {
+        return fmt.Errorf("address cannot be empty")
+    }
+    
+    // Check if address is already blacklisted
+    isBlacklisted, err := s.IsAddressBlacklisted(ctx, addressToBlock)
+    if err != nil {
+        return fmt.Errorf("failed to check current blacklist status: %v", err)
+    }
+    if isBlacklisted {
+        return fmt.Errorf("address %s is already blacklisted", addressToBlock)
+    }
+    
+    // Create the blacklist key for this address
+    blacklistKey := BlacklistKey + addressToBlock
+    
+    // Set the address as blacklisted in the world state
+    err = ctx.GetStub().PutState(blacklistKey, []byte("true"))
+    if err != nil {
+        return fmt.Errorf("failed to blacklist address %s: %v", addressToBlock, err)
+    }
+    
+    // Log successful authorization
+    s.logAuthorizationEvent(ctx, "AddToBlacklist", PermissionAddToBlacklist, true, fmt.Sprintf("Address %s blacklisted", addressToBlock))
+    
+    // Emit blacklisting event
+    err = s.emitAddressBlacklistedEvent(ctx, addressToBlock)
+    if err != nil {
+        return fmt.Errorf("failed to emit blacklisting event: %v", err)
+    }
+    
+    return nil
+}
+
+// RemoveFromBlacklist removes an address from the blacklist
+func (s *GatekeeperContract) RemoveFromBlacklist(ctx contractapi.TransactionContextInterface, addressToUnblock string) error {
+    // Check permission - only authorized administrators can manage blacklist
+    err := s.checkPermission(ctx, PermissionRemoveFromBlacklist)
+    if err != nil {
+        s.logAuthorizationEvent(ctx, "RemoveFromBlacklist", PermissionRemoveFromBlacklist, false, err.Error())
+        return err
+    }
+    
+    if addressToUnblock == "" {
+        return fmt.Errorf("address cannot be empty")
+    }
+    
+    // Check if address is currently blacklisted
+    isBlacklisted, err := s.IsAddressBlacklisted(ctx, addressToUnblock)
+    if err != nil {
+        return fmt.Errorf("failed to check current blacklist status: %v", err)
+    }
+    if !isBlacklisted {
+        return fmt.Errorf("address %s is not currently blacklisted", addressToUnblock)
+    }
+    
+    // Create the blacklist key for this address
+    blacklistKey := BlacklistKey + addressToUnblock
+    
+    // Remove the address from the blacklist by deleting the state
+    err = ctx.GetStub().DelState(blacklistKey)
+    if err != nil {
+        return fmt.Errorf("failed to remove address %s from blacklist: %v", addressToUnblock, err)
+    }
+    
+    // Log successful authorization
+    s.logAuthorizationEvent(ctx, "RemoveFromBlacklist", PermissionRemoveFromBlacklist, true, fmt.Sprintf("Address %s removed from blacklist", addressToUnblock))
+    
+    // Emit removal event
+    err = s.emitAddressRemovedFromBlacklistEvent(ctx, addressToUnblock)
+    if err != nil {
+        return fmt.Errorf("failed to emit blacklist removal event: %v", err)
+    }
+    
+    return nil
+}
+
+// IsAddressBlacklisted checks if an address is blacklisted
+func (s *GatekeeperContract) IsAddressBlacklisted(ctx contractapi.TransactionContextInterface, addressToCheck string) (bool, error) {
+    if addressToCheck == "" {
+        return false, fmt.Errorf("address cannot be empty")
+    }
+    
+    // Create the blacklist key for this address
+    blacklistKey := BlacklistKey + addressToCheck
+    
+    // Check if the address exists in the blacklist
+    blacklistBytes, err := ctx.GetStub().GetState(blacklistKey)
+    if err != nil {
+        return false, fmt.Errorf("failed to check blacklist status for address %s: %v", addressToCheck, err)
+    }
+    
+    // If no entry exists, the address is not blacklisted
+    if blacklistBytes == nil {
+        return false, nil
+    }
+    
+    // Return true if the address is blacklisted
+    return string(blacklistBytes) == "true", nil
+}
+
+// buildBlacklistReason creates a descriptive reason for blacklisted addresses
+func (s *GatekeeperContract) buildBlacklistReason(senderBlacklisted, receiverBlacklisted bool) string {
+    if senderBlacklisted && receiverBlacklisted {
+        return "Both sender and receiver addresses are blacklisted"
+    } else if senderBlacklisted {
+        return "Sender address is blacklisted"
+    } else if receiverBlacklisted {
+        return "Receiver address is blacklisted"
+    }
+    return "Address blacklisting check failed"
+}
+
+// emitAddressBlacklistedEvent emits an event when an address is blacklisted
+func (s *GatekeeperContract) emitAddressBlacklistedEvent(ctx contractapi.TransactionContextInterface, address string) error {
+    eventData := map[string]interface{}{
+        "action":    "address_blacklisted",
+        "address":   address,
+        "timestamp": time.Now().Format(time.RFC3339),
+        "clientId":  s.getClientID(ctx),
+    }
+    
+    eventPayload, err := json.Marshal(eventData)
+    if err != nil {
+        return fmt.Errorf("failed to marshal blacklisting event: %v", err)
+    }
+    
+    return ctx.GetStub().SetEvent("AddressBlacklisted", eventPayload)
+}
+
+// emitAddressRemovedFromBlacklistEvent emits an event when an address is removed from blacklist
+func (s *GatekeeperContract) emitAddressRemovedFromBlacklistEvent(ctx contractapi.TransactionContextInterface, address string) error {
+    eventData := map[string]interface{}{
+        "action":    "address_removed_from_blacklist",
+        "address":   address,
+        "timestamp": time.Now().Format(time.RFC3339),
+        "clientId":  s.getClientID(ctx),
+    }
+    
+    eventPayload, err := json.Marshal(eventData)
+    if err != nil {
+        return fmt.Errorf("failed to marshal blacklist removal event: %v", err)
+    }
+    
+    return ctx.GetStub().SetEvent("AddressRemovedFromBlacklist", eventPayload)
+}
+
 // InitLedger initializes the chaincode with permission-based authorization
 func (s *GatekeeperContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
     // Note: All pause states are now managed in world state
@@ -419,7 +604,7 @@ func (s *GatekeeperContract) InitLedger(ctx contractapi.TransactionContextInterf
     eventData := map[string]interface{}{
         "action":              "initialized",
         "timestamp":           timestamp,
-        "version":            "2.0.0",
+        "version":            "2.1.0",
         "authorizationModel": "permission-based",
         "features": []string{
             "global-pause",
@@ -428,6 +613,7 @@ func (s *GatekeeperContract) InitLedger(ctx contractapi.TransactionContextInterf
             "wallet-pause-scoped",
             "hierarchical-authorization",
             "audit-trail",
+            "address-blacklisting",
         },
     }
     

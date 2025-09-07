@@ -36,6 +36,11 @@ const (
     PermissionPauseWalletScoped   GatekeeperPermission = "gatekeeper:pause_wallet_scoped"
     PermissionUnpauseWalletScoped GatekeeperPermission = "gatekeeper:unpause_wallet_scoped"
 
+    // Blacklisting permissions (high-level administrative)
+    PermissionAddToBlacklist      GatekeeperPermission = "gatekeeper:add_to_blacklist"
+    PermissionRemoveFromBlacklist GatekeeperPermission = "gatekeeper:remove_from_blacklist"
+    PermissionViewBlacklist       GatekeeperPermission = "gatekeeper:view_blacklist"
+
     // Read permissions
     PermissionViewPauseState       GatekeeperPermission = "gatekeeper:view_pause_state"
     PermissionViewComplianceGlobal GatekeeperPermission = "gatekeeper:view_compliance_global"
