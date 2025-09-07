@@ -18,12 +18,7 @@ let HealthModule = class HealthModule {
 exports.HealthModule = HealthModule;
 exports.HealthModule = HealthModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            terminus_1.TerminusModule,
-            axios_1.HttpModule,
-            blockchain_module_1.BlockchainModule,
-            database_module_1.DatabaseModule,
-        ],
+        imports: [terminus_1.TerminusModule, axios_1.HttpModule, blockchain_module_1.BlockchainModule, database_module_1.DatabaseModule],
         controllers: [health_controller_1.HealthController],
     })
 ], HealthModule);

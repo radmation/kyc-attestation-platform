@@ -6,12 +6,7 @@ import { BlockchainModule } from '../blockchain/blockchain.module';
 import { DatabaseModule } from '../database/database.module';
 
 @Module({
-  imports: [
-    TerminusModule,
-    HttpModule,
-    BlockchainModule,
-    DatabaseModule,
-  ],
+  imports: [TerminusModule, HttpModule, BlockchainModule, DatabaseModule],
   controllers: [HealthController],
 })
-export class HealthModule {} 
+export class HealthModule {}

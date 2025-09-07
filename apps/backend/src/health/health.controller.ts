@@ -1,6 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { HealthCheck, HealthCheckService, HttpHealthIndicator } from '@nestjs/terminus';
+import {
+  HealthCheck,
+  HealthCheckService,
+  HttpHealthIndicator,
+} from '@nestjs/terminus';
 import { Public } from '../shared/decorators/public.decorator';
 import { BlockchainProviderService } from '../blockchain/blockchain-provider.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -54,7 +58,8 @@ export class HealthController {
         },
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Database health check failed: ${errorMessage}`);
     }
   }
@@ -74,7 +79,8 @@ export class HealthController {
         },
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Blockchain health check failed: ${errorMessage}`);
     }
   }
@@ -108,7 +114,8 @@ export class HealthController {
       await this.prismaService.$queryRaw`SELECT 1`;
       return { status: 'ready', timestamp: new Date().toISOString() };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Service not ready: ${errorMessage}`);
     }
   }
@@ -119,4 +126,4 @@ export class HealthController {
   async liveness() {
     return { status: 'alive', timestamp: new Date().toISOString() };
   }
-} 
+}
