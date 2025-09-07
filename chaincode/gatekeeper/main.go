@@ -12,7 +12,6 @@ import (
 // GatekeeperContract provides functions for compliance checking
 type GatekeeperContract struct {
     contractapi.Contract
-    paused bool
 }
 
 // ComplianceResult represents the result of a compliance check
@@ -51,18 +50,22 @@ const (
     StatusRevoked  AttestationStatus = "REVOKED"
 )
 
-// Admin role for pause/unpause operations
-const AdminRole = "admin"
+// State keys for different pause levels
+const (
+    GlobalPauseKey  = "global_paused"
+    ClientPauseKey  = "client_paused_"  // client_paused_<clientId>
+    WalletPauseKey  = "wallet_paused_"  // wallet_paused_<address>
+)
 
 // CheckCompliance verifies that both sender and receiver have valid KYC attestations
 func (s *GatekeeperContract) CheckCompliance(ctx contractapi.TransactionContextInterface, senderAddress string, receiverAddress string) (*ComplianceResult, error) {
-    // Check if contract is paused
-    if s.paused {
+    // Check hierarchical pause states
+    if paused, reason := s.checkPauseState(ctx, senderAddress, receiverAddress); paused {
         result := &ComplianceResult{
             Sender:      senderAddress,
             Receiver:    receiverAddress,
             IsCompliant: false,
-            Reason:      "Contract is currently paused",
+            Reason:      reason,
             CheckedAt:   time.Now().Format(time.RFC3339),
         }
         
@@ -170,124 +173,231 @@ func (s *GatekeeperContract) emitComplianceCheckEvent(ctx contractapi.Transactio
     return ctx.GetStub().SetEvent("ComplianceCheckResult", eventPayload)
 }
 
-// Pause pauses the contract (only callable by admin)
-func (s *GatekeeperContract) Pause(ctx contractapi.TransactionContextInterface) error {
-    // Check admin authorization
-    err := s.checkAdminRole(ctx)
+// ========================================
+// GLOBAL PAUSE FUNCTIONS (Platform-level)
+// ========================================
+
+// PauseGlobal pauses the entire gatekeeper system (platform admin only)
+func (s *GatekeeperContract) PauseGlobal(ctx contractapi.TransactionContextInterface) error {
+    // Check permission
+    err := s.checkPermission(ctx, PermissionPauseGlobal)
     if err != nil {
+        s.logAuthorizationEvent(ctx, "PauseGlobal", PermissionPauseGlobal, false, err.Error())
         return err
     }
 
-    if s.paused {
-        return fmt.Errorf("contract is already paused")
-    }
-
-    s.paused = true
-
-    // Store pause state in world state for persistence
-    err = ctx.GetStub().PutState("paused", []byte("true"))
+    // Check if already paused
+    isPaused, err := s.isGloballyPaused(ctx)
     if err != nil {
-        return fmt.Errorf("failed to store pause state: %v", err)
+        return fmt.Errorf("failed to check global pause state: %v", err)
     }
+    if isPaused {
+        return fmt.Errorf("gatekeeper is already globally paused")
+    }
+
+    // Set global pause state
+    err = ctx.GetStub().PutState(GlobalPauseKey, []byte("true"))
+    if err != nil {
+        return fmt.Errorf("failed to set global pause state: %v", err)
+    }
+
+    // Log successful authorization
+    s.logAuthorizationEvent(ctx, "PauseGlobal", PermissionPauseGlobal, true, "Global pause activated")
 
     // Emit pause event
-    timestamp := time.Now().Format(time.RFC3339)
-    eventData := map[string]interface{}{
-        "action":    "paused",
-        "timestamp": timestamp,
-        "admin":     s.getClientID(ctx),
-    }
-    
-    eventPayload, err := json.Marshal(eventData)
-    if err != nil {
-        return fmt.Errorf("failed to marshal pause event: %v", err)
-    }
-
-    err = ctx.GetStub().SetEvent("ContractPaused", eventPayload)
-    if err != nil {
-        return fmt.Errorf("failed to emit pause event: %v", err)
-    }
-
-    return nil
+    return s.emitPauseEvent(ctx, "global", "", "System maintenance - all operations paused")
 }
 
-// Unpause unpauses the contract (only callable by admin)
-func (s *GatekeeperContract) Unpause(ctx contractapi.TransactionContextInterface) error {
-    // Check admin authorization
-    err := s.checkAdminRole(ctx)
+// UnpauseGlobal unpauses the entire gatekeeper system (platform admin only)
+func (s *GatekeeperContract) UnpauseGlobal(ctx contractapi.TransactionContextInterface) error {
+    // Check permission
+    err := s.checkPermission(ctx, PermissionUnpauseGlobal)
     if err != nil {
+        s.logAuthorizationEvent(ctx, "UnpauseGlobal", PermissionUnpauseGlobal, false, err.Error())
         return err
     }
 
-    if !s.paused {
-        return fmt.Errorf("contract is not paused")
-    }
-
-    s.paused = false
-
-    // Store pause state in world state for persistence
-    err = ctx.GetStub().PutState("paused", []byte("false"))
+    // Check if actually paused
+    isPaused, err := s.isGloballyPaused(ctx)
     if err != nil {
-        return fmt.Errorf("failed to store pause state: %v", err)
+        return fmt.Errorf("failed to check global pause state: %v", err)
     }
+    if !isPaused {
+        return fmt.Errorf("gatekeeper is not globally paused")
+    }
+
+    // Remove global pause state
+    err = ctx.GetStub().DelState(GlobalPauseKey)
+    if err != nil {
+        return fmt.Errorf("failed to remove global pause state: %v", err)
+    }
+
+    // Log successful authorization
+    s.logAuthorizationEvent(ctx, "UnpauseGlobal", PermissionUnpauseGlobal, true, "Global pause deactivated")
 
     // Emit unpause event
-    timestamp := time.Now().Format(time.RFC3339)
-    eventData := map[string]interface{}{
-        "action":    "unpaused",
-        "timestamp": timestamp,
-        "admin":     s.getClientID(ctx),
+    return s.emitPauseEvent(ctx, "global", "", "System maintenance complete - operations resumed")
+}
+
+// ========================================
+// CLIENT PAUSE FUNCTIONS (Regulatory-level)
+// ========================================
+
+// PauseClient pauses all operations for a specific client organization
+func (s *GatekeeperContract) PauseClient(ctx contractapi.TransactionContextInterface, clientId string) error {
+    // Check permission
+    err := s.checkPermission(ctx, PermissionPauseClient)
+    if err != nil {
+        s.logAuthorizationEvent(ctx, "PauseClient", PermissionPauseClient, false, err.Error())
+        return err
     }
+
+    // Check if client is already paused
+    isPaused, err := s.isClientPaused(ctx, clientId)
+    if err != nil {
+        return fmt.Errorf("failed to check client pause state: %v", err)
+    }
+    if isPaused {
+        return fmt.Errorf("client %s is already paused", clientId)
+    }
+
+    // Set client pause state
+    err = ctx.GetStub().PutState(ClientPauseKey+clientId, []byte("true"))
+    if err != nil {
+        return fmt.Errorf("failed to set client pause state: %v", err)
+    }
+
+    // Log successful authorization
+    s.logAuthorizationEvent(ctx, "PauseClient", PermissionPauseClient, true, 
+        fmt.Sprintf("Client %s paused for regulatory compliance", clientId))
+
+    // Emit pause event
+    return s.emitPauseEvent(ctx, "client", clientId, "Client operations paused by regulatory authority")
+}
+
+// UnpauseClient unpauses operations for a specific client organization
+func (s *GatekeeperContract) UnpauseClient(ctx contractapi.TransactionContextInterface, clientId string) error {
+    // Check permission
+    err := s.checkPermission(ctx, PermissionUnpauseClient)
+    if err != nil {
+        s.logAuthorizationEvent(ctx, "UnpauseClient", PermissionUnpauseClient, false, err.Error())
+        return err
+    }
+
+    // Check if client is actually paused
+    isPaused, err := s.isClientPaused(ctx, clientId)
+    if err != nil {
+        return fmt.Errorf("failed to check client pause state: %v", err)
+    }
+    if !isPaused {
+        return fmt.Errorf("client %s is not paused", clientId)
+    }
+
+    // Remove client pause state
+    err = ctx.GetStub().DelState(ClientPauseKey + clientId)
+    if err != nil {
+        return fmt.Errorf("failed to remove client pause state: %v", err)
+    }
+
+    // Log successful authorization
+    s.logAuthorizationEvent(ctx, "UnpauseClient", PermissionUnpauseClient, true, 
+        fmt.Sprintf("Client %s unpaused - operations resumed", clientId))
+
+    // Emit unpause event
+    return s.emitPauseEvent(ctx, "client", clientId, "Client operations resumed")
+}
+
+// GetPauseState returns the current pause states at all levels
+func (s *GatekeeperContract) GetPauseState(ctx contractapi.TransactionContextInterface) (map[string]interface{}, error) {
+    // Check permission
+    err := s.checkPermission(ctx, PermissionViewPauseState)
+    if err != nil {
+        return nil, err
+    }
+
+    // Get global pause state
+    globalPaused, err := s.isGloballyPaused(ctx)
+    if err != nil {
+        globalPaused = false
+    }
+
+    // Prepare response
+    pauseState := map[string]interface{}{
+        "globalPaused":  globalPaused,
+        "timestamp":     time.Now().Format(time.RFC3339),
+        "queriedBy":     s.getClientID(ctx),
+    }
+
+    return pauseState, nil
+}
+
+// GetClientPauseState returns pause state for a specific client
+func (s *GatekeeperContract) GetClientPauseState(ctx contractapi.TransactionContextInterface, clientId string) (map[string]interface{}, error) {
+    // Check permission with client scope validation for non-admins
+    authCtx, err := getAuthorizationContext(ctx)
+    if err != nil {
+        return nil, err
+    }
+
+    // Global admins can check any client, others need client scope validation
+    if !authCtx.isGlobalAdmin() && !authCtx.isRegulatoryAdmin() {
+        err = s.checkPermission(ctx, PermissionViewComplianceClient, validateClientScope(clientId))
+        if err != nil {
+            return nil, err
+        }
+    } else {
+        err = s.checkPermission(ctx, PermissionViewComplianceGlobal)
+        if err != nil {
+            return nil, err
+        }
+    }
+
+    // Get client pause state
+    clientPaused, err := s.isClientPaused(ctx, clientId)
+    if err != nil {
+        clientPaused = false
+    }
+
+    // Prepare response
+    pauseState := map[string]interface{}{
+        "clientId":      clientId,
+        "clientPaused":  clientPaused,
+        "timestamp":     time.Now().Format(time.RFC3339),
+        "queriedBy":     authCtx.UserID,
+    }
+
+    return pauseState, nil
+}
+
+// GetWalletPauseState returns pause state for a specific wallet
+func (s *GatekeeperContract) GetWalletPauseState(ctx contractapi.TransactionContextInterface, walletAddress string) (map[string]interface{}, error) {
+    // Check permission
+    err := s.checkPermission(ctx, PermissionViewPauseState)
+    if err != nil {
+        return nil, err
+    }
+
+    // Get wallet pause states
+    directPaused, _ := s.isWalletDirectlyPaused(ctx, walletAddress)
     
-    eventPayload, err := json.Marshal(eventData)
-    if err != nil {
-        return fmt.Errorf("failed to marshal unpause event: %v", err)
+    // Check for scoped pauses (we'd need to iterate through clients)
+    clientId := s.getWalletClientId(ctx, walletAddress)
+    scopedPaused := false
+    if clientId != "" {
+        scopedPaused, _ = s.isWalletScopedPaused(ctx, walletAddress, clientId)
     }
 
-    err = ctx.GetStub().SetEvent("ContractUnpaused", eventPayload)
-    if err != nil {
-        return fmt.Errorf("failed to emit unpause event: %v", err)
+    // Prepare response
+    pauseState := map[string]interface{}{
+        "walletAddress": walletAddress,
+        "directPaused":  directPaused,
+        "scopedPaused":  scopedPaused,
+        "clientId":      clientId,
+        "timestamp":     time.Now().Format(time.RFC3339),
+        "queriedBy":     s.getClientID(ctx),
     }
 
-    return nil
-}
-
-// GetPauseState returns the current pause state
-func (s *GatekeeperContract) GetPauseState(ctx contractapi.TransactionContextInterface) (bool, error) {
-    pausedBytes, err := ctx.GetStub().GetState("paused")
-    if err != nil {
-        return false, fmt.Errorf("failed to get pause state: %v", err)
-    }
-
-    if pausedBytes == nil {
-        return false, nil // Default to not paused
-    }
-
-    paused := string(pausedBytes) == "true"
-    s.paused = paused // Update internal state
-    return paused, nil
-}
-
-// checkAdminRole verifies that the caller has admin privileges
-func (s *GatekeeperContract) checkAdminRole(ctx contractapi.TransactionContextInterface) error {
-    // In a production environment, this should check against a proper RBAC system
-    // For now, we'll check if the client has admin role attribute
-    clientID, err := ctx.GetClientIdentity().GetID()
-    if err != nil {
-        return fmt.Errorf("failed to get client identity: %v", err)
-    }
-
-    // Check for admin attribute (this would be set during enrollment)
-    adminAttr, found, err := ctx.GetClientIdentity().GetAttributeValue("role")
-    if err != nil {
-        return fmt.Errorf("failed to get role attribute: %v", err)
-    }
-
-    if !found || adminAttr != AdminRole {
-        return fmt.Errorf("access denied: admin role required (client: %s)", clientID)
-    }
-
-    return nil
+    return pauseState, nil
 }
 
 // getClientID is a helper to get client ID
@@ -299,22 +409,26 @@ func (s *GatekeeperContract) getClientID(ctx contractapi.TransactionContextInter
     return clientID
 }
 
-// InitLedger initializes the chaincode
+// InitLedger initializes the chaincode with permission-based authorization
 func (s *GatekeeperContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
-    // Initialize pause state to false
-    err := ctx.GetStub().PutState("paused", []byte("false"))
-    if err != nil {
-        return fmt.Errorf("failed to initialize pause state: %v", err)
-    }
-
-    s.paused = false
+    // Note: All pause states are now managed in world state
+    // No need to initialize them explicitly as they default to false/not-paused
 
     // Emit initialization event
     timestamp := time.Now().Format(time.RFC3339)
     eventData := map[string]interface{}{
-        "action":    "initialized",
-        "timestamp": timestamp,
-        "version":   "1.0.0",
+        "action":              "initialized",
+        "timestamp":           timestamp,
+        "version":            "2.0.0",
+        "authorizationModel": "permission-based",
+        "features": []string{
+            "global-pause",
+            "client-pause", 
+            "wallet-pause-direct",
+            "wallet-pause-scoped",
+            "hierarchical-authorization",
+            "audit-trail",
+        },
     }
     
     eventPayload, err := json.Marshal(eventData)
@@ -322,7 +436,7 @@ func (s *GatekeeperContract) InitLedger(ctx contractapi.TransactionContextInterf
         return fmt.Errorf("failed to marshal initialization event: %v", err)
     }
 
-    err = ctx.GetStub().SetEvent("ContractInitialized", eventPayload)
+    err = ctx.GetStub().SetEvent("GatekeeperInitialized", eventPayload)
     if err != nil {
         return fmt.Errorf("failed to emit initialization event: %v", err)
     }
