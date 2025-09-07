@@ -36,10 +36,15 @@ const (
     PermissionPauseWalletScoped   GatekeeperPermission = "gatekeeper:pause_wallet_scoped"
     PermissionUnpauseWalletScoped GatekeeperPermission = "gatekeeper:unpause_wallet_scoped"
 
-    // Blacklisting permissions (high-level administrative)
-    PermissionAddToBlacklist      GatekeeperPermission = "gatekeeper:add_to_blacklist"
-    PermissionRemoveFromBlacklist GatekeeperPermission = "gatekeeper:remove_from_blacklist"
-    PermissionViewBlacklist       GatekeeperPermission = "gatekeeper:view_blacklist"
+    // Blacklisting permissions - Global level (Platform/Regulatory admins only)
+    PermissionAddToBlacklistGlobal      GatekeeperPermission = "gatekeeper:add_to_blacklist_global"
+    PermissionRemoveFromBlacklistGlobal GatekeeperPermission = "gatekeeper:remove_from_blacklist_global"
+    PermissionViewBlacklistGlobal       GatekeeperPermission = "gatekeeper:view_blacklist_global"
+
+    // Blacklisting permissions - Client-scoped level (Client admins for their own company)
+    PermissionAddToBlacklistScoped      GatekeeperPermission = "gatekeeper:add_to_blacklist_scoped"
+    PermissionRemoveFromBlacklistScoped GatekeeperPermission = "gatekeeper:remove_from_blacklist_scoped"
+    PermissionViewBlacklistScoped       GatekeeperPermission = "gatekeeper:view_blacklist_scoped"
 
     // Read permissions
     PermissionViewPauseState       GatekeeperPermission = "gatekeeper:view_pause_state"
