@@ -9,6 +9,8 @@ import (
 
     "github.com/hyperledger/fabric-contract-api-go/contractapi"
     "github.com/hyperledger/fabric-chaincode-go/shimtest"
+    "github.com/stretchr/testify/assert"
+    "github.com/hyperledger/fabric-chaincode-go/shim"
 )
 
 func TestCheckCompliance_ValidAttestations(t *testing.T) {
@@ -377,28 +379,313 @@ func setupMockErrorResponse(ctx contractapi.TransactionContextInterface) {
 // Benchmark tests for performance validation
 
 func BenchmarkCheckCompliance(b *testing.B) {
-    contract := &GatekeeperContract{}
-    ctx := createMockContext()
-
-    validAttestations := []*Attestation{
-        {
-            ID:        "attestation1",
-            WalletID:  "0x123",
-            Status:    string(StatusActive),
-            IssuedAt:  time.Now().AddDate(0, -1, 0).Format(time.RFC3339),
-            ExpiresAt: time.Now().AddDate(1, 0, 0).Format(time.RFC3339),
-        },
-    }
-
-    mockJSON, _ := json.Marshal(validAttestations)
-    setupMockResponse(ctx, mockJSON)
-
-    b.ResetTimer()
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
     
+    // Setup mock responses for valid attestations
+    chaincodeStub.MockTransactionStart("txid")
+    chaincodeStub.GetStateReturns(createMockAttestation("valid-attestation", "ACTIVE"), nil)
+    chaincodeStub.MockInvoke("kyc-attestation", [][]byte{
+        []byte("GetAttestationByWallet"),
+        []byte("0x123"),
+    })
+    chaincodeStub.MockInvoke("kyc-attestation", [][]byte{
+        []byte("GetAttestationByWallet"),
+        []byte("0x456"),
+    })
+
     for i := 0; i < b.N; i++ {
         _, err := contract.CheckCompliance(ctx, "0x123", "0x456")
         if err != nil {
-            b.Fatalf("Benchmark failed: %v", err)
+            b.Fatal(err)
         }
     }
+}
+
+// ==========================================
+// BLACKLISTING FUNCTIONALITY TESTS
+// ==========================================
+
+func TestAddToBlacklist_Success(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    address := "0x123456789"
+    
+    // Mock authorization check
+    chaincodeStub.GetStateReturns(createMockPermissionState(), nil)
+    
+    // Mock that address is not already blacklisted
+    chaincodeStub.GetStateReturnsOnCall(1, nil, nil)
+
+    err := contract.AddToBlacklist(ctx, address)
+    
+    assert.NoError(t, err)
+    assert.True(t, chaincodeStub.PutStateCalled)
+    assert.True(t, chaincodeStub.SetEventCalled)
+}
+
+func TestAddToBlacklist_EmptyAddress(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    // Mock authorization check
+    chaincodeStub.GetStateReturns(createMockPermissionState(), nil)
+
+    err := contract.AddToBlacklist(ctx, "")
+    
+    assert.Error(t, err)
+    assert.Contains(t, err.Error(), "address cannot be empty")
+}
+
+func TestAddToBlacklist_AlreadyBlacklisted(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    address := "0x123456789"
+    
+    // Mock authorization check
+    chaincodeStub.GetStateReturns(createMockPermissionState(), nil)
+    
+    // Mock that address is already blacklisted
+    chaincodeStub.GetStateReturnsOnCall(1, []byte("true"), nil)
+
+    err := contract.AddToBlacklist(ctx, address)
+    
+    assert.Error(t, err)
+    assert.Contains(t, err.Error(), "already blacklisted")
+}
+
+func TestRemoveFromBlacklist_Success(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    address := "0x123456789"
+    
+    // Mock authorization check
+    chaincodeStub.GetStateReturns(createMockPermissionState(), nil)
+    
+    // Mock that address is currently blacklisted
+    chaincodeStub.GetStateReturnsOnCall(1, []byte("true"), nil)
+
+    err := contract.RemoveFromBlacklist(ctx, address)
+    
+    assert.NoError(t, err)
+    assert.True(t, chaincodeStub.DelStateCalled)
+    assert.True(t, chaincodeStub.SetEventCalled)
+}
+
+func TestRemoveFromBlacklist_NotBlacklisted(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    address := "0x123456789"
+    
+    // Mock authorization check
+    chaincodeStub.GetStateReturns(createMockPermissionState(), nil)
+    
+    // Mock that address is not currently blacklisted
+    chaincodeStub.GetStateReturnsOnCall(1, nil, nil)
+
+    err := contract.RemoveFromBlacklist(ctx, address)
+    
+    assert.Error(t, err)
+    assert.Contains(t, err.Error(), "not currently blacklisted")
+}
+
+func TestIsAddressBlacklisted_True(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    address := "0x123456789"
+    
+    // Mock that address is blacklisted
+    chaincodeStub.GetStateReturns([]byte("true"), nil)
+
+    result, err := contract.IsAddressBlacklisted(ctx, address)
+    
+    assert.NoError(t, err)
+    assert.True(t, result)
+}
+
+func TestIsAddressBlacklisted_False(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    address := "0x123456789"
+    
+    // Mock that address is not blacklisted
+    chaincodeStub.GetStateReturns(nil, nil)
+
+    result, err := contract.IsAddressBlacklisted(ctx, address)
+    
+    assert.NoError(t, err)
+    assert.False(t, result)
+}
+
+func TestIsAddressBlacklisted_EmptyAddress(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    result, err := contract.IsAddressBlacklisted(ctx, "")
+    
+    assert.Error(t, err)
+    assert.False(t, result)
+    assert.Contains(t, err.Error(), "address cannot be empty")
+}
+
+func TestCheckCompliance_SenderBlacklisted(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    senderAddress := "0x123"
+    receiverAddress := "0x456"
+    
+    // Mock sender is blacklisted, receiver is not
+    chaincodeStub.GetStateReturnsOnCall(0, []byte("true"), nil)  // sender blacklisted
+    chaincodeStub.GetStateReturnsOnCall(1, nil, nil)            // receiver not blacklisted
+
+    result, err := contract.CheckCompliance(ctx, senderAddress, receiverAddress)
+    
+    assert.NoError(t, err)
+    assert.False(t, result.IsCompliant)
+    assert.Contains(t, result.Reason, "Sender address is blacklisted")
+    assert.False(t, result.SenderValid)
+    assert.False(t, result.ReceiverValid)
+}
+
+func TestCheckCompliance_ReceiverBlacklisted(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    senderAddress := "0x123"
+    receiverAddress := "0x456"
+    
+    // Mock sender is not blacklisted, receiver is blacklisted
+    chaincodeStub.GetStateReturnsOnCall(0, nil, nil)            // sender not blacklisted
+    chaincodeStub.GetStateReturnsOnCall(1, []byte("true"), nil) // receiver blacklisted
+
+    result, err := contract.CheckCompliance(ctx, senderAddress, receiverAddress)
+    
+    assert.NoError(t, err)
+    assert.False(t, result.IsCompliant)
+    assert.Contains(t, result.Reason, "Receiver address is blacklisted")
+    assert.False(t, result.SenderValid)
+    assert.False(t, result.ReceiverValid)
+}
+
+func TestCheckCompliance_BothBlacklisted(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    senderAddress := "0x123"
+    receiverAddress := "0x456"
+    
+    // Mock both addresses are blacklisted
+    chaincodeStub.GetStateReturnsOnCall(0, []byte("true"), nil) // sender blacklisted
+    chaincodeStub.GetStateReturnsOnCall(1, []byte("true"), nil) // receiver blacklisted
+
+    result, err := contract.CheckCompliance(ctx, senderAddress, receiverAddress)
+    
+    assert.NoError(t, err)
+    assert.False(t, result.IsCompliant)
+    assert.Contains(t, result.Reason, "Both sender and receiver addresses are blacklisted")
+    assert.False(t, result.SenderValid)
+    assert.False(t, result.ReceiverValid)
+}
+
+func TestCheckCompliance_NeitherBlacklisted_ContinuesNormalFlow(t *testing.T) {
+    ctx, chaincodeStub := shimtest.NewMockStub("gatekeeper", new(GatekeeperContract))
+    contractapi.SetMockStub(chaincodeStub, ctx)
+    contract := new(GatekeeperContract)
+
+    senderAddress := "0x123"
+    receiverAddress := "0x456"
+    
+    // Mock neither address is blacklisted
+    chaincodeStub.GetStateReturnsOnCall(0, nil, nil) // sender not blacklisted
+    chaincodeStub.GetStateReturnsOnCall(1, nil, nil) // receiver not blacklisted
+    
+    // Mock pause state check (not paused)
+    chaincodeStub.GetStateReturnsOnCall(2, nil, nil) // global pause
+    chaincodeStub.GetStateReturnsOnCall(3, nil, nil) // client pause
+    chaincodeStub.GetStateReturnsOnCall(4, nil, nil) // wallet pause sender
+    chaincodeStub.GetStateReturnsOnCall(5, nil, nil) // wallet pause receiver
+    
+    // Mock valid attestations for both addresses
+    chaincodeStub.InvokeReturns(shim.Response{
+        Status:  200,
+        Payload: createMockAttestation("valid-attestation", "ACTIVE"),
+    })
+
+    result, err := contract.CheckCompliance(ctx, senderAddress, receiverAddress)
+    
+    assert.NoError(t, err)
+    // Should continue to normal attestation checking since neither is blacklisted
+    // The exact result depends on the attestation mocking, but it should not fail due to blacklisting
+    assert.NotContains(t, result.Reason, "blacklisted")
+}
+
+func TestBuildBlacklistReason(t *testing.T) {
+    contract := new(GatekeeperContract)
+
+    tests := []struct {
+        name               string
+        senderBlacklisted  bool
+        receiverBlacklisted bool
+        expectedReason     string
+    }{
+        {"Both blacklisted", true, true, "Both sender and receiver addresses are blacklisted"},
+        {"Sender only", true, false, "Sender address is blacklisted"},
+        {"Receiver only", false, true, "Receiver address is blacklisted"},
+        {"Neither blacklisted", false, false, "Address blacklisting check failed"},
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            result := contract.buildBlacklistReason(tt.senderBlacklisted, tt.receiverBlacklisted)
+            assert.Equal(t, tt.expectedReason, result)
+        })
+    }
+}
+
+// Helper function to create mock permission state for authorization tests
+func createMockPermissionState() []byte {
+    // Mock a valid permission state that allows blacklisting operations
+    permissionData := map[string]interface{}{
+        "permissions": []string{"gatekeeper:add_to_blacklist", "gatekeeper:remove_from_blacklist"},
+    }
+    data, _ := json.Marshal(permissionData)
+    return data
+}
+
+// Helper function to create mock attestation data
+func createMockAttestation(id, status string) []byte {
+    attestation := Attestation{
+        ID:          id,
+        ProfileID:   "profile-123",
+        WalletID:    "0x123456789",
+        Status:      status,
+        MetadataURI: "ipfs://test-metadata",
+        IssuedAt:    time.Now().AddDate(0, -1, 0).Format(time.RFC3339),
+        ExpiresAt:   time.Now().AddDate(1, 0, 0).Format(time.RFC3339),
+        Issuer:      "test-issuer",
+        CreatedBy:   "system",
+        UpdatedAt:   time.Now().Format(time.RFC3339),
+    }
+    
+    data, _ := json.Marshal(attestation)
+    return data
 } 
