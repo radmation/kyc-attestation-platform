@@ -10,7 +10,7 @@ export async function seedGatekeeperPermissions() {
   // ========================================
 
   const gatekeeperPermissions = [
-    // Platform-level permissions (System maintenance)
+    // Global pause/unpause (platform admin only)
     {
       name: 'gatekeeper:pause_global',
       description: 'Pause the entire gatekeeper system (emergency maintenance)',
@@ -23,48 +23,68 @@ export async function seedGatekeeperPermissions() {
       action: 'unpause',
       resource: 'gatekeeper.global',
     },
-
-    // Regulatory-level permissions (Law enforcement, sanctions)
+    
+    // Client pause/unpause (regulatory admin)
     {
       name: 'gatekeeper:pause_client',
-      description: 'Pause all operations for a specific client organization',
+      description: 'Pause all gatekeeper operations for a specific client',
       action: 'pause',
       resource: 'gatekeeper.client',
     },
     {
       name: 'gatekeeper:unpause_client',
-      description: 'Unpause operations for a specific client organization',
+      description: 'Unpause all gatekeeper operations for a specific client',
       action: 'unpause',
       resource: 'gatekeeper.client',
     },
     {
       name: 'gatekeeper:pause_wallet_direct',
-      description: 'Directly pause any wallet address (regulatory/court orders)',
+      description: 'Pause gatekeeper operations for specific wallet (direct regulatory action)',
       action: 'pause',
       resource: 'gatekeeper.wallet.direct',
     },
     {
       name: 'gatekeeper:unpause_wallet_direct',
-      description: 'Directly unpause any wallet address',
-      action: 'unpause', 
+      description: 'Unpause gatekeeper operations for specific wallet (direct regulatory action)',
+      action: 'unpause',
       resource: 'gatekeeper.wallet.direct',
     },
-
-    // Client-scoped permissions (Business operations)
+    
+    // Client-scoped wallet operations
     {
       name: 'gatekeeper:pause_wallet_scoped',
-      description: 'Pause wallet addresses belonging to own client organization',
+      description: 'Pause gatekeeper operations for wallet within client scope',
       action: 'pause',
       resource: 'gatekeeper.wallet.scoped',
     },
     {
       name: 'gatekeeper:unpause_wallet_scoped',
-      description: 'Unpause wallet addresses belonging to own client organization',
+      description: 'Unpause gatekeeper operations for wallet within client scope',
       action: 'unpause',
       resource: 'gatekeeper.wallet.scoped',
     },
 
-    // Read-only permissions
+    // Blacklisting permissions (high-level administrative)
+    {
+      name: 'gatekeeper:add_to_blacklist',
+      description: 'Add addresses to the compliance blacklist (sanctions/regulatory)',
+      action: 'create',
+      resource: 'gatekeeper.blacklist',
+    },
+    {
+      name: 'gatekeeper:remove_from_blacklist',
+      description: 'Remove addresses from the compliance blacklist',
+      action: 'delete',
+      resource: 'gatekeeper.blacklist',
+    },
+    {
+      name: 'gatekeeper:view_blacklist',
+      description: 'View blacklisted addresses and blacklist status',
+      action: 'read',
+      resource: 'gatekeeper.blacklist',
+    },
+    
+    // Read permissions
     {
       name: 'gatekeeper:view_pause_state',
       description: 'View current pause state of gatekeeper components',
@@ -73,13 +93,13 @@ export async function seedGatekeeperPermissions() {
     },
     {
       name: 'gatekeeper:view_compliance_global',
-      description: 'View compliance check results across all clients',
+      description: 'View global compliance check results and statistics',
       action: 'read',
       resource: 'gatekeeper.compliance.global',
     },
     {
       name: 'gatekeeper:view_compliance_client',
-      description: 'View compliance check results for own client',
+      description: 'View compliance check results within client scope',
       action: 'read',
       resource: 'gatekeeper.compliance.client',
     },
@@ -109,24 +129,29 @@ export async function seedGatekeeperPermissions() {
   // ========================================
 
   const platformRoles = [
+    // Platform Administrator - Full access including emergency controls
     {
-      name: 'PLATFORM_ADMIN',
-      description: 'System administrators with full platform access',
+      name: 'Platform Administrator',
+      description: 'Full platform access with all administrative permissions',
       isGlobal: true,
       permissions: [
         // Full gatekeeper access
         'gatekeeper:pause_global',
         'gatekeeper:unpause_global',
-        'gatekeeper:pause_client', 
+        'gatekeeper:pause_client',
         'gatekeeper:unpause_client',
         'gatekeeper:pause_wallet_direct',
         'gatekeeper:unpause_wallet_direct',
         'gatekeeper:pause_wallet_scoped',
         'gatekeeper:unpause_wallet_scoped',
+        'gatekeeper:add_to_blacklist',
+        'gatekeeper:remove_from_blacklist',
+        'gatekeeper:view_blacklist',
         'gatekeeper:view_pause_state',
         'gatekeeper:view_compliance_global',
         'gatekeeper:view_compliance_client',
         'gatekeeper:manage_permissions',
+        // ... other platform permissions would go here
       ],
     },
     {

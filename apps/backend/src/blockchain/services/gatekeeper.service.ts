@@ -104,7 +104,101 @@ export class GatekeeperService {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Failed to get pause state:', errorMessage);
-      throw new Error(`Failed to get pause state: ${errorMessage}`);
+      throw new Error(`Get pause state failed: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Add an address to the blacklist
+   */
+  async addToBlacklist(addressToBlock: string): Promise<void> {
+    this.logger.debug(`Adding address to blacklist: ${addressToBlock}`);
+
+    try {
+      // Mock implementation
+      this.logger.warn(
+        `Mock implementation - would add ${addressToBlock} to blacklist`,
+      );
+      
+      this.logger.log(`Address ${addressToBlock} added to blacklist successfully`);
+
+      // Real implementation would look like this:
+      /*
+      await this.fabricProvider.invokeChaincode(
+        this.channelName,
+        this.chaincodeName,
+        'AddToBlacklist',
+        [addressToBlock]
+      );
+      */
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to add address to blacklist:', errorMessage);
+      throw new Error(`Add to blacklist failed: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Remove an address from the blacklist
+   */
+  async removeFromBlacklist(addressToUnblock: string): Promise<void> {
+    this.logger.debug(`Removing address from blacklist: ${addressToUnblock}`);
+
+    try {
+      // Mock implementation
+      this.logger.warn(
+        `Mock implementation - would remove ${addressToUnblock} from blacklist`,
+      );
+      
+      this.logger.log(`Address ${addressToUnblock} removed from blacklist successfully`);
+
+      // Real implementation would look like this:
+      /*
+      await this.fabricProvider.invokeChaincode(
+        this.channelName,
+        this.chaincodeName,
+        'RemoveFromBlacklist',
+        [addressToUnblock]
+      );
+      */
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to remove address from blacklist:', errorMessage);
+      throw new Error(`Remove from blacklist failed: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Check if an address is blacklisted
+   */
+  async isAddressBlacklisted(addressToCheck: string): Promise<boolean> {
+    this.logger.debug(`Checking if address is blacklisted: ${addressToCheck}`);
+
+    try {
+      // Mock implementation
+      const isBlacklisted = false; // Default to not blacklisted in mock
+      
+      this.logger.log(`Address ${addressToCheck} blacklist status: ${isBlacklisted}`);
+      return isBlacklisted;
+
+      // Real implementation would look like this:
+      /*
+      const result = await this.fabricProvider.queryChaincode(
+        this.channelName,
+        this.chaincodeName,
+        'IsAddressBlacklisted',
+        [addressToCheck]
+      );
+      
+      return JSON.parse(result.toString()) as boolean;
+      */
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to check blacklist status:', errorMessage);
+      throw new Error(`Check blacklist status failed: ${errorMessage}`);
     }
   }
 

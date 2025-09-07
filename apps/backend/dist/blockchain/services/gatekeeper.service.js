@@ -53,7 +53,44 @@ let GatekeeperService = GatekeeperService_1 = class GatekeeperService {
         catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             this.logger.error('Failed to get pause state:', errorMessage);
-            throw new Error(`Failed to get pause state: ${errorMessage}`);
+            throw new Error(`Get pause state failed: ${errorMessage}`);
+        }
+    }
+    async addToBlacklist(addressToBlock) {
+        this.logger.debug(`Adding address to blacklist: ${addressToBlock}`);
+        try {
+            this.logger.warn(`Mock implementation - would add ${addressToBlock} to blacklist`);
+            this.logger.log(`Address ${addressToBlock} added to blacklist successfully`);
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error('Failed to add address to blacklist:', errorMessage);
+            throw new Error(`Add to blacklist failed: ${errorMessage}`);
+        }
+    }
+    async removeFromBlacklist(addressToUnblock) {
+        this.logger.debug(`Removing address from blacklist: ${addressToUnblock}`);
+        try {
+            this.logger.warn(`Mock implementation - would remove ${addressToUnblock} from blacklist`);
+            this.logger.log(`Address ${addressToUnblock} removed from blacklist successfully`);
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error('Failed to remove address from blacklist:', errorMessage);
+            throw new Error(`Remove from blacklist failed: ${errorMessage}`);
+        }
+    }
+    async isAddressBlacklisted(addressToCheck) {
+        this.logger.debug(`Checking if address is blacklisted: ${addressToCheck}`);
+        try {
+            const isBlacklisted = false;
+            this.logger.log(`Address ${addressToCheck} blacklist status: ${isBlacklisted}`);
+            return isBlacklisted;
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error('Failed to check blacklist status:', errorMessage);
+            throw new Error(`Check blacklist status failed: ${errorMessage}`);
         }
     }
     async pauseContract() {
