@@ -12,7 +12,7 @@ const config_1 = require("@nestjs/config");
 const invitation_service_1 = require("./application/services/invitation.service");
 const prisma_invitation_repository_1 = require("./infrastructure/repositories/prisma-invitation.repository");
 const invitation_controller_1 = require("./interfaces/invitation.controller");
-const database_module_1 = require("../../database/database.module");
+const prisma_module_1 = require("../../prisma/prisma.module");
 class MockUserService {
     async findByEmail(email) {
         return null;
@@ -69,7 +69,7 @@ let InvitationModule = class InvitationModule {
 exports.InvitationModule = InvitationModule;
 exports.InvitationModule = InvitationModule = __decorate([
     (0, common_1.Module)({
-        imports: [config_1.ConfigModule, database_module_1.DatabaseModule],
+        imports: [config_1.ConfigModule, prisma_module_1.PrismaModule],
         controllers: [invitation_controller_1.InvitationController],
         providers: [
             invitation_service_1.InvitationService,

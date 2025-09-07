@@ -12,13 +12,13 @@ const terminus_1 = require("@nestjs/terminus");
 const axios_1 = require("@nestjs/axios");
 const health_controller_1 = require("./health.controller");
 const blockchain_module_1 = require("../blockchain/blockchain.module");
-const database_module_1 = require("../database/database.module");
+const prisma_module_1 = require("../prisma/prisma.module");
 let HealthModule = class HealthModule {
 };
 exports.HealthModule = HealthModule;
 exports.HealthModule = HealthModule = __decorate([
     (0, common_1.Module)({
-        imports: [terminus_1.TerminusModule, axios_1.HttpModule, blockchain_module_1.BlockchainModule, database_module_1.DatabaseModule],
+        imports: [terminus_1.TerminusModule, axios_1.HttpModule, blockchain_module_1.BlockchainModule, prisma_module_1.PrismaModule],
         controllers: [health_controller_1.HealthController],
     })
 ], HealthModule);

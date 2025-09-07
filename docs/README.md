@@ -24,8 +24,10 @@
 
 ### **🔗 Integration Guides**
 **Directory**: [`integration-guides/`](integration-guides/)
+- **[Integration Guides Overview](integration-guides/README.md)** - Index of all external service integrations
 - **[iDenfy Integration Guide](integration-guides/IDENFY_INTEGRATION_GUIDE.md)** - Complete iDenfy API and webhook documentation
 - **[iDenfy Webhook Payloads](integration-guides/IDENFY_WEBHOOK_PAYLOADS.md)** - Detailed webhook payload examples and handling
+- **[Stripe Billing Integration Guide](integration-guides/STRIPE_INTEGRATION_GUIDE.md)** - Complete Stripe billing and subscription management
 
 ### **📋 Project Management**
 **Directory**: [`project-management/`](project-management/)

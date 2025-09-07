@@ -11,7 +11,7 @@ import { PrismaInvitationRepository } from './infrastructure/repositories/prisma
 import { InvitationController } from './interfaces/invitation.controller';
 
 // Database module
-import { DatabaseModule } from '../../database/database.module';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 // Import shared services (these will be available when other modules are integrated)
 // Note: These imports will work when the respective modules are properly set up
@@ -95,7 +95,7 @@ class MockClientService {
 // MockPrismaService removed - now using real PrismaService via DatabaseModule
 
 @Module({
-  imports: [ConfigModule, DatabaseModule],
+  imports: [ConfigModule, PrismaModule],
   controllers: [InvitationController],
   providers: [
     // Application services

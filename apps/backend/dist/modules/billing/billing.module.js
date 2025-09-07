@@ -6,21 +6,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KycModule = void 0;
+exports.BillingModule = void 0;
 const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
+const billing_controller_1 = require("./billing.controller");
+const stripe_controller_1 = require("./stripe.controller");
+const stripe_service_1 = require("./stripe.service");
+const billing_scheduler_service_1 = require("./billing-scheduler.service");
 const prisma_module_1 = require("../../prisma/prisma.module");
-const idenfy_service_1 = require("./infrastructure/services/idenfy.service");
-const kyc_controller_1 = require("./presentation/controllers/kyc.controller");
-let KycModule = class KycModule {
+let BillingModule = class BillingModule {
 };
-exports.KycModule = KycModule;
-exports.KycModule = KycModule = __decorate([
+exports.BillingModule = BillingModule;
+exports.BillingModule = BillingModule = __decorate([
     (0, common_1.Module)({
-        imports: [config_1.ConfigModule, prisma_module_1.PrismaModule],
-        controllers: [kyc_controller_1.KycController],
-        providers: [idenfy_service_1.IdenfyService],
-        exports: [idenfy_service_1.IdenfyService],
+        imports: [prisma_module_1.PrismaModule],
+        controllers: [billing_controller_1.BillingController, stripe_controller_1.StripeController],
+        providers: [stripe_service_1.StripeService, billing_scheduler_service_1.BillingSchedulerService],
+        exports: [stripe_service_1.StripeService],
     })
-], KycModule);
-//# sourceMappingURL=kyc.module.js.map
+], BillingModule);
+//# sourceMappingURL=billing.module.js.map

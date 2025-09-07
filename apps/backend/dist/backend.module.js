@@ -10,15 +10,17 @@ exports.BackendModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const throttler_1 = require("@nestjs/throttler");
+const schedule_1 = require("@nestjs/schedule");
 const core_1 = require("@nestjs/core");
 const auth_module_1 = require("./modules/auth/auth.module");
 const kyc_module_1 = require("./modules/kyc/kyc.module");
 const invitation_module_1 = require("./modules/invitation/invitation.module");
 const branding_module_1 = require("./modules/branding/branding.module");
+const billing_module_1 = require("./modules/billing/billing.module");
 const blockchain_module_1 = require("./blockchain/blockchain.module");
 const jwt_auth_guard_1 = require("./shared/guards/jwt-auth.guard");
 const roles_guard_1 = require("./shared/guards/roles.guard");
-const database_module_1 = require("./database/database.module");
+const prisma_module_1 = require("./prisma/prisma.module");
 const health_module_1 = require("./health/health.module");
 const security_middleware_1 = require("./shared/middleware/security.middleware");
 const logging_middleware_1 = require("./shared/middleware/logging.middleware");
@@ -41,11 +43,13 @@ exports.BackendModule = BackendModule = __decorate([
                 useFactory: rate_limit_config_1.createRateLimitConfig,
                 inject: [config_1.ConfigService],
             }),
-            database_module_1.DatabaseModule,
+            schedule_1.ScheduleModule.forRoot(),
+            prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
             kyc_module_1.KycModule,
             invitation_module_1.InvitationModule,
             branding_module_1.BrandingModule,
+            billing_module_1.BillingModule,
             blockchain_module_1.BlockchainModule,
             health_module_1.HealthModule,
         ],
