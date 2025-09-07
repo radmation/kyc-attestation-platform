@@ -6,6 +6,7 @@ import {
   User, 
   Shield, 
   Settings, 
+  CreditCard,
   LogOut, 
   Sun, 
   Moon,
@@ -22,6 +23,7 @@ const Layout: React.FC = () => {
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Profile', href: '/profile', icon: User },
     { name: 'KYC Verification', href: '/kyc', icon: Shield },
+    { name: 'Billing', href: '/billing', icon: CreditCard },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 

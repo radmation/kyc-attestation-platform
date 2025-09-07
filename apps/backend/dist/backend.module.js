@@ -10,11 +10,13 @@ exports.BackendModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const throttler_1 = require("@nestjs/throttler");
+const schedule_1 = require("@nestjs/schedule");
 const core_1 = require("@nestjs/core");
 const auth_module_1 = require("./modules/auth/auth.module");
 const kyc_module_1 = require("./modules/kyc/kyc.module");
 const invitation_module_1 = require("./modules/invitation/invitation.module");
 const branding_module_1 = require("./modules/branding/branding.module");
+const billing_module_1 = require("./modules/billing/billing.module");
 const blockchain_module_1 = require("./blockchain/blockchain.module");
 const jwt_auth_guard_1 = require("./shared/guards/jwt-auth.guard");
 const roles_guard_1 = require("./shared/guards/roles.guard");
@@ -41,11 +43,13 @@ exports.BackendModule = BackendModule = __decorate([
                 useFactory: rate_limit_config_1.createRateLimitConfig,
                 inject: [config_1.ConfigService],
             }),
+            schedule_1.ScheduleModule.forRoot(),
             database_module_1.DatabaseModule,
             auth_module_1.AuthModule,
             kyc_module_1.KycModule,
             invitation_module_1.InvitationModule,
             branding_module_1.BrandingModule,
+            billing_module_1.BillingModule,
             blockchain_module_1.BlockchainModule,
             health_module_1.HealthModule,
         ],

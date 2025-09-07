@@ -9,6 +9,8 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import KYC from './pages/KYC';
+import Pricing from './pages/Pricing';
+import Billing from './pages/Billing';
 
 // Simple placeholder pages
 const Profile: React.FC = () => (
@@ -65,6 +67,7 @@ const App: React.FC = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
+          <Route path="/pricing" element={<Pricing />} />
           
           {/* Protected Routes */}
           <Route
@@ -78,6 +81,7 @@ const App: React.FC = () => {
             <Route index element={<Dashboard />} />
             <Route path="profile" element={<Profile />} />
             <Route path="kyc" element={<KYC />} />
+            <Route path="billing" element={<Billing />} />
             <Route path="settings" element={<Settings />} />
           </Route>
           

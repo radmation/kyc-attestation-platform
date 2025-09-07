@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { 
   setCSSProperty, 
   generateColorShades, 
-  getContrastTextColor, 
   debounce,
   hexToRgb,
   isLightColor

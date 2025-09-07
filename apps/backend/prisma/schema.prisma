@@ -11,19 +11,27 @@ datasource db {
 /// Client/Organization model for multi-tenant architecture
 /// Each client represents a separate organization using the platform
 model Client {
-  id             String           @id @unique
-  name           String           @unique
-  domain         String           @unique
-  subdomain      String?          @unique
-  isActive       Boolean          @default(true)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  users          User[]
-  profiles       Profile[]
-  branding       Branding?
-  smartContracts SmartContract[]
-  roles          Role[]
-  invitations    UserInvitation[]
+  id                  String           @id @unique
+  name                String           @unique
+  domain              String           @unique
+  subdomain           String?          @unique
+  isActive            Boolean          @default(true)
+  
+  // Billing fields for Stripe integration
+  stripeCustomerId    String?          @unique
+  billingStatus       BillingStatus    @default(TRIAL)
+  subscriptionId      String?          @unique
+  gracePeriodEndsAt   DateTime?
+  lastPaymentFailedAt DateTime?
+  
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  users               User[]
+  profiles            Profile[]
+  branding            Branding?
+  smartContracts      SmartContract[]
+  roles               Role[]
+  invitations         UserInvitation[]
 
   @@map("clients")
 }
@@ -398,4 +406,13 @@ enum InvitationStatus {
   ACCEPTED
   EXPIRED
   REVOKED
+}
+
+/// Billing status enumeration for subscription management
+enum BillingStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  SUSPENDED
 }

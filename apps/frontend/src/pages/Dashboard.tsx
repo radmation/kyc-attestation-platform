@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, User, CheckCircle, AlertCircle, Clock, ArrowRight } from 'lucide-react';
+import BillingWarningBanner from '../components/BillingWarningBanner';
 
 const Dashboard: React.FC = () => {
   // Mock data for demo
@@ -56,6 +57,9 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-8">
+      {/* Billing Warning Banner */}
+      <BillingWarningBanner />
+      
       {/* Welcome Header */}
       <div className="text-center">
         <h1 className="text-4xl font-bold text-foreground mb-2">
