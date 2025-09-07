@@ -119,8 +119,10 @@ export class GatekeeperService {
       this.logger.warn(
         `Mock implementation - would add ${addressToBlock} to blacklist`,
       );
-      
-      this.logger.log(`Address ${addressToBlock} added to blacklist successfully`);
+
+      this.logger.log(
+        `Address ${addressToBlock} added to blacklist successfully`,
+      );
 
       // Real implementation would look like this:
       /*
@@ -150,8 +152,10 @@ export class GatekeeperService {
       this.logger.warn(
         `Mock implementation - would remove ${addressToUnblock} from blacklist`,
       );
-      
-      this.logger.log(`Address ${addressToUnblock} removed from blacklist successfully`);
+
+      this.logger.log(
+        `Address ${addressToUnblock} removed from blacklist successfully`,
+      );
 
       // Real implementation would look like this:
       /*
@@ -165,7 +169,10 @@ export class GatekeeperService {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('Failed to remove address from blacklist:', errorMessage);
+      this.logger.error(
+        'Failed to remove address from blacklist:',
+        errorMessage,
+      );
       throw new Error(`Remove from blacklist failed: ${errorMessage}`);
     }
   }
@@ -179,8 +186,10 @@ export class GatekeeperService {
     try {
       // Mock implementation
       const isBlacklisted = false; // Default to not blacklisted in mock
-      
-      this.logger.log(`Address ${addressToCheck} blacklist status: ${isBlacklisted}`);
+
+      this.logger.log(
+        `Address ${addressToCheck} blacklist status: ${isBlacklisted}`,
+      );
       return isBlacklisted;
 
       // Real implementation would look like this:
