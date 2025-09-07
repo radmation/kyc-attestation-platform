@@ -15,6 +15,7 @@ graph TB
         B --> D[KYC Module]
         B --> E[Attestation Module]
         B --> F[Users Module]
+        B --> G[Billing Module]
     end
     
     subgraph "Blockchain Layer"
@@ -32,6 +33,7 @@ graph TB
     
     subgraph "Integration Layer"
         D --> M[iDenfy KYC API]
+        G --> O[Stripe Payment API]
         B --> N[AWS EventBridge]
     end
     
@@ -351,6 +353,7 @@ interface SecurityMiddleware {
 /api/v1/users/*          // User management
 /api/v1/kyc/*            // KYC verification
 /api/v1/attestations/*   // Attestation management
+/api/v1/billing/*        // Billing and subscription management
 /api/v1/monitoring/*     // Health and metrics
 
 // Version headers

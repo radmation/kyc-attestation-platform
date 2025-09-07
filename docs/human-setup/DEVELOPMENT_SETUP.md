@@ -79,6 +79,11 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mydatabase?schema=public
 IDENFY_API_ACCESS_KEY="your_actual_key"
 IDENFY_API_SECRET_KEY="your_actual_secret"
 
+# Stripe Configuration
+STRIPE_SECRET_KEY="sk_test_your_actual_key"
+STRIPE_WEBHOOK_SECRET="whsec_your_actual_secret"
+STRIPE_PUBLISHABLE_KEY="pk_test_your_actual_key"
+
 # Blockchain Provider Configuration
 PRIMARY_BLOCKCHAIN_PROVIDER="HYPERLEDGER_FABRIC"
 PRIMARY_BLOCKCHAIN_NETWORK="kycchannel"

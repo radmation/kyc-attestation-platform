@@ -32,6 +32,7 @@ A blockchain-based Know Your Customer (KYC) attestation platform that creates on
 - **Blockchain**: Multi-blockchain support with Hyperledger Fabric, Ethereum, and EVM-compatible networks
 - **Frontend**: React.js with TypeScript and shadcn/ui components
 - **KYC Integration**: iDenfy API with webhook processing
+- **Billing & Payments**: Stripe integration with subscription management
 - **Storage**: IPFS with Filebase for attestation metadata
 - **Monitoring**: Prometheus metrics, Grafana dashboards, health check endpoints
 - **Infrastructure**: Docker containerization with AWS deployment
@@ -45,6 +46,8 @@ A blockchain-based Know Your Customer (KYC) attestation platform that creates on
 - ✅ **Blockchain Attestations**: On-chain identity attestations with provider flexibility
 - ✅ **Smart Contract Integration**: Automated compliance enforcement for DeFi protocols
 - ✅ **Multi-tenant Support**: White-labeled solution for token issuers and compliance providers
+- ✅ **Subscription Billing**: Self-service client onboarding with Stripe payment processing
+- ✅ **Payment Management**: Automated billing cycles, grace periods, and customer portal access
 - ✅ **Regulatory Compliance**: GENIUS Act compliance and comprehensive audit trails
 
 ---
