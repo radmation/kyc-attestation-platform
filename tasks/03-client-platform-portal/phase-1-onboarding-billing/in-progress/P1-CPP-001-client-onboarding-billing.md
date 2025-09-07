@@ -40,4 +40,5 @@
   - [ ] The frontend displays a clear warning banner to clients in their grace period.
   - [ ] A client can manage their subscription via the Stripe Customer Portal.
 - **Success Metrics**:
-  - The entire client onboarding and payment flow is 100% self-service, requiring no manual intervention. 
+  - The entire client onboarding and payment flow is 100% self-service, requiring no manual intervention. - **Started**: Sun Sep  7 12:04:37 PDT 2025
+- **Last Update**: Sun Sep  7 12:04:37 PDT 2025 - Started implementation
