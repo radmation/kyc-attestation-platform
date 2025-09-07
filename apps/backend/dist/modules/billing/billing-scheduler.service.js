@@ -70,8 +70,11 @@ let BillingSchedulerService = BillingSchedulerService_1 = class BillingScheduler
                 if (!client.lastPaymentFailedAt || !client.gracePeriodEndsAt) {
                     continue;
                 }
-                const daysSinceFailure = Math.floor((now.getTime() - client.lastPaymentFailedAt.getTime()) / (1000 * 60 * 60 * 24));
-                if (daysSinceFailure === 7 || daysSinceFailure === 14 || daysSinceFailure === 20) {
+                const daysSinceFailure = Math.floor((now.getTime() - client.lastPaymentFailedAt.getTime()) /
+                    (1000 * 60 * 60 * 24));
+                if (daysSinceFailure === 7 ||
+                    daysSinceFailure === 14 ||
+                    daysSinceFailure === 20) {
                     await this.sendReminderEmail(client.id, daysSinceFailure, client.gracePeriodEndsAt);
                 }
             }
@@ -81,7 +84,8 @@ let BillingSchedulerService = BillingSchedulerService_1 = class BillingScheduler
         }
     }
     async sendReminderEmail(clientId, daysSinceFailure, gracePeriodEndsAt) {
-        const daysRemaining = Math.ceil((gracePeriodEndsAt.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.ceil((gracePeriodEndsAt.getTime() - new Date().getTime()) /
+            (1000 * 60 * 60 * 24));
         this.logger.log(`Would send day ${daysSinceFailure} reminder email to client ${clientId}. ` +
             `${daysRemaining} days remaining in grace period.`);
     }

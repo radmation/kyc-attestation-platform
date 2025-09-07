@@ -41,6 +41,6 @@
   - [ ] A client can manage their subscription via the Stripe Customer Portal.
 - **Success Metrics**:
   - The entire client onboarding and payment flow is 100% self-service, requiring no manual intervention. - **Started**: Sun Sep  7 12:04:37 PDT 2025
-- **Last Update**: Sun Sep  7 13:00:07 PDT 2025 - Completed and moved to review
-- **Completed**: Sun Sep  7 13:00:07 PDT 2025
-- [Date] - Moved to review/
+- **Last Update**: Sun Sep  7 13:14:43 PDT 2025 - PR merged and moved to done
+- **Completed**: Sun Sep  7 13:14:43 PDT 2025
+- **Status**: ✅ DONE - PR merged into develop branch
