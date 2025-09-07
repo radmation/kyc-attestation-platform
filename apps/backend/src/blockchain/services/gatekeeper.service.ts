@@ -21,9 +21,7 @@ export class GatekeeperService {
   private readonly chaincodeName = 'gatekeeper';
   private readonly channelName = 'kycchannel';
 
-  constructor(
-    private readonly fabricProvider: FabricBlockchainProvider,
-  ) {}
+  constructor(private readonly fabricProvider: FabricBlockchainProvider) {}
 
   /**
    * Check compliance for sender and receiver addresses
@@ -44,7 +42,8 @@ export class GatekeeperService {
         sender: senderAddress,
         receiver: receiverAddress,
         isCompliant: false,
-        reason: 'Mock implementation - would check KYC attestations on blockchain',
+        reason:
+          'Mock implementation - would check KYC attestations on blockchain',
         checkedAt: new Date().toISOString(),
         senderValid: false,
         receiverValid: false,
@@ -55,7 +54,7 @@ export class GatekeeperService {
       );
 
       return mockResult;
-      
+
       // Real implementation would look like this:
       /*
       const result = await this.fabricProvider.invokeChaincode(
@@ -68,7 +67,8 @@ export class GatekeeperService {
       return JSON.parse(result.toString()) as ComplianceCheckResult;
       */
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Failed to check compliance:', errorMessage);
       throw new Error(`Compliance check failed: ${errorMessage}`);
     }
@@ -101,7 +101,8 @@ export class GatekeeperService {
       return JSON.parse(result.toString()) as PauseStateResult;
       */
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Failed to get pause state:', errorMessage);
       throw new Error(`Failed to get pause state: ${errorMessage}`);
     }
@@ -116,7 +117,7 @@ export class GatekeeperService {
     try {
       // Mock implementation
       this.logger.warn('Mock implementation - would pause gatekeeper contract');
-      
+
       // Real implementation would look like this:
       /*
       await this.fabricProvider.invokeChaincode(
@@ -126,10 +127,11 @@ export class GatekeeperService {
         []
       );
       */
-      
+
       this.logger.log('Gatekeeper contract paused successfully');
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Failed to pause contract:', errorMessage);
       throw new Error(`Failed to pause contract: ${errorMessage}`);
     }
@@ -143,8 +145,10 @@ export class GatekeeperService {
 
     try {
       // Mock implementation
-      this.logger.warn('Mock implementation - would unpause gatekeeper contract');
-      
+      this.logger.warn(
+        'Mock implementation - would unpause gatekeeper contract',
+      );
+
       // Real implementation would look like this:
       /*
       await this.fabricProvider.invokeChaincode(
@@ -154,10 +158,11 @@ export class GatekeeperService {
         []
       );
       */
-      
+
       this.logger.log('Gatekeeper contract unpaused successfully');
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Failed to unpause contract:', errorMessage);
       throw new Error(`Failed to unpause contract: ${errorMessage}`);
     }
@@ -172,11 +177,11 @@ export class GatekeeperService {
     receiverAddress: string,
   ): Promise<boolean> {
     const result = await this.checkCompliance(senderAddress, receiverAddress);
-    
+
     this.logger.debug(
       `Transaction compliance result: ${result.isCompliant}. Reason: ${result.reason}`,
     );
-    
+
     return result.isCompliant;
   }
 
@@ -192,15 +197,15 @@ export class GatekeeperService {
     recommendation: string;
   }> {
     const details = await this.checkCompliance(senderAddress, receiverAddress);
-    
+
     const recommendation = details.isCompliant
       ? 'Transaction can proceed - both parties have valid KYC attestations'
       : 'Transaction should be blocked - ' + details.reason;
-    
+
     return {
       isCompliant: details.isCompliant,
       details,
       recommendation,
     };
   }
-} 
+}

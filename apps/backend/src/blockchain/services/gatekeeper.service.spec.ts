@@ -38,7 +38,10 @@ describe('GatekeeperService', () => {
       const senderAddress = '0x123456789';
       const receiverAddress = '0x987654321';
 
-      const result = await service.checkCompliance(senderAddress, receiverAddress);
+      const result = await service.checkCompliance(
+        senderAddress,
+        receiverAddress,
+      );
 
       expect(result).toBeDefined();
       expect(result.sender).toBe(senderAddress);
@@ -171,4 +174,4 @@ describe('GatekeeperService', () => {
       expect(result.receiver).toBe('');
     });
   });
-}); 
+});
