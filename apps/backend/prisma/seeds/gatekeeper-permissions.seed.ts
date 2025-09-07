@@ -64,24 +64,44 @@ export async function seedGatekeeperPermissions() {
       resource: 'gatekeeper.wallet.scoped',
     },
 
-    // Blacklisting permissions (high-level administrative)
+    // Blacklisting permissions - Global level (Platform/Regulatory admins only)
     {
-      name: 'gatekeeper:add_to_blacklist',
-      description: 'Add addresses to the compliance blacklist (sanctions/regulatory)',
+      name: 'gatekeeper:add_to_blacklist_global',
+      description: 'Add addresses to the global compliance blacklist (sanctions/regulatory)',
       action: 'create',
-      resource: 'gatekeeper.blacklist',
+      resource: 'gatekeeper.blacklist.global',
     },
     {
-      name: 'gatekeeper:remove_from_blacklist',
-      description: 'Remove addresses from the compliance blacklist',
+      name: 'gatekeeper:remove_from_blacklist_global',
+      description: 'Remove addresses from the global compliance blacklist',
       action: 'delete',
-      resource: 'gatekeeper.blacklist',
+      resource: 'gatekeeper.blacklist.global',
     },
     {
-      name: 'gatekeeper:view_blacklist',
-      description: 'View blacklisted addresses and blacklist status',
+      name: 'gatekeeper:view_blacklist_global',
+      description: 'View globally blacklisted addresses and blacklist status',
       action: 'read',
-      resource: 'gatekeeper.blacklist',
+      resource: 'gatekeeper.blacklist.global',
+    },
+
+    // Blacklisting permissions - Client-scoped level (Client admins for their company only)
+    {
+      name: 'gatekeeper:add_to_blacklist_scoped',
+      description: 'Add addresses to client-scoped blacklist (company internal)',
+      action: 'create',
+      resource: 'gatekeeper.blacklist.scoped',
+    },
+    {
+      name: 'gatekeeper:remove_from_blacklist_scoped',
+      description: 'Remove addresses from client-scoped blacklist',
+      action: 'delete',
+      resource: 'gatekeeper.blacklist.scoped',
+    },
+    {
+      name: 'gatekeeper:view_blacklist_scoped',
+      description: 'View client-scoped blacklisted addresses',
+      action: 'read',
+      resource: 'gatekeeper.blacklist.scoped',
     },
     
     // Read permissions
@@ -144,9 +164,12 @@ export async function seedGatekeeperPermissions() {
         'gatekeeper:unpause_wallet_direct',
         'gatekeeper:pause_wallet_scoped',
         'gatekeeper:unpause_wallet_scoped',
-        'gatekeeper:add_to_blacklist',
-        'gatekeeper:remove_from_blacklist',
-        'gatekeeper:view_blacklist',
+        'gatekeeper:add_to_blacklist_global',
+        'gatekeeper:remove_from_blacklist_global',
+        'gatekeeper:view_blacklist_global',
+        'gatekeeper:add_to_blacklist_scoped',
+        'gatekeeper:remove_from_blacklist_scoped',
+        'gatekeeper:view_blacklist_scoped',
         'gatekeeper:view_pause_state',
         'gatekeeper:view_compliance_global',
         'gatekeeper:view_compliance_client',
@@ -254,6 +277,9 @@ export async function seedGatekeeperPermissions() {
         // Client business operations
         'gatekeeper:pause_wallet_scoped',
         'gatekeeper:unpause_wallet_scoped',
+        'gatekeeper:add_to_blacklist_scoped',
+        'gatekeeper:remove_from_blacklist_scoped',
+        'gatekeeper:view_blacklist_scoped',
         'gatekeeper:view_pause_state',
         'gatekeeper:view_compliance_client',
       ],
@@ -276,6 +302,9 @@ export async function seedGatekeeperPermissions() {
         // Security operations
         'gatekeeper:pause_wallet_scoped',
         'gatekeeper:unpause_wallet_scoped',
+        'gatekeeper:add_to_blacklist_scoped',
+        'gatekeeper:remove_from_blacklist_scoped',
+        'gatekeeper:view_blacklist_scoped',
         'gatekeeper:view_pause_state',
         'gatekeeper:view_compliance_client',
       ],
