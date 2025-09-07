@@ -32,6 +32,18 @@ const (
     PermissionPauseWalletDirect   GatekeeperPermission = "gatekeeper:pause_wallet_direct"
     PermissionUnpauseWalletDirect GatekeeperPermission = "gatekeeper:unpause_wallet_direct"
 
+    // Emergency freeze permissions (GENIUS Act compliance)
+    // Direct freeze (Regulatory/Platform admins - can freeze any address)
+    PermissionFreezeAddressDirect   GatekeeperPermission = "gatekeeper:freeze_address_direct"
+    PermissionUnfreezeAddressDirect GatekeeperPermission = "gatekeeper:unfreeze_address_direct"
+    
+    // Scoped freeze (Client admins - can only freeze addresses in their organization)
+    PermissionFreezeAddressScoped   GatekeeperPermission = "gatekeeper:freeze_address_scoped"
+    PermissionUnfreezeAddressScoped GatekeeperPermission = "gatekeeper:unfreeze_address_scoped"
+    
+    // View permissions
+    PermissionViewFrozenState GatekeeperPermission = "gatekeeper:view_frozen_state"
+
     // Client-scoped permissions
     PermissionPauseWalletScoped   GatekeeperPermission = "gatekeeper:pause_wallet_scoped"
     PermissionUnpauseWalletScoped GatekeeperPermission = "gatekeeper:unpause_wallet_scoped"

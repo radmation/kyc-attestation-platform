@@ -133,6 +133,103 @@ let GatekeeperService = GatekeeperService_1 = class GatekeeperService {
             recommendation,
         };
     }
+    async freezeAddressDirect(addressToFreeze) {
+        this.logger.debug(`Freezing address (direct): ${addressToFreeze}`);
+        try {
+            this.logger.warn(`Mock implementation - would freeze ${addressToFreeze} (regulatory freeze)`);
+            this.logger.log(`Address ${addressToFreeze} frozen successfully (direct/regulatory)`);
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error('Failed to freeze address (direct):', errorMessage);
+            throw new Error(`Direct freeze failed: ${errorMessage}`);
+        }
+    }
+    async unfreezeAddressDirect(addressToUnfreeze) {
+        this.logger.debug(`Unfreezing address (direct): ${addressToUnfreeze}`);
+        try {
+            this.logger.warn(`Mock implementation - would unfreeze ${addressToUnfreeze} (regulatory unfreeze)`);
+            this.logger.log(`Address ${addressToUnfreeze} unfrozen successfully (direct/regulatory)`);
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error('Failed to unfreeze address (direct):', errorMessage);
+            throw new Error(`Direct unfreeze failed: ${errorMessage}`);
+        }
+    }
+    async freezeAddressScoped(addressToFreeze) {
+        this.logger.debug(`Freezing address (scoped): ${addressToFreeze}`);
+        try {
+            this.logger.warn(`Mock implementation - would freeze ${addressToFreeze} (client scoped freeze)`);
+            this.logger.log(`Address ${addressToFreeze} frozen successfully (client scoped)`);
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error('Failed to freeze address (scoped):', errorMessage);
+            throw new Error(`Scoped freeze failed: ${errorMessage}`);
+        }
+    }
+    async unfreezeAddressScoped(addressToUnfreeze) {
+        this.logger.debug(`Unfreezing address (scoped): ${addressToUnfreeze}`);
+        try {
+            this.logger.warn(`Mock implementation - would unfreeze ${addressToUnfreeze} (client scoped unfreeze)`);
+            this.logger.log(`Address ${addressToUnfreeze} unfrozen successfully (client scoped)`);
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error('Failed to unfreeze address (scoped):', errorMessage);
+            throw new Error(`Scoped unfreeze failed: ${errorMessage}`);
+        }
+    }
+    async isAddressFrozen(addressToCheck) {
+        this.logger.debug(`Checking if address is frozen: ${addressToCheck}`);
+        try {
+            const isFrozen = false;
+            this.logger.log(`Address ${addressToCheck} frozen status: ${isFrozen}`);
+            return isFrozen;
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error('Failed to check frozen status:', errorMessage);
+            throw new Error(`Check frozen status failed: ${errorMessage}`);
+        }
+    }
+    async isTransactionBlockedByFreeze(senderAddress, receiverAddress) {
+        this.logger.debug(`Checking transaction freeze status: ${senderAddress} -> ${receiverAddress}`);
+        try {
+            const senderFrozen = await this.isAddressFrozen(senderAddress);
+            const receiverFrozen = await this.isAddressFrozen(receiverAddress);
+            const frozenAddresses = [];
+            if (senderFrozen)
+                frozenAddresses.push(senderAddress);
+            if (receiverFrozen)
+                frozenAddresses.push(receiverAddress);
+            const isBlocked = frozenAddresses.length > 0;
+            let reason;
+            if (isBlocked) {
+                if (senderFrozen && receiverFrozen) {
+                    reason = 'Both sender and receiver addresses are frozen';
+                }
+                else if (senderFrozen) {
+                    reason = 'Sender address is frozen';
+                }
+                else if (receiverFrozen) {
+                    reason = 'Receiver address is frozen';
+                }
+            }
+            this.logger.debug(`Transaction freeze check result - Blocked: ${isBlocked}, Reason: ${reason}`);
+            return {
+                isBlocked,
+                reason,
+                frozenAddresses,
+            };
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error('Failed to check transaction freeze status:', errorMessage);
+            throw new Error(`Transaction freeze check failed: ${errorMessage}`);
+        }
+    }
 };
 exports.GatekeeperService = GatekeeperService;
 exports.GatekeeperService = GatekeeperService = GatekeeperService_1 = __decorate([

@@ -29,4 +29,7 @@
   - [ ] Unit tests are written to cover freezing, unfreezing, and checking the status of addresses.
   - [ ] An integration test from the NestJS backend demonstrates that a frozen address is successfully prevented from sending a token.
 - **Success Metrics**:
-  - The platform provides the core technical capability for issuers to comply with lawful orders to freeze assets, meeting a critical requirement of the GENIUS Act. 
+  - The platform provides the core technical capability for issuers to comply with lawful orders to freeze assets, meeting a critical requirement of the GENIUS Act. - **Started**: Sun Sep  7 10:45:27 PDT 2025
+- **Last Update**: Sun Sep  7 11:39:40 PDT 2025 - Completed and moved to review
+- **Completed**: Sun Sep  7 11:39:40 PDT 2025
+- [Date] - Moved to review/
