@@ -8,43 +8,9 @@ import (
     "github.com/hyperledger/fabric-chaincode-go/shimtest"
 )
 
-// TestPauseUnpauseLogic tests the pause/unpause functionality which doesn't require chaincode invocation
-func TestPauseUnpauseLogic(t *testing.T) {
-    contract := &GatekeeperContract{paused: false}
-    
-    // Test paused state check in CheckCompliance
-    ctx := &contractapi.TransactionContext{}
-    ctx.SetStub(shimtest.NewMockStub("test", nil))
-    
-    // Set contract to paused
-    contract.paused = true
-    
-    result, err := contract.CheckCompliance(ctx, "0x123", "0x456")
-    if err != nil {
-        t.Fatalf("Expected no error, got: %v", err)
-    }
-    
-    if result.IsCompliant {
-        t.Error("Expected compliance to be false when contract is paused")
-    }
-    
-    if result.Reason != "Contract is currently paused" {
-        t.Errorf("Expected pause message, got: %s", result.Reason)
-    }
-    
-    // Verify basic structure
-    if result.Sender != "0x123" || result.Receiver != "0x456" {
-        t.Error("Expected correct sender/receiver addresses")
-    }
-    
-    if result.CheckedAt == "" {
-        t.Error("Expected timestamp to be set")
-    }
-}
-
 // TestComplianceResultStructure tests the basic result structure
 func TestComplianceResultStructure(t *testing.T) {
-    contract := &GatekeeperContract{paused: false}
+    contract := &GatekeeperContract{}
     ctx := &contractapi.TransactionContext{}
     ctx.SetStub(shimtest.NewMockStub("test", nil))
     
@@ -78,10 +44,13 @@ func TestComplianceResultStructure(t *testing.T) {
 // TestContractInitialization tests the basic contract setup
 func TestContractInitialization(t *testing.T) {
     contract := &GatekeeperContract{}
+    ctx := &contractapi.TransactionContext{}
+    ctx.SetStub(shimtest.NewMockStub("test", nil))
     
-    // Test default state
-    if contract.paused {
-        t.Error("Expected contract to be unpaused by default")
+    // Test initialization
+    err := contract.InitLedger(ctx)
+    if err != nil {
+        t.Fatalf("Expected no error during initialization, got: %v", err)
     }
 }
 
@@ -104,9 +73,21 @@ func TestAttestationStatusConstants(t *testing.T) {
     }
 }
 
-// TestAdminRole tests the admin role constant
-func TestAdminRole(t *testing.T) {
-    if AdminRole != "admin" {
-        t.Errorf("Expected admin role to be 'admin', got: %s", AdminRole)
+// TestStateKeyConstants tests the state key constants
+func TestStateKeyConstants(t *testing.T) {
+    if GlobalPauseKey != "global_paused" {
+        t.Errorf("Expected global pause key to be 'global_paused', got: %s", GlobalPauseKey)
+    }
+    
+    if ClientPauseKey != "client_paused_" {
+        t.Errorf("Expected client pause key to be 'client_paused_', got: %s", ClientPauseKey)
+    }
+    
+    if WalletPauseKey != "wallet_paused_" {
+        t.Errorf("Expected wallet pause key to be 'wallet_paused_', got: %s", WalletPauseKey)
+    }
+    
+    if FrozenAddressKey != "frozen_address_" {
+        t.Errorf("Expected frozen address key to be 'frozen_address_', got: %s", FrozenAddressKey)
     }
 } 

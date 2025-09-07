@@ -57,6 +57,7 @@ const (
     WalletPauseKey       = "wallet_paused_"       // wallet_paused_<address>
     BlacklistGlobalKey   = "blacklist_global_"    // blacklist_global_<address>
     BlacklistClientKey   = "blacklist_client_"    // blacklist_client_<clientId>_<address>
+    FrozenAddressKey     = "frozen_address_"      // frozen_address_<address> (GENIUS Act emergency controls)
 )
 
 // CheckCompliance verifies that both sender and receiver have valid KYC attestations
@@ -85,6 +86,34 @@ func (s *GatekeeperContract) CheckCompliance(ctx contractapi.TransactionContextI
         }
         
         // Emit compliance check event for blacklisted addresses
+        s.emitComplianceCheckEvent(ctx, result)
+        return result, nil
+    }
+
+    // SECOND: Check if either address is frozen (GENIUS Act emergency controls)
+    senderFrozen, err := s.IsAddressFrozen(ctx, senderAddress)
+    if err != nil {
+        return nil, fmt.Errorf("failed to check sender frozen status: %v", err)
+    }
+    
+    receiverFrozen, err := s.IsAddressFrozen(ctx, receiverAddress)
+    if err != nil {
+        return nil, fmt.Errorf("failed to check receiver frozen status: %v", err)
+    }
+    
+    // If either address is frozen, immediately fail compliance
+    if senderFrozen || receiverFrozen {
+        result := &ComplianceResult{
+            Sender:        senderAddress,
+            Receiver:      receiverAddress,
+            IsCompliant:   false,
+            Reason:        s.buildFreezeReason(senderFrozen, receiverFrozen),
+            CheckedAt:     time.Now().Format(time.RFC3339),
+            SenderValid:   false,
+            ReceiverValid: false,
+        }
+        
+        // Emit compliance check event for frozen addresses
         s.emitComplianceCheckEvent(ctx, result)
         return result, nil
     }
@@ -674,6 +703,30 @@ func (s *GatekeeperContract) IsAddressBlacklisted(ctx contractapi.TransactionCon
     return globallyBlacklisted || clientBlacklisted, nil
 }
 
+// IsAddressFrozen checks if an address is frozen (GENIUS Act emergency controls)
+func (s *GatekeeperContract) IsAddressFrozen(ctx contractapi.TransactionContextInterface, addressToCheck string) (bool, error) {
+    if addressToCheck == "" {
+        return false, fmt.Errorf("address cannot be empty")
+    }
+
+    // Create the frozen address key for this address
+    frozenKey := FrozenAddressKey + addressToCheck
+
+    // Check if the address exists in the frozen address state
+    frozenBytes, err := ctx.GetStub().GetState(frozenKey)
+    if err != nil {
+        return false, fmt.Errorf("failed to check frozen address status for address %s: %v", addressToCheck, err)
+    }
+
+    // If no entry exists, the address is not frozen
+    if frozenBytes == nil {
+        return false, nil
+    }
+
+    // Return true if the address is frozen
+    return string(frozenBytes) == "true", nil
+}
+
 // isAddressGloballyBlacklisted checks if an address is in the global blacklist
 func (s *GatekeeperContract) isAddressGloballyBlacklisted(ctx contractapi.TransactionContextInterface, addressToCheck string) (bool, error) {
     if addressToCheck == "" {
@@ -738,6 +791,18 @@ func (s *GatekeeperContract) buildBlacklistReason(senderBlacklisted, receiverBla
     return "Address blacklisting check failed"
 }
 
+// buildFreezeReason creates a descriptive reason for frozen addresses
+func (s *GatekeeperContract) buildFreezeReason(senderFrozen, receiverFrozen bool) string {
+    if senderFrozen && receiverFrozen {
+        return "Both sender and receiver addresses are frozen"
+    } else if senderFrozen {
+        return "Sender address is frozen"
+    } else if receiverFrozen {
+        return "Receiver address is frozen"
+    }
+    return "Address freezing check failed"
+}
+
 // emitAddressBlacklistedEvent emits an event when an address is blacklisted
 func (s *GatekeeperContract) emitAddressBlacklistedEvent(ctx contractapi.TransactionContextInterface, address string, scope string, clientID string) error {
     eventData := map[string]interface{}{
@@ -776,6 +841,266 @@ func (s *GatekeeperContract) emitAddressRemovedFromBlacklistEvent(ctx contractap
     return ctx.GetStub().SetEvent("AddressRemovedFromBlacklist", eventPayload)
 }
 
+// ========================================
+// EMERGENCY FREEZE FUNCTIONS (GENIUS Act Compliance)
+// ========================================
+
+// FreezeAddressDirect freezes any address (Regulatory/Platform admins only)
+func (s *GatekeeperContract) FreezeAddressDirect(ctx contractapi.TransactionContextInterface, addressToFreeze string) error {
+    // Check permission - only regulatory/platform administrators can directly freeze any address
+    err := s.checkPermission(ctx, PermissionFreezeAddressDirect)
+    if err != nil {
+        s.logAuthorizationEvent(ctx, "FreezeAddressDirect", PermissionFreezeAddressDirect, false, err.Error())
+        return err
+    }
+    
+    if addressToFreeze == "" {
+        return fmt.Errorf("address cannot be empty")
+    }
+    
+    // Check if address is already frozen
+    isFrozen, err := s.IsAddressFrozen(ctx, addressToFreeze)
+    if err != nil {
+        return fmt.Errorf("failed to check current frozen status: %v", err)
+    }
+    if isFrozen {
+        return fmt.Errorf("address %s is already frozen", addressToFreeze)
+    }
+    
+    // Create the frozen address key for this address
+    frozenKey := FrozenAddressKey + addressToFreeze
+    
+    // Set the address as frozen in the world state
+    err = ctx.GetStub().PutState(frozenKey, []byte("true"))
+    if err != nil {
+        return fmt.Errorf("failed to freeze address %s: %v", addressToFreeze, err)
+    }
+    
+    // Log successful authorization
+    s.logAuthorizationEvent(ctx, "FreezeAddressDirect", PermissionFreezeAddressDirect, true, fmt.Sprintf("Address %s frozen by regulatory order", addressToFreeze))
+    
+    // Emit freeze event
+    err = s.emitAddressFrozenEvent(ctx, addressToFreeze, "direct", "", "Address frozen by regulatory authority")
+    if err != nil {
+        return fmt.Errorf("failed to emit freeze event: %v", err)
+    }
+    
+    return nil
+}
+
+// UnfreezeAddressDirect unfreezes any address (Regulatory/Platform admins only)
+func (s *GatekeeperContract) UnfreezeAddressDirect(ctx contractapi.TransactionContextInterface, addressToUnfreeze string) error {
+    // Check permission - only regulatory/platform administrators can directly unfreeze any address
+    err := s.checkPermission(ctx, PermissionUnfreezeAddressDirect)
+    if err != nil {
+        s.logAuthorizationEvent(ctx, "UnfreezeAddressDirect", PermissionUnfreezeAddressDirect, false, err.Error())
+        return err
+    }
+    
+    if addressToUnfreeze == "" {
+        return fmt.Errorf("address cannot be empty")
+    }
+    
+    // Check if address is currently frozen
+    isFrozen, err := s.IsAddressFrozen(ctx, addressToUnfreeze)
+    if err != nil {
+        return fmt.Errorf("failed to check current frozen status: %v", err)
+    }
+    if !isFrozen {
+        return fmt.Errorf("address %s is not currently frozen", addressToUnfreeze)
+    }
+    
+    // Create the frozen address key for this address
+    frozenKey := FrozenAddressKey + addressToUnfreeze
+    
+    // Remove the address from the frozen state by deleting the state
+    err = ctx.GetStub().DelState(frozenKey)
+    if err != nil {
+        return fmt.Errorf("failed to unfreeze address %s: %v", addressToUnfreeze, err)
+    }
+    
+    // Log successful authorization
+    s.logAuthorizationEvent(ctx, "UnfreezeAddressDirect", PermissionUnfreezeAddressDirect, true, fmt.Sprintf("Address %s unfrozen by regulatory order", addressToUnfreeze))
+    
+    // Emit unfreeze event
+    err = s.emitAddressUnfrozenEvent(ctx, addressToUnfreeze, "direct", "", "Address unfrozen by regulatory authority")
+    if err != nil {
+        return fmt.Errorf("failed to emit unfreeze event: %v", err)
+    }
+    
+    return nil
+}
+
+// FreezeAddressScoped freezes an address within client's organization (Client admins only)
+func (s *GatekeeperContract) FreezeAddressScoped(ctx contractapi.TransactionContextInterface, addressToFreeze string) error {
+    // Check permission - only client administrators can freeze addresses within their scope
+    err := s.checkPermission(ctx, PermissionFreezeAddressScoped)
+    if err != nil {
+        s.logAuthorizationEvent(ctx, "FreezeAddressScoped", PermissionFreezeAddressScoped, false, err.Error())
+        return err
+    }
+    
+    if addressToFreeze == "" {
+        return fmt.Errorf("address cannot be empty")
+    }
+    
+    // Get client ID from authorization context
+    authCtx, err := getAuthorizationContext(ctx)
+    if err != nil {
+        return fmt.Errorf("failed to get authorization context: %v", err)
+    }
+    
+    if authCtx.ClientID == "" {
+        return fmt.Errorf("client ID is required for scoped freeze operations")
+    }
+    
+    // Validate wallet ownership - ensure the address belongs to this client's organization
+    err = s.validateWalletOwnership(ctx, addressToFreeze, authCtx)
+    if err != nil {
+        s.logAuthorizationEvent(ctx, "FreezeAddressScoped", PermissionFreezeAddressScoped, false, 
+            fmt.Sprintf("Wallet ownership validation failed: %s", err.Error()))
+        return fmt.Errorf("access denied: %v", err)
+    }
+    
+    // Check if address is already frozen
+    isFrozen, err := s.IsAddressFrozen(ctx, addressToFreeze)
+    if err != nil {
+        return fmt.Errorf("failed to check current frozen status: %v", err)
+    }
+    if isFrozen {
+        return fmt.Errorf("address %s is already frozen", addressToFreeze)
+    }
+    
+    // Create the frozen address key for this address
+    frozenKey := FrozenAddressKey + addressToFreeze
+    
+    // Set the address as frozen in the world state
+    err = ctx.GetStub().PutState(frozenKey, []byte("true"))
+    if err != nil {
+        return fmt.Errorf("failed to freeze address %s: %v", addressToFreeze, err)
+    }
+    
+    // Log successful authorization
+    s.logAuthorizationEvent(ctx, "FreezeAddressScoped", PermissionFreezeAddressScoped, true, 
+        fmt.Sprintf("Address %s frozen by client %s for organizational compliance", addressToFreeze, authCtx.ClientID))
+    
+    // Emit freeze event
+    err = s.emitAddressFrozenEvent(ctx, addressToFreeze, "client-scoped", authCtx.ClientID, "Address frozen by organization for compliance")
+    if err != nil {
+        return fmt.Errorf("failed to emit freeze event: %v", err)
+    }
+    
+    return nil
+}
+
+// UnfreezeAddressScoped unfreezes an address within client's organization (Client admins only)
+func (s *GatekeeperContract) UnfreezeAddressScoped(ctx contractapi.TransactionContextInterface, addressToUnfreeze string) error {
+    // Check permission - only client administrators can unfreeze addresses within their scope
+    err := s.checkPermission(ctx, PermissionUnfreezeAddressScoped)
+    if err != nil {
+        s.logAuthorizationEvent(ctx, "UnfreezeAddressScoped", PermissionUnfreezeAddressScoped, false, err.Error())
+        return err
+    }
+    
+    if addressToUnfreeze == "" {
+        return fmt.Errorf("address cannot be empty")
+    }
+    
+    // Get client ID from authorization context
+    authCtx, err := getAuthorizationContext(ctx)
+    if err != nil {
+        return fmt.Errorf("failed to get authorization context: %v", err)
+    }
+    
+    if authCtx.ClientID == "" {
+        return fmt.Errorf("client ID is required for scoped unfreeze operations")
+    }
+    
+    // Validate wallet ownership - ensure the address belongs to this client's organization
+    err = s.validateWalletOwnership(ctx, addressToUnfreeze, authCtx)
+    if err != nil {
+        s.logAuthorizationEvent(ctx, "UnfreezeAddressScoped", PermissionUnfreezeAddressScoped, false, 
+            fmt.Sprintf("Wallet ownership validation failed: %s", err.Error()))
+        return fmt.Errorf("access denied: %v", err)
+    }
+    
+    // Check if address is currently frozen
+    isFrozen, err := s.IsAddressFrozen(ctx, addressToUnfreeze)
+    if err != nil {
+        return fmt.Errorf("failed to check current frozen status: %v", err)
+    }
+    if !isFrozen {
+        return fmt.Errorf("address %s is not currently frozen", addressToUnfreeze)
+    }
+    
+    // Create the frozen address key for this address
+    frozenKey := FrozenAddressKey + addressToUnfreeze
+    
+    // Remove the address from the frozen state by deleting the state
+    err = ctx.GetStub().DelState(frozenKey)
+    if err != nil {
+        return fmt.Errorf("failed to unfreeze address %s: %v", addressToUnfreeze, err)
+    }
+    
+    // Log successful authorization
+    s.logAuthorizationEvent(ctx, "UnfreezeAddressScoped", PermissionUnfreezeAddressScoped, true, 
+        fmt.Sprintf("Address %s unfrozen by client %s", addressToUnfreeze, authCtx.ClientID))
+    
+    // Emit unfreeze event
+    err = s.emitAddressUnfrozenEvent(ctx, addressToUnfreeze, "client-scoped", authCtx.ClientID, "Address unfrozen by organization")
+    if err != nil {
+        return fmt.Errorf("failed to emit unfreeze event: %v", err)
+    }
+    
+    return nil
+}
+
+// emitAddressFrozenEvent emits an event when an address is frozen
+func (s *GatekeeperContract) emitAddressFrozenEvent(ctx contractapi.TransactionContextInterface, address string, scope string, clientID string, reason string) error {
+    authCtx, _ := getAuthorizationContext(ctx)
+    
+    eventData := map[string]interface{}{
+        "action":    "address_frozen",
+        "address":   address,
+        "scope":     scope,
+        "clientId":  clientID,
+        "reason":    reason,
+        "timestamp": time.Now().Format(time.RFC3339),
+        "adminId":   authCtx.UserID,
+        "adminClientId": authCtx.ClientID,
+    }
+    
+    eventPayload, err := json.Marshal(eventData)
+    if err != nil {
+        return fmt.Errorf("failed to marshal freeze event: %v", err)
+    }
+    
+    return ctx.GetStub().SetEvent("AddressFrozen", eventPayload)
+}
+
+// emitAddressUnfrozenEvent emits an event when an address is unfrozen
+func (s *GatekeeperContract) emitAddressUnfrozenEvent(ctx contractapi.TransactionContextInterface, address string, scope string, clientID string, reason string) error {
+    authCtx, _ := getAuthorizationContext(ctx)
+    
+    eventData := map[string]interface{}{
+        "action":    "address_unfrozen",
+        "address":   address,
+        "scope":     scope,
+        "clientId":  clientID,
+        "reason":    reason,
+        "timestamp": time.Now().Format(time.RFC3339),
+        "adminId":   authCtx.UserID,
+        "adminClientId": authCtx.ClientID,
+    }
+    
+    eventPayload, err := json.Marshal(eventData)
+    if err != nil {
+        return fmt.Errorf("failed to marshal unfreeze event: %v", err)
+    }
+    
+    return ctx.GetStub().SetEvent("AddressUnfrozen", eventPayload)
+}
+
 // InitLedger initializes the chaincode with permission-based authorization
 func (s *GatekeeperContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
     // Note: All pause states are now managed in world state
@@ -796,6 +1121,9 @@ func (s *GatekeeperContract) InitLedger(ctx contractapi.TransactionContextInterf
             "hierarchical-authorization",
             "audit-trail",
             "address-blacklisting",
+            "address-freezing-direct",
+            "address-freezing-scoped",
+            "genius-act-compliance",
         },
     }
     
