@@ -30,4 +30,7 @@
   - [ ] An admin can manage their billing subscription via the Stripe Customer Portal.
   - [ ] An admin can update their company's branding via the settings page.
 - **Success Metrics**:
-  - The client portal provides all the necessary tools for an issuer to manage their account without needing to contact support. 
+  - The client portal provides all the necessary tools for an issuer to manage their account without needing to contact support. - **Started**: Tue Sep  9 18:42:45 PDT 2025
+- **Last Update**: Tue Sep  9 18:56:57 PDT 2025 - Completed and moved to review
+- **Completed**: Tue Sep  9 18:56:57 PDT 2025
+- [Date] - Moved to review/
