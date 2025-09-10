@@ -17,6 +17,11 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const invitation_service_1 = require("../application/services/invitation.service");
 const dto_1 = require("../dto");
+const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
+const roles_guard_1 = require("../../../shared/guards/roles.guard");
+const roles_decorator_1 = require("../../../shared/decorators/roles.decorator");
+const public_decorator_1 = require("../../../shared/decorators/public.decorator");
+const client_1 = require("@prisma/client");
 let InvitationController = class InvitationController {
     constructor(invitationService) {
         this.invitationService = invitationService;
@@ -102,6 +107,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Invitation created successfully' }),
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid invitation data' }),
     (0, swagger_1.ApiResponse)({ status: 403, description: 'Insufficient permissions' }),
+    (0, roles_decorator_1.Roles)(client_1.UserRole.CLIENT_ADMIN, client_1.UserRole.SUPER_ADMIN),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -114,6 +120,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Bulk invitations processed' }),
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid bulk invitation data' }),
     (0, swagger_1.ApiResponse)({ status: 403, description: 'Insufficient permissions' }),
+    (0, roles_decorator_1.Roles)(client_1.UserRole.CLIENT_ADMIN, client_1.UserRole.SUPER_ADMIN),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -122,6 +129,7 @@ __decorate([
 ], InvitationController.prototype, "createBulkInvitations", null);
 __decorate([
     (0, common_1.Post)(':token/accept'),
+    (0, public_decorator_1.Public)(),
     (0, swagger_1.ApiOperation)({ summary: 'Accept an invitation using token' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Invitation accepted successfully' }),
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid token or invitation data' }),
@@ -140,6 +148,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Cannot resend invitation' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Invitation not found' }),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, roles_decorator_1.Roles)(client_1.UserRole.CLIENT_ADMIN, client_1.UserRole.SUPER_ADMIN),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -153,6 +162,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Cannot revoke invitation' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Invitation not found' }),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, roles_decorator_1.Roles)(client_1.UserRole.CLIENT_ADMIN, client_1.UserRole.SUPER_ADMIN),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -167,6 +177,7 @@ __decorate([
         description: 'Invitations retrieved successfully',
     }),
     (0, swagger_1.ApiResponse)({ status: 403, description: 'Insufficient permissions' }),
+    (0, roles_decorator_1.Roles)(client_1.UserRole.CLIENT_ADMIN, client_1.UserRole.SUPER_ADMIN, client_1.UserRole.CLIENT_USER),
     __param(0, (0, common_1.Query)()),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -182,6 +193,7 @@ __decorate([
     }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Invitation not found' }),
     (0, swagger_1.ApiResponse)({ status: 403, description: 'Insufficient permissions' }),
+    (0, roles_decorator_1.Roles)(client_1.UserRole.CLIENT_ADMIN, client_1.UserRole.SUPER_ADMIN, client_1.UserRole.CLIENT_USER),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -189,6 +201,7 @@ __decorate([
 ], InvitationController.prototype, "getInvitation", null);
 __decorate([
     (0, common_1.Get)('token/:token/validate'),
+    (0, public_decorator_1.Public)(),
     (0, swagger_1.ApiOperation)({ summary: 'Validate invitation token' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Token is valid' }),
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Token is invalid or expired' }),
@@ -202,6 +215,7 @@ exports.InvitationController = InvitationController = __decorate([
     (0, swagger_1.ApiTags)('invitations'),
     (0, common_1.Controller)('api/v1/invitations'),
     (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     __metadata("design:paramtypes", [invitation_service_1.InvitationService])
 ], InvitationController);
 //# sourceMappingURL=invitation.controller.js.map

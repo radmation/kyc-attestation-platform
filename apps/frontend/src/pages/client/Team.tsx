@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Plus, 
@@ -8,85 +8,70 @@ import {
   UserX,
   Crown,
   User,
-  Shield,
   Trash2,
-  Send
+  Send,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
+import apiClient, { type InvitationResponse, type User as ApiUser } from '../../lib/api';
 
-interface TeamMember {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'member' | 'viewer';
-  status: 'active' | 'pending' | 'suspended';
-  joinedAt: string;
-  lastActive: string;
-}
-
-interface PendingInvitation {
-  id: string;
-  email: string;
-  role: 'admin' | 'member' | 'viewer';
-  invitedAt: string;
-  invitedBy: string;
-}
+// Removed unused interfaces - using API types directly
 
 const ClientTeam: React.FC = () => {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteForm, setInviteForm] = useState({
     email: '',
-    role: 'member' as 'admin' | 'member' | 'viewer'
+    role: 'CLIENT_USER' as 'CLIENT_ADMIN' | 'CLIENT_USER'
   });
+  
+  // State for API data
+  const [teamMembers, setTeamMembers] = useState<ApiUser[]>([]);
+  const [pendingInvitations, setPendingInvitations] = useState<InvitationResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data for team members
-  const teamMembers: TeamMember[] = [
-    {
-      id: '1',
-      name: 'John Smith',
-      email: 'john@acmecorp.com',
-      role: 'admin',
-      status: 'active',
-      joinedAt: '2024-01-15',
-      lastActive: '2 hours ago'
-    },
-    {
-      id: '2',
-      name: 'Sarah Johnson',
-      email: 'sarah@acmecorp.com',
-      role: 'member',
-      status: 'active',
-      joinedAt: '2024-02-01',
-      lastActive: '1 day ago'
-    },
-    {
-      id: '3',
-      name: 'Mike Chen',
-      email: 'mike@acmecorp.com',
-      role: 'viewer',
-      status: 'active',
-      joinedAt: '2024-02-15',
-      lastActive: '3 days ago'
-    }
-  ];
+  // Load data on component mount
+  useEffect(() => {
+    loadTeamData();
+  }, []);
 
-  const pendingInvitations: PendingInvitation[] = [
-    {
-      id: '4',
-      email: 'alex@acmecorp.com',
-      role: 'member',
-      invitedAt: '2024-03-01',
-      invitedBy: 'john@acmecorp.com'
+  const loadTeamData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const [usersResponse, invitationsResponse] = await Promise.all([
+        apiClient.getUsers(),
+        apiClient.getInvitations({ status: 'PENDING' })
+      ]);
+
+      if (usersResponse.success) {
+        setTeamMembers(usersResponse.data || []);
+      } else {
+        console.error('Failed to load users:', usersResponse.error);
+      }
+
+      if (invitationsResponse.success) {
+        setPendingInvitations(invitationsResponse.data?.invitations || []);
+      } else {
+        console.error('Failed to load invitations:', invitationsResponse.error);
+      }
+    } catch (err) {
+      setError('Failed to load team data');
+      console.error('Error loading team data:', err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case 'admin':
+      case 'CLIENT_ADMIN':
+      case 'SUPER_ADMIN':
         return <Crown className="w-4 h-4 text-amber-500" />;
-      case 'member':
+      case 'CLIENT_USER':
         return <User className="w-4 h-4 text-blue-500" />;
-      case 'viewer':
-        return <Shield className="w-4 h-4 text-gray-500" />;
       default:
         return <User className="w-4 h-4" />;
     }
@@ -120,30 +105,103 @@ const ClientTeam: React.FC = () => {
     }
   };
 
-  const handleInviteSubmit = (e: React.FormEvent) => {
+  const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Call the POST /invitations endpoint
-    console.log('Inviting user:', inviteForm);
+    setSubmitting(true);
+    setError(null);
     
-    // Reset form and close modal
-    setInviteForm({ email: '', role: 'member' });
-    setShowInviteModal(false);
-    
-    // In real implementation, show success/error message
+    try {
+      const response = await apiClient.createInvitation({
+        email: inviteForm.email,
+        role: inviteForm.role,
+      });
+
+      if (response.success) {
+        // Reset form and close modal
+        setInviteForm({ email: '', role: 'CLIENT_USER' });
+        setShowInviteModal(false);
+        
+        // Reload data to show new invitation
+        await loadTeamData();
+      } else {
+        setError(response.error || 'Failed to send invitation');
+      }
+    } catch (err) {
+      setError('Failed to send invitation');
+      console.error('Error sending invitation:', err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleRevokePendingInvitation = (invitationId: string) => {
-    // TODO: Call API to revoke invitation
-    console.log('Revoking invitation:', invitationId);
+  const handleRevokePendingInvitation = async (invitationId: string) => {
+    try {
+      const response = await apiClient.revokeInvitation(invitationId);
+      if (response.success) {
+        await loadTeamData(); // Reload to update the list
+      } else {
+        setError(response.error || 'Failed to revoke invitation');
+      }
+    } catch (err) {
+      setError('Failed to revoke invitation');
+      console.error('Error revoking invitation:', err);
+    }
   };
 
-  const handleRemoveMember = (memberId: string) => {
-    // TODO: Call API to remove team member
-    console.log('Removing member:', memberId);
+  const handleResendInvitation = async (invitationId: string) => {
+    try {
+      const response = await apiClient.resendInvitation(invitationId);
+      if (response.success) {
+        // Show success message or update UI
+        console.log('Invitation resent successfully');
+      } else {
+        setError(response.error || 'Failed to resend invitation');
+      }
+    } catch (err) {
+      setError('Failed to resend invitation');
+      console.error('Error resending invitation:', err);
+    }
   };
+
+  const handleRemoveMember = async (memberId: string) => {
+    try {
+      const response = await apiClient.removeUser(memberId);
+      if (response.success) {
+        await loadTeamData(); // Reload to update the list
+      } else {
+        setError(response.error || 'Failed to remove team member');
+      }
+    } catch (err) {
+      setError('Failed to remove team member');
+      console.error('Error removing member:', err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span>Loading team data...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <div className="flex">
+            <AlertCircle className="w-5 h-5 text-red-400" />
+            <div className="ml-3">
+              <p className="text-sm text-red-800">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -181,7 +239,7 @@ const ClientTeam: React.FC = () => {
               <span className="text-sm font-medium text-muted-foreground">Admins</span>
             </div>
             <p className="text-2xl font-bold text-foreground mt-2">
-              {teamMembers.filter(m => m.role === 'admin').length}
+              {teamMembers.filter(m => m.role === 'CLIENT_ADMIN' || m.role === 'SUPER_ADMIN').length}
             </p>
           </div>
         </div>
@@ -203,7 +261,7 @@ const ClientTeam: React.FC = () => {
               <span className="text-sm font-medium text-muted-foreground">Active</span>
             </div>
             <p className="text-2xl font-bold text-foreground mt-2">
-              {teamMembers.filter(m => m.status === 'active').length}
+              {teamMembers.filter(m => m.isActive).length}
             </p>
           </div>
         </div>
@@ -232,21 +290,27 @@ const ClientTeam: React.FC = () => {
                   <tr key={member.id} className="border-b border-border hover:bg-accent/50">
                     <td className="p-4">
                       <div>
-                        <p className="font-medium text-foreground">{member.name}</p>
+                        <p className="font-medium text-foreground">
+                          {member.firstName && member.lastName 
+                            ? `${member.firstName} ${member.lastName}` 
+                            : member.email}
+                        </p>
                         <p className="text-sm text-muted-foreground">{member.email}</p>
                       </div>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center space-x-2">
                         {getRoleIcon(member.role)}
-                        <span className="capitalize text-sm">{member.role}</span>
+                        <span className="capitalize text-sm">{member.role.replace('CLIENT_', '').toLowerCase()}</span>
                       </div>
                     </td>
                     <td className="p-4">
-                      {getStatusBadge(member.status)}
+                      {getStatusBadge(member.isActive ? 'active' : 'suspended')}
                     </td>
                     <td className="p-4">
-                      <span className="text-sm text-muted-foreground">{member.lastActive}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(member.updatedAt).toLocaleDateString()}
+                      </span>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center space-x-2">
@@ -291,13 +355,16 @@ const ClientTeam: React.FC = () => {
                         <span className="text-sm text-muted-foreground capitalize">{invitation.role}</span>
                         <span className="text-sm text-muted-foreground">•</span>
                         <span className="text-sm text-muted-foreground">
-                          Invited {new Date(invitation.invitedAt).toLocaleDateString()}
+                          Invited {new Date(invitation.createdAt).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <button className="btn-outline btn-sm">
+                    <button 
+                      onClick={() => handleResendInvitation(invitation.id)}
+                      className="btn-outline btn-sm"
+                    >
                       <Send className="w-4 h-4 mr-2" />
                       Resend
                     </button>
@@ -341,12 +408,11 @@ const ClientTeam: React.FC = () => {
                 </label>
                 <select
                   value={inviteForm.role}
-                  onChange={(e) => setInviteForm({...inviteForm, role: e.target.value as any})}
+                  onChange={(e) => setInviteForm({...inviteForm, role: e.target.value as 'CLIENT_ADMIN' | 'CLIENT_USER'})}
                   className="input-field w-full"
                 >
-                  <option value="viewer">Viewer - Read-only access</option>
-                  <option value="member">Member - Standard access</option>
-                  <option value="admin">Admin - Full access</option>
+                  <option value="CLIENT_USER">User - Standard access</option>
+                  <option value="CLIENT_ADMIN">Admin - Full access</option>
                 </select>
               </div>
               <div className="flex justify-end space-x-3 pt-4">
@@ -357,8 +423,15 @@ const ClientTeam: React.FC = () => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary">
-                  Send Invitation
+                <button type="submit" className="btn-primary" disabled={submitting}>
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Invitation'
+                  )}
                 </button>
               </div>
             </form>
