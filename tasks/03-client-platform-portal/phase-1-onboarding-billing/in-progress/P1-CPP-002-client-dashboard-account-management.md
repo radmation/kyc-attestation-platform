@@ -31,4 +31,4 @@
   - [ ] An admin can update their company's branding via the settings page.
 - **Success Metrics**:
   - The client portal provides all the necessary tools for an issuer to manage their account without needing to contact support. - **Started**: Tue Sep  9 18:42:45 PDT 2025
-- **Last Update**: Tue Sep  9 18:42:45 PDT 2025 - Started implementation
+- **Last Update**: Tue Sep  9 18:51:28 PDT 2025 - Work in progress

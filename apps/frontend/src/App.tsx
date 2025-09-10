@@ -4,13 +4,20 @@ import { ThemeProvider } from './contexts/ThemeContext';
 
 // Components
 import Layout from './components/Layout';
+import ClientLayout from './components/ClientLayout';
 
-// Pages
+// Pages - End User Portal
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import KYC from './pages/KYC';
 import Pricing from './pages/Pricing';
 import Billing from './pages/Billing';
+
+// Pages - Client Portal
+import ClientDashboard from './pages/client/Dashboard';
+import ClientTeam from './pages/client/Team';
+import ClientSettings from './pages/client/Settings';
+import ClientCompliance from './pages/client/Compliance';
 
 // Simple placeholder pages
 const Profile: React.FC = () => (
@@ -69,7 +76,23 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/pricing" element={<Pricing />} />
           
-          {/* Protected Routes */}
+          {/* Client Portal Routes */}
+          <Route
+            path="/client/*"
+            element={
+              <ProtectedRoute>
+                <ClientLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="dashboard" element={<ClientDashboard />} />
+            <Route path="team" element={<ClientTeam />} />
+            <Route path="settings" element={<ClientSettings />} />
+            <Route path="compliance" element={<ClientCompliance />} />
+            <Route index element={<Navigate to="/client/dashboard" replace />} />
+          </Route>
+          
+          {/* End User Portal Routes */}
           <Route
             path="/"
             element={
