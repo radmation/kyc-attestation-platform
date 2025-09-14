@@ -22,7 +22,7 @@ const bcrypt_password_service_1 = require("./infrastructure/services/bcrypt-pass
 const jwt_service_1 = require("./infrastructure/services/jwt.service");
 const jwt_strategy_1 = require("./infrastructure/strategies/jwt.strategy");
 const email_verification_controller_1 = require("./presentation/controllers/email-verification.controller");
-const user_controller_1 = require("./presentation/controllers/user.controller");
+const auth_controller_1 = require("./presentation/controllers/auth.controller");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -46,7 +46,7 @@ exports.AuthModule = AuthModule = __decorate([
                 inject: [config_1.ConfigService],
             }),
         ],
-        controllers: [email_verification_controller_1.EmailVerificationController, user_controller_1.UserController],
+        controllers: [email_verification_controller_1.EmailVerificationController, auth_controller_1.AuthController],
         providers: [
             send_verification_email_use_case_1.SendVerificationEmailUseCase,
             verify_email_use_case_1.VerifyEmailUseCase,

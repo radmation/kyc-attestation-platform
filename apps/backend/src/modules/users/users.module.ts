@@ -5,12 +5,12 @@ import { PrismaModule } from '../../prisma/prisma.module';
 import { PrismaUserRepository } from '../auth/infrastructure/repositories/prisma-user.repository';
 
 // Presentation
-// TODO: Add controllers when they are created
+import { UsersController } from './presentation/controllers/users.controller';
 
 @Module({
   imports: [PrismaModule],
   controllers: [
-    // TODO: Add controllers when they are created
+    UsersController,
   ],
   providers: [
     // Repositories
