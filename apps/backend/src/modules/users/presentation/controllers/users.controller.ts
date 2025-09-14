@@ -1,5 +1,10 @@
 import { Controller, Get, UseGuards, Request, Logger } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../shared/guards/roles.guard';
 import { Roles } from '../../../../shared/decorators/roles.decorator';
@@ -63,9 +68,9 @@ export class UsersController {
 
     try {
       const users = await this.userRepository.findByClientId(clientId);
-      
+
       // Remove sensitive data from the response
-      const sanitizedUsers = users.map(user => ({
+      const sanitizedUsers = users.map((user) => ({
         id: user.id,
         email: user.email,
         firstName: user.firstName,
@@ -80,11 +85,13 @@ export class UsersController {
         updatedAt: user.updatedAt,
       }));
 
-      this.logger.log(`Found ${sanitizedUsers.length} users for client: ${clientId}`);
+      this.logger.log(
+        `Found ${sanitizedUsers.length} users for client: ${clientId}`,
+      );
       return sanitizedUsers;
     } catch (error) {
       this.logger.error(`Failed to list users for client ${clientId}:`, error);
       throw error;
     }
   }
-} 
+}

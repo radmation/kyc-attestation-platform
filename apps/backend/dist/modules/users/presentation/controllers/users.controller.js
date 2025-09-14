@@ -32,7 +32,7 @@ let UsersController = UsersController_1 = class UsersController {
         this.logger.log(`Listing users for client: ${clientId}`);
         try {
             const users = await this.userRepository.findByClientId(clientId);
-            const sanitizedUsers = users.map(user => ({
+            const sanitizedUsers = users.map((user) => ({
                 id: user.id,
                 email: user.email,
                 firstName: user.firstName,

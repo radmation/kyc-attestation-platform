@@ -9,9 +9,7 @@ import { UsersController } from './presentation/controllers/users.controller';
 
 @Module({
   imports: [PrismaModule],
-  controllers: [
-    UsersController,
-  ],
+  controllers: [UsersController],
   providers: [
     // Repositories
     PrismaUserRepository,

@@ -170,7 +170,9 @@ describe('UsersController', () => {
 
       await controller.listUsers(mockRequest);
 
-      expect(userRepository.findByClientId).toHaveBeenCalledWith('different-client-456');
+      expect(userRepository.findByClientId).toHaveBeenCalledWith(
+        'different-client-456',
+      );
     });
   });
-}); 
+});
