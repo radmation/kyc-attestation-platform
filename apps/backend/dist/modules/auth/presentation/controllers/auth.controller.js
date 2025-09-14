@@ -11,17 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var UserController_1;
+var AuthController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserController = void 0;
+exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const create_user_use_case_1 = require("../../application/use-cases/create-user.use-case");
 const create_user_dto_1 = require("../../application/dto/create-user.dto");
-let UserController = UserController_1 = class UserController {
+let AuthController = AuthController_1 = class AuthController {
     constructor(createUserUseCase) {
         this.createUserUseCase = createUserUseCase;
-        this.logger = new common_1.Logger(UserController_1.name);
+        this.logger = new common_1.Logger(AuthController_1.name);
     }
     async createUser(createUserDto) {
         this.logger.log(`Creating user with email: ${createUserDto.email}`);
@@ -45,7 +45,7 @@ let UserController = UserController_1 = class UserController {
         }
     }
 };
-exports.UserController = UserController;
+exports.AuthController = AuthController;
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Create a new user' }),
     (0, swagger_1.ApiBody)({ type: create_user_dto_1.CreateUserDto }),
@@ -98,10 +98,10 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "createUser", null);
-exports.UserController = UserController = UserController_1 = __decorate([
-    (0, swagger_1.ApiTags)('users'),
-    (0, common_1.Controller)('users'),
+], AuthController.prototype, "createUser", null);
+exports.AuthController = AuthController = AuthController_1 = __decorate([
+    (0, swagger_1.ApiTags)('auth'),
+    (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [create_user_use_case_1.CreateUserUseCase])
-], UserController);
-//# sourceMappingURL=user.controller.js.map
+], AuthController);
+//# sourceMappingURL=auth.controller.js.map

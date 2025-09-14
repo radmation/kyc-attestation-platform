@@ -3,10 +3,10 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { CreateUserUseCase } from '../../application/use-cases/create-user.use-case';
 import { CreateUserDto } from '../../application/dto/create-user.dto';
 
-@ApiTags('users')
-@Controller('users')
-export class UserController {
-  private readonly logger = new Logger(UserController.name);
+@ApiTags('auth')
+@Controller('auth')
+export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
 
   constructor(private readonly createUserUseCase: CreateUserUseCase) {}
 

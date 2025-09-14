@@ -23,7 +23,7 @@ import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 
 // Presentation
 import { EmailVerificationController } from './presentation/controllers/email-verification.controller';
-import { UserController } from './presentation/controllers/user.controller';
+import { AuthController } from './presentation/controllers/auth.controller';
 
 @Module({
   imports: [
@@ -44,7 +44,7 @@ import { UserController } from './presentation/controllers/user.controller';
       inject: [ConfigService],
     }),
   ],
-  controllers: [EmailVerificationController, UserController],
+  controllers: [EmailVerificationController, AuthController],
   providers: [
     // Use cases
     SendVerificationEmailUseCase,

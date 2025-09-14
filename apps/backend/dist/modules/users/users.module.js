@@ -10,13 +10,14 @@ exports.UsersModule = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const prisma_user_repository_1 = require("../auth/infrastructure/repositories/prisma-user.repository");
+const users_controller_1 = require("./presentation/controllers/users.controller");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
 exports.UsersModule = UsersModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
-        controllers: [],
+        controllers: [users_controller_1.UsersController],
         providers: [
             prisma_user_repository_1.PrismaUserRepository,
         ],
