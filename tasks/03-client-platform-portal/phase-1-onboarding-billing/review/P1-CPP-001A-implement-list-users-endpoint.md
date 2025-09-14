@@ -30,4 +30,6 @@
           - It returns a 403 Forbidden error for authenticated users who are not `CLIENT_ADMIN`.
           - It returns a 200 OK with the correct list of users for an authorized `CLIENT_ADMIN`.
           - The returned user objects do not contain the password hash. - **Started**: Sat Sep 13 17:15:34 PDT 2025
-- **Last Update**: Sat Sep 13 17:15:34 PDT 2025 - Started implementation
+- **Last Update**: Sat Sep 13 17:35:25 PDT 2025 - Completed and moved to review
+- **Completed**: Sat Sep 13 17:35:25 PDT 2025
+- [Date] - Moved to review/
