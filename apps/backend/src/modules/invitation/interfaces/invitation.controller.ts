@@ -30,20 +30,25 @@ import {
   PaginatedInvitationsResult,
 } from '../dto';
 import { UserInvitation } from '../domain/entities/user-invitation.entity';
+import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../shared/guards/roles.guard';
+import { Roles } from '../../../shared/decorators/roles.decorator';
+import { Public } from '../../../shared/decorators/public.decorator';
+import { UserRole } from '@prisma/client';
 
-// Import guards and decorators (these will be available from the auth module)
-// Note: These imports will work when the auth module is properly integrated
 interface AuthenticatedRequest {
   user: {
     id: string;
     clientId: string;
     role: string;
+    permissions: string[];
   };
 }
 
 @ApiTags('invitations')
 @Controller('api/v1/invitations')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class InvitationController {
   constructor(private readonly invitationService: InvitationService) {}
 
@@ -52,8 +57,7 @@ export class InvitationController {
   @ApiResponse({ status: 201, description: 'Invitation created successfully' })
   @ApiResponse({ status: 400, description: 'Invalid invitation data' })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN)
   async createInvitation(
     @Body() createInvitationDto: CreateInvitationDto,
     @Request() req: AuthenticatedRequest,
@@ -69,8 +73,7 @@ export class InvitationController {
   @ApiResponse({ status: 201, description: 'Bulk invitations processed' })
   @ApiResponse({ status: 400, description: 'Invalid bulk invitation data' })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN)
   async createBulkInvitations(
     @Body() bulkInvitationDto: BulkInvitationDto,
     @Request() req: AuthenticatedRequest,
@@ -82,6 +85,7 @@ export class InvitationController {
   }
 
   @Post(':token/accept')
+  @Public()
   @ApiOperation({ summary: 'Accept an invitation using token' })
   @ApiResponse({ status: 200, description: 'Invitation accepted successfully' })
   @ApiResponse({ status: 400, description: 'Invalid token or invitation data' })
@@ -107,8 +111,7 @@ export class InvitationController {
   @ApiResponse({ status: 400, description: 'Cannot resend invitation' })
   @ApiResponse({ status: 404, description: 'Invitation not found' })
   @HttpCode(HttpStatus.OK)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN)
   async resendInvitation(
     @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
@@ -123,8 +126,7 @@ export class InvitationController {
   @ApiResponse({ status: 400, description: 'Cannot revoke invitation' })
   @ApiResponse({ status: 404, description: 'Invitation not found' })
   @HttpCode(HttpStatus.OK)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN)
   async revokeInvitation(
     @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
@@ -140,8 +142,7 @@ export class InvitationController {
     description: 'Invitations retrieved successfully',
   })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN, UserRole.CLIENT_USER)
   async getInvitations(
     @Query() query: GetInvitationsQueryDto,
     @Request() req: AuthenticatedRequest,
@@ -157,8 +158,7 @@ export class InvitationController {
   })
   @ApiResponse({ status: 404, description: 'Invitation not found' })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CLIENT_ADMIN, UserRole.SUPER_ADMIN, UserRole.CLIENT_USER)
   async getInvitation(@Param('id') id: string): Promise<UserInvitation> {
     const invitation = await this.invitationService.getInvitation(id);
     if (!invitation) {
@@ -168,6 +168,7 @@ export class InvitationController {
   }
 
   @Get('token/:token/validate')
+  @Public()
   @ApiOperation({ summary: 'Validate invitation token' })
   @ApiResponse({ status: 200, description: 'Token is valid' })
   @ApiResponse({ status: 400, description: 'Token is invalid or expired' })

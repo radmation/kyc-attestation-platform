@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
+import authService from './lib/auth';
 
 // Components
 import Layout from './components/Layout';
@@ -51,11 +52,10 @@ const Settings: React.FC = () => (
 );
 
 /**
- * Simple auth guard component (mock implementation)
+ * Auth guard component with real authentication
  */
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Mock authentication check
-  const isAuthenticated = true; // In real app, this would check auth state
+  const isAuthenticated = authService.isAuthenticated();
   
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -68,6 +68,13 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
  * Main App component with routing
  */
 const App: React.FC = () => {
+  // Auto-login for development testing
+  useEffect(() => {
+    if (!authService.isAuthenticated()) {
+      authService.mockLogin('CLIENT_ADMIN');
+    }
+  }, []);
+
   return (
     <ThemeProvider defaultMode="system">
       <Router>

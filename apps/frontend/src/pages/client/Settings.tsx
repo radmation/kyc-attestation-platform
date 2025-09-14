@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, 
   CreditCard, 
@@ -6,19 +6,51 @@ import {
   Save,
   ExternalLink,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
+import apiClient, { type BrandingData } from '../../lib/api';
 
 const ClientSettings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'profile' | 'billing'>('profile');
   const [profileForm, setProfileForm] = useState({
-    companyName: 'Acme Corp',
-    contactEmail: 'admin@acmecorp.com',
+    companyName: '',
+    contactEmail: '',
     themeColor: '#3b82f6',
     logo: null as File | null
   });
+  const [currentBranding, setCurrentBranding] = useState<BrandingData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [error, setError] = useState<string | null>(null);
+
+  // Load current branding data
+  useEffect(() => {
+    loadBrandingData();
+  }, []);
+
+  const loadBrandingData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiClient.getBranding();
+      if (response.success && response.data) {
+        const brandingData = response.data;
+        setCurrentBranding(brandingData);
+        setProfileForm(prev => ({
+          ...prev,
+          themeColor: brandingData.primaryColor || '#3b82f6',
+        }));
+      }
+    } catch (err) {
+      setError('Failed to load branding settings');
+      console.error('Error loading branding:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const tabs = [
     { id: 'profile' as const, name: 'Profile', icon: User },
@@ -40,24 +72,40 @@ const ClientSettings: React.FC = () => {
   const handleProfileSave = async () => {
     setIsSaving(true);
     setSaveStatus('idle');
+    setError(null);
     
     try {
-      // TODO: Call the white-labeling API from P0-INF-008
-      const formData = new FormData();
-      formData.append('companyName', profileForm.companyName);
-      formData.append('contactEmail', profileForm.contactEmail);
-      formData.append('themeColor', profileForm.themeColor);
+      // First upload logo if provided
+      let logoUrl = currentBranding?.logoUrl;
       if (profileForm.logo) {
-        formData.append('logo', profileForm.logo);
+        const logoResponse = await apiClient.uploadLogo(profileForm.logo);
+        if (logoResponse.success) {
+          logoUrl = logoResponse.data?.logoUrl;
+        } else {
+          throw new Error(logoResponse.error || 'Failed to upload logo');
+        }
       }
 
-      // Mock API call - replace with actual endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Update branding settings
+      const brandingData: Partial<BrandingData> = {
+        primaryColor: profileForm.themeColor,
+        logoUrl: logoUrl,
+      };
+
+      const response = await apiClient.updateBranding(brandingData);
       
-      setSaveStatus('success');
-      setTimeout(() => setSaveStatus('idle'), 3000);
-    } catch (error) {
+      if (response.success) {
+        setSaveStatus('success');
+        setCurrentBranding(response.data || null);
+        // Clear the logo file since it's been uploaded
+        setProfileForm(prev => ({ ...prev, logo: null }));
+        setTimeout(() => setSaveStatus('idle'), 3000);
+      } else {
+        throw new Error(response.error || 'Failed to save settings');
+      }
+    } catch (err) {
       setSaveStatus('error');
+      setError(err instanceof Error ? err.message : 'Failed to save settings');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } finally {
       setIsSaving(false);
@@ -66,16 +114,28 @@ const ClientSettings: React.FC = () => {
 
   const handleOpenCustomerPortal = async () => {
     try {
-      // TODO: Call the Stripe Customer Portal endpoint from P1-CPP-001
-      // This should redirect to Stripe's Customer Portal
-      console.log('Opening Stripe Customer Portal...');
-      
-      // Mock redirect - replace with actual Stripe portal URL
-      window.open('https://billing.stripe.com/p/login/test_customer_portal', '_blank');
-    } catch (error) {
-      console.error('Failed to open customer portal:', error);
+      const response = await apiClient.createCustomerPortalSession();
+      if (response.success && response.data?.url) {
+        window.open(response.data.url, '_blank');
+      } else {
+        setError(response.error || 'Failed to open customer portal');
+      }
+    } catch (err) {
+      setError('Failed to open customer portal');
+      console.error('Failed to open customer portal:', err);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span>Loading settings...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -86,6 +146,18 @@ const ClientSettings: React.FC = () => {
           Manage your account settings and preferences
         </p>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <div className="flex">
+            <AlertCircle className="w-5 h-5 text-red-400" />
+            <div className="ml-3">
+              <p className="text-sm text-red-800">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tab Navigation */}
       <div className="border-b border-border">
@@ -164,6 +236,12 @@ const ClientSettings: React.FC = () => {
                           alt="Logo preview" 
                           className="w-full h-full object-cover rounded-lg"
                         />
+                      ) : currentBranding?.logoUrl ? (
+                        <img 
+                          src={currentBranding.logoUrl} 
+                          alt="Current logo" 
+                          className="w-full h-full object-cover rounded-lg"
+                        />
                       ) : (
                         <Upload className="w-6 h-6 text-muted-foreground" />
                       )}
@@ -220,7 +298,11 @@ const ClientSettings: React.FC = () => {
                     disabled={isSaving}
                     className="btn-primary flex items-center space-x-2"
                   >
-                    <Save className="w-4 h-4" />
+                    {isSaving ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
                     <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
                   </button>
                   
