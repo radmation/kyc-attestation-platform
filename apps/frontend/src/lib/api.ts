@@ -79,10 +79,10 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
@@ -103,7 +103,8 @@ class ApiClient {
       if (!response.ok) {
         return {
           success: false,
-          error: data.message || `HTTP ${response.status}: ${response.statusText}`,
+          error:
+            data.message || `HTTP ${response.status}: ${response.statusText}`,
           data: data,
         };
       }
@@ -115,7 +116,8 @@ class ApiClient {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Network error occurred',
+        error:
+          error instanceof Error ? error.message : 'Network error occurred',
       };
     }
   }
@@ -132,27 +134,33 @@ class ApiClient {
   }
 
   // Invitation API methods
-  async createInvitation(invitation: CreateInvitationDto): Promise<ApiResponse<InvitationResponse>> {
+  async createInvitation(
+    invitation: CreateInvitationDto,
+  ): Promise<ApiResponse<InvitationResponse>> {
     return this.request<InvitationResponse>('/api/v1/invitations', {
       method: 'POST',
       body: JSON.stringify(invitation),
     });
   }
 
-  async createBulkInvitations(bulkInvitation: BulkInvitationDto): Promise<ApiResponse<any>> {
+  async createBulkInvitations(
+    bulkInvitation: BulkInvitationDto,
+  ): Promise<ApiResponse<any>> {
     return this.request('/api/v1/invitations/bulk', {
       method: 'POST',
       body: JSON.stringify(bulkInvitation),
     });
   }
 
-  async getInvitations(params: {
-    page?: number;
-    limit?: number;
-    status?: string;
-    role?: string;
-    search?: string;
-  } = {}): Promise<ApiResponse<PaginatedInvitationsResult>> {
+  async getInvitations(
+    params: {
+      page?: number;
+      limit?: number;
+      status?: string;
+      role?: string;
+      search?: string;
+    } = {},
+  ): Promise<ApiResponse<PaginatedInvitationsResult>> {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -161,7 +169,7 @@ class ApiClient {
     });
 
     return this.request<PaginatedInvitationsResult>(
-      `/api/v1/invitations?${searchParams.toString()}`
+      `/api/v1/invitations?${searchParams.toString()}`,
     );
   }
 
@@ -181,11 +189,14 @@ class ApiClient {
     });
   }
 
-  async acceptInvitation(token: string, userData: {
-    firstName: string;
-    lastName: string;
-    password: string;
-  }): Promise<ApiResponse<User>> {
+  async acceptInvitation(
+    token: string,
+    userData: {
+      firstName: string;
+      lastName: string;
+      password: string;
+    },
+  ): Promise<ApiResponse<User>> {
     return this.request<User>(`/api/v1/invitations/accept/${token}`, {
       method: 'POST',
       body: JSON.stringify(userData),
@@ -208,7 +219,9 @@ class ApiClient {
     return this.request<BrandingData>('/api/v1/branding');
   }
 
-  async updateBranding(branding: Partial<BrandingData>): Promise<ApiResponse<BrandingData>> {
+  async updateBranding(
+    branding: Partial<BrandingData>,
+  ): Promise<ApiResponse<BrandingData>> {
     return this.request<BrandingData>('/api/v1/branding', {
       method: 'PUT',
       body: JSON.stringify(branding),
@@ -229,12 +242,14 @@ class ApiClient {
   }
 
   // Billing API methods
-  async getBillingStatus(): Promise<ApiResponse<{
-    status: string;
-    subscriptionId?: string;
-    gracePeriodEndsAt?: string;
-    lastPaymentFailedAt?: string;
-  }>> {
+  async getBillingStatus(): Promise<
+    ApiResponse<{
+      status: string;
+      subscriptionId?: string;
+      gracePeriodEndsAt?: string;
+      lastPaymentFailedAt?: string;
+    }>
+  > {
     return this.request('/api/v1/billing/status');
   }
 
@@ -251,4 +266,4 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient();
-export default apiClient; 
+export default apiClient;

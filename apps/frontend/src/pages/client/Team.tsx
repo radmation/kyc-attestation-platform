@@ -8,70 +8,112 @@ import {
   UserX,
   Crown,
   User,
+  Shield,
   Trash2,
   Send,
   Loader2,
   AlertCircle
 } from 'lucide-react';
-import apiClient, { type InvitationResponse, type User as ApiUser } from '../../lib/api';
 
-// Removed unused interfaces - using API types directly
+interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'member' | 'viewer';
+  status: 'active' | 'pending' | 'suspended';
+  joinedAt: string;
+  lastActive: string;
+}
+
+interface PendingInvitation {
+  id: string;
+  email: string;
+  role: 'admin' | 'member' | 'viewer';
+  invitedAt: string;
+  invitedBy: string;
+  status: string;
+}
 
 const ClientTeam: React.FC = () => {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteForm, setInviteForm] = useState({
     email: '',
-    role: 'CLIENT_USER' as 'CLIENT_ADMIN' | 'CLIENT_USER'
+    role: 'member' as 'admin' | 'member' | 'viewer'
   });
-  
-  // State for API data
-  const [teamMembers, setTeamMembers] = useState<ApiUser[]>([]);
-  const [pendingInvitations, setPendingInvitations] = useState<InvitationResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [pendingInvitations, setPendingInvitations] = useState<PendingInvitation[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInviting, setIsInviting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load data on component mount
+  // Load team data on component mount
   useEffect(() => {
     loadTeamData();
   }, []);
 
   const loadTeamData = async () => {
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
-    
     try {
-      const [usersResponse, invitationsResponse] = await Promise.all([
-        apiClient.getUsers(),
-        apiClient.getInvitations({ status: 'PENDING' })
+      // Load pending invitations
+      const invitationsResponse = await fetch('/api/v1/invitations', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (invitationsResponse.ok) {
+        const invitationsData = await invitationsResponse.json();
+        setPendingInvitations(invitationsData.data || []);
+      }
+
+      // Mock team members data for now - this would come from a users endpoint
+      setTeamMembers([
+        {
+          id: '1',
+          name: 'John Smith',
+          email: 'john@acmecorp.com',
+          role: 'admin',
+          status: 'active',
+          joinedAt: '2024-01-15',
+          lastActive: '2 hours ago'
+        },
+        {
+          id: '2',
+          name: 'Sarah Johnson',
+          email: 'sarah@acmecorp.com',
+          role: 'member',
+          status: 'active',
+          joinedAt: '2024-02-01',
+          lastActive: '1 day ago'
+        },
+        {
+          id: '3',
+          name: 'Mike Chen',
+          email: 'mike@acmecorp.com',
+          role: 'viewer',
+          status: 'active',
+          joinedAt: '2024-02-15',
+          lastActive: '3 days ago'
+        }
       ]);
-
-      if (usersResponse.success) {
-        setTeamMembers(usersResponse.data || []);
-      } else {
-        console.error('Failed to load users:', usersResponse.error);
-      }
-
-      if (invitationsResponse.success) {
-        setPendingInvitations(invitationsResponse.data?.invitations || []);
-      } else {
-        console.error('Failed to load invitations:', invitationsResponse.error);
-      }
-    } catch (err) {
-      setError('Failed to load team data');
-      console.error('Error loading team data:', err);
+    } catch (error) {
+      console.error('Failed to load team data:', error);
+      setError('Failed to load team data. Please try again.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case 'CLIENT_ADMIN':
-      case 'SUPER_ADMIN':
+      case 'admin':
         return <Crown className="w-4 h-4 text-amber-500" />;
-      case 'CLIENT_USER':
+      case 'member':
         return <User className="w-4 h-4 text-blue-500" />;
+      case 'viewer':
+        return <Shield className="w-4 h-4 text-gray-500" />;
       default:
         return <User className="w-4 h-4" />;
     }
@@ -107,77 +149,107 @@ const ClientTeam: React.FC = () => {
 
   const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
+    setIsInviting(true);
     setError(null);
-    
+
     try {
-      const response = await apiClient.createInvitation({
-        email: inviteForm.email,
-        role: inviteForm.role,
+      const response = await fetch('/api/v1/invitations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: inviteForm.email,
+          role: inviteForm.role.toUpperCase(),
+          firstName: '', // Optional
+          lastName: '', // Optional
+        }),
       });
 
-      if (response.success) {
-        // Reset form and close modal
-        setInviteForm({ email: '', role: 'CLIENT_USER' });
-        setShowInviteModal(false);
-        
-        // Reload data to show new invitation
-        await loadTeamData();
-      } else {
-        setError(response.error || 'Failed to send invitation');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to send invitation');
       }
-    } catch (err) {
-      setError('Failed to send invitation');
-      console.error('Error sending invitation:', err);
+
+      const result = await response.json();
+      console.log('Invitation sent successfully:', result);
+
+      // Reset form and close modal
+      setInviteForm({ email: '', role: 'member' });
+      setShowInviteModal(false);
+
+      // Reload team data to show the new pending invitation
+      await loadTeamData();
+
+      // Show success message (you could add a toast notification here)
+      alert('Invitation sent successfully!');
+    } catch (error) {
+      console.error('Failed to send invitation:', error);
+      setError(error instanceof Error ? error.message : 'Failed to send invitation');
     } finally {
-      setSubmitting(false);
+      setIsInviting(false);
     }
   };
 
   const handleRevokePendingInvitation = async (invitationId: string) => {
+    if (!confirm('Are you sure you want to revoke this invitation?')) {
+      return;
+    }
+
     try {
-      const response = await apiClient.revokeInvitation(invitationId);
-      if (response.success) {
-        await loadTeamData(); // Reload to update the list
-      } else {
-        setError(response.error || 'Failed to revoke invitation');
+      const response = await fetch(`/api/v1/invitations/${invitationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to revoke invitation');
       }
-    } catch (err) {
-      setError('Failed to revoke invitation');
-      console.error('Error revoking invitation:', err);
+
+      // Reload team data to remove the revoked invitation
+      await loadTeamData();
+
+      alert('Invitation revoked successfully');
+    } catch (error) {
+      console.error('Failed to revoke invitation:', error);
+      alert('Failed to revoke invitation. Please try again.');
     }
   };
 
   const handleResendInvitation = async (invitationId: string) => {
     try {
-      const response = await apiClient.resendInvitation(invitationId);
-      if (response.success) {
-        // Show success message or update UI
-        console.log('Invitation resent successfully');
-      } else {
-        setError(response.error || 'Failed to resend invitation');
+      const response = await fetch(`/api/v1/invitations/${invitationId}/resend`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to resend invitation');
       }
-    } catch (err) {
-      setError('Failed to resend invitation');
-      console.error('Error resending invitation:', err);
+
+      alert('Invitation resent successfully');
+    } catch (error) {
+      console.error('Failed to resend invitation:', error);
+      alert('Failed to resend invitation. Please try again.');
     }
   };
 
-  const handleRemoveMember = async (memberId: string) => {
-    try {
-      const response = await apiClient.removeUser(memberId);
-      if (response.success) {
-        await loadTeamData(); // Reload to update the list
-      } else {
-        setError(response.error || 'Failed to remove team member');
-      }
-    } catch (err) {
-      setError('Failed to remove team member');
-      console.error('Error removing member:', err);
-    }
+  const handleRemoveMember = (memberId: string) => {
+    // TODO: Implement user removal API call when user management endpoints are available
+    console.log('Removing member:', memberId);
+    alert('User removal functionality will be implemented when user management APIs are ready.');
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex items-center space-x-2">
@@ -209,6 +281,11 @@ const ClientTeam: React.FC = () => {
           <p className="text-muted-foreground mt-1">
             Manage your team members and their access permissions
           </p>
+          {error && (
+            <div className="mt-2 p-2 bg-red-100 border border-red-300 text-red-700 rounded">
+              {error}
+            </div>
+          )}
         </div>
         <button
           onClick={() => setShowInviteModal(true)}
@@ -238,9 +315,9 @@ const ClientTeam: React.FC = () => {
               <Crown className="w-5 h-5 text-amber-500" />
               <span className="text-sm font-medium text-muted-foreground">Admins</span>
             </div>
-            <p className="text-2xl font-bold text-foreground mt-2">
-              {teamMembers.filter(m => m.role === 'CLIENT_ADMIN' || m.role === 'SUPER_ADMIN').length}
-            </p>
+                          <p className="text-2xl font-bold text-foreground mt-2">
+                {teamMembers.filter(m => m.role === 'admin').length}
+              </p>
           </div>
         </div>
         <div className="card">
@@ -261,7 +338,7 @@ const ClientTeam: React.FC = () => {
               <span className="text-sm font-medium text-muted-foreground">Active</span>
             </div>
             <p className="text-2xl font-bold text-foreground mt-2">
-              {teamMembers.filter(m => m.isActive).length}
+              {teamMembers.filter(m => m.status === 'active').length}
             </p>
           </div>
         </div>
@@ -291,9 +368,7 @@ const ClientTeam: React.FC = () => {
                     <td className="p-4">
                       <div>
                         <p className="font-medium text-foreground">
-                          {member.firstName && member.lastName 
-                            ? `${member.firstName} ${member.lastName}` 
-                            : member.email}
+                          {member.name}
                         </p>
                         <p className="text-sm text-muted-foreground">{member.email}</p>
                       </div>
@@ -301,15 +376,15 @@ const ClientTeam: React.FC = () => {
                     <td className="p-4">
                       <div className="flex items-center space-x-2">
                         {getRoleIcon(member.role)}
-                        <span className="capitalize text-sm">{member.role.replace('CLIENT_', '').toLowerCase()}</span>
+                        <span className="capitalize text-sm">{member.role}</span>
                       </div>
                     </td>
                     <td className="p-4">
-                      {getStatusBadge(member.isActive ? 'active' : 'suspended')}
+                      {getStatusBadge(member.status)}
                     </td>
                     <td className="p-4">
                       <span className="text-sm text-muted-foreground">
-                        {new Date(member.updatedAt).toLocaleDateString()}
+                        {member.lastActive}
                       </span>
                     </td>
                     <td className="p-4">
@@ -355,7 +430,7 @@ const ClientTeam: React.FC = () => {
                         <span className="text-sm text-muted-foreground capitalize">{invitation.role}</span>
                         <span className="text-sm text-muted-foreground">•</span>
                         <span className="text-sm text-muted-foreground">
-                          Invited {new Date(invitation.createdAt).toLocaleDateString()}
+                          Invited {new Date(invitation.invitedAt).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
@@ -408,11 +483,12 @@ const ClientTeam: React.FC = () => {
                 </label>
                 <select
                   value={inviteForm.role}
-                  onChange={(e) => setInviteForm({...inviteForm, role: e.target.value as 'CLIENT_ADMIN' | 'CLIENT_USER'})}
+                  onChange={(e) => setInviteForm({...inviteForm, role: e.target.value as 'admin' | 'member' | 'viewer'})}
                   className="input-field w-full"
                 >
-                  <option value="CLIENT_USER">User - Standard access</option>
-                  <option value="CLIENT_ADMIN">Admin - Full access</option>
+                  <option value="member">User - Standard access</option>
+                  <option value="admin">Admin - Full access</option>
+                  <option value="viewer">Viewer - Limited access</option>
                 </select>
               </div>
               <div className="flex justify-end space-x-3 pt-4">
@@ -423,8 +499,8 @@ const ClientTeam: React.FC = () => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary" disabled={submitting}>
-                  {submitting ? (
+                <button type="submit" className="btn-primary" disabled={isInviting}>
+                  {isInviting ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Sending...

@@ -36,7 +36,7 @@ class AuthService {
   private initializeFromStorage() {
     const token = localStorage.getItem('auth_token');
     const userStr = localStorage.getItem('auth_user');
-    
+
     if (token && userStr) {
       try {
         this.currentUser = JSON.parse(userStr);
@@ -49,11 +49,13 @@ class AuthService {
     }
   }
 
-  async login(credentials: LoginCredentials): Promise<{ success: boolean; error?: string }> {
+  async login(
+    credentials: LoginCredentials,
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       // For now, we'll use mock authentication since the login endpoint isn't implemented
       // TODO: Replace with actual login endpoint when available
-      
+
       // Mock successful login for development
       if (credentials.email && credentials.password) {
         const mockUser: AuthUser = {
@@ -63,26 +65,26 @@ class AuthService {
           lastName: 'User',
           role: 'CLIENT_ADMIN',
           clientId: 'mock-client-id',
-          permissions: ['invite:create', 'invite:manage', 'branding:manage']
+          permissions: ['invite:create', 'invite:manage', 'branding:manage'],
         };
 
         const mockToken = 'mock-jwt-token-' + Date.now();
-        
+
         this.currentUser = mockUser;
         localStorage.setItem('auth_user', JSON.stringify(mockUser));
         localStorage.setItem('auth_token', mockToken);
         apiClient.setToken(mockToken);
-        
+
         this.scheduleTokenRefresh();
-        
+
         return { success: true };
       } else {
         return { success: false, error: 'Please provide email and password' };
       }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Login failed' 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Login failed',
       };
     }
   }
@@ -93,7 +95,7 @@ class AuthService {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('refresh_token');
     apiClient.clearToken();
-    
+
     if (this.tokenRefreshTimeout) {
       clearTimeout(this.tokenRefreshTimeout);
       this.tokenRefreshTimeout = null;
@@ -105,7 +107,9 @@ class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.currentUser !== null && localStorage.getItem('auth_token') !== null;
+    return (
+      this.currentUser !== null && localStorage.getItem('auth_token') !== null
+    );
   }
 
   hasRole(role: string): boolean {
@@ -121,10 +125,13 @@ class AuthService {
     if (this.tokenRefreshTimeout) {
       clearTimeout(this.tokenRefreshTimeout);
     }
-    
-    this.tokenRefreshTimeout = setTimeout(() => {
-      this.refreshToken();
-    }, 14 * 60 * 1000); // 14 minutes
+
+    this.tokenRefreshTimeout = setTimeout(
+      () => {
+        this.refreshToken();
+      },
+      14 * 60 * 1000,
+    ); // 14 minutes
   }
 
   private async refreshToken() {
@@ -145,7 +152,9 @@ class AuthService {
   }
 
   // Mock login for development - creates a fake admin user
-  async mockLogin(role: 'CLIENT_ADMIN' | 'CLIENT_USER' = 'CLIENT_ADMIN'): Promise<void> {
+  async mockLogin(
+    role: 'CLIENT_ADMIN' | 'CLIENT_USER' = 'CLIENT_ADMIN',
+  ): Promise<void> {
     const mockUser: AuthUser = {
       id: 'mock-user-' + Date.now(),
       email: `${role.toLowerCase()}@example.com`,
@@ -153,21 +162,27 @@ class AuthService {
       lastName: role === 'CLIENT_ADMIN' ? 'Admin' : 'User',
       role: role,
       clientId: 'mock-client-id',
-      permissions: role === 'CLIENT_ADMIN' 
-        ? ['invite:create', 'invite:manage', 'branding:manage', 'billing:manage']
-        : ['invite:view']
+      permissions:
+        role === 'CLIENT_ADMIN'
+          ? [
+              'invite:create',
+              'invite:manage',
+              'branding:manage',
+              'billing:manage',
+            ]
+          : ['invite:view'],
     };
 
     const mockToken = 'mock-jwt-token-' + Date.now();
-    
+
     this.currentUser = mockUser;
     localStorage.setItem('auth_user', JSON.stringify(mockUser));
     localStorage.setItem('auth_token', mockToken);
     apiClient.setToken(mockToken);
-    
+
     this.scheduleTokenRefresh();
   }
 }
 
 export const authService = new AuthService();
-export default authService; 
+export default authService;
